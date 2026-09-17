@@ -1,0 +1,90 @@
+/* ── Inline <style> rules from /painel/?version=3 (filtered to rules that match the page) ── */
+@font-face { font-family: Nunito; font-style: normal; font-weight: 200 1000; font-display: swap; src: url("/sites/eagenda-com-br-a1f95f96/shared/fonts/nunito-latin.woff2") format("woff2"); ascent-override: 97.5%; descent-override: 27%; line-gap-override: 0%; }
+
+html, body { background-color: #F7F9FB !important; }
+
+@media (max-width: 1023px) {
+  .sidebar { position: fixed !important; transform: translateX(-100%) !important; z-index: 60 !important; top: 0 !important; left: 0 !important; width: 288px !important; height: 100vh !important; display: flex !important; flex-direction: column !important; background: #eff2f6 !important; border-right: 1px solid #e5e7eb !important; transition: transform .3s ease-in-out !important; }
+  .sidebar.mobile-open { transform: translateX(0) !important; }
+  .sidebar-container { width: 0 !important; min-width: 0 !important; overflow: hidden !important; flex-shrink: 0 !important; }
+  #mainContent { margin-left: 0 !important; width: 100% !important; }
+}
+@media (min-width: 1024px) {
+  .sidebar { position: fixed !important; height: 100vh !important; top: 0 !important; left: 0 !important; width: 288px !important; transition: margin-left .3s !important; }
+  .sidebar-container { flex-shrink: 0; width: 0 !important; min-width: 0 !important; overflow: visible !important; }
+  #mainContent { margin-left: 288px !important; flex: 1 1 0% !important; width: calc(100vw - 288px) !important; transition: margin-left .3s, width .3s !important; }
+  body.sidebar-collapsed .sidebar { margin-left: -288px !important; }
+  body.sidebar-collapsed #mainContent { margin-left: 0 !important; width: 100vw !important; }
+  body { flex-direction: row !important; }
+  body > div { flex-direction: row !important; }
+}
+
+aside#sidebar .sidebar-zone-divider { border: none; border-top: 1px solid var(--color-slate-300, #cbd5e1); margin: .5rem .75rem; opacity: 1; }
+#logoContainer { height: 4rem !important; }
+#mainContent .topbar { background-color: #F7F9FB !important; }
+
+html:not(.sidebar-theme-blue) aside#sidebar.sidebar { background-color: #eff2f6 !important; border-right: none !important; }
+html:not(.sidebar-theme-blue) aside#sidebar.sidebar::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background-color: #e5e7eb; pointer-events: none; }
+html:not(.sidebar-theme-blue) aside#sidebar #logoContainer { background-color: #eff2f6 !important; }
+html:not(.sidebar-theme-blue) .sidebar .snav-row.nav-item-active { background-color: #fff !important; color: #101828 !important; box-shadow: 0 0 0 1px rgba(16,24,40,.06), 0 1px 2px 0 rgba(16,24,40,.09), 0 2px 10px -2px rgba(16,24,40,.14) !important; }
+html:not(.sidebar-theme-blue) .sidebar .snav-row.nav-item-active:hover { background-color: #fff !important; }
+html:not(.sidebar-theme-blue) .sidebar .snav-row.nav-item-active .snav-label,
+html:not(.sidebar-theme-blue) .sidebar .snav-row.nav-item-active .sidebar-text,
+html:not(.sidebar-theme-blue) .sidebar .snav-row.nav-item-active .sidebar-icon { color: #101828 !important; font-weight: 700 !important; }
+.sidebar .snav-indicator { display: none !important; }
+html:not(.sidebar-theme-blue) .sidebar .sidebar-sublist { border-left-color: transparent !important; }
+
+.lato-regular { font-family: Nunito, system-ui, sans-serif; font-weight: 600; }
+.alatsi-regular, .varela-round { font-family: Nunito, "Trebuchet MS", system-ui, sans-serif; font-weight: 700; letter-spacing: -.005em; }
+.inter-regular { font-family: Nunito, system-ui, sans-serif; font-weight: 600; }
+.inter-semibold { font-family: Nunito, system-ui, sans-serif; font-weight: 600; }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { scrollbar-width: none; }
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgba(0,31,84,.25) transparent; }
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background-color: rgba(0,31,84,.25); border-radius: 9999px; }
+
+aside.sidebar .sidebar-chevron { transform-origin: center; transition: transform .26s cubic-bezier(.22,1,.36,1), color .2s; will-change: transform; }
+aside.sidebar .sidebar-header, aside.sidebar nav, aside.sidebar .sidebar-footer { opacity: 1; transition: opacity .14s; }
+aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; transition: opacity .15s, max-width .15s; }
+.sidebar-footer { background: transparent; }
+
+.help-center-container { position: fixed; z-index: 40; --hc-primary: #001f54; --hc-primary-dark: #001440; --hc-primary-light: #2a4a86; --hc-tint-50: #eef2fb; --hc-tint-100: #dde4f5; }
+.help-center-container.hc-bottom-right { bottom: 1.5rem; right: 1.5rem; }
+.help-center-button { display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; padding: 0; border: 0; cursor: pointer; background: var(--hc-primary); color: #fff; border-radius: 9999px; box-shadow: 0 4px 12px rgba(0,31,84,.35); transition: transform .2s, box-shadow .2s, background-color .2s; }
+.help-center-button:hover { background: var(--hc-primary-light); box-shadow: 0 6px 18px rgba(0,31,84,.45); transform: translateY(-1px); }
+.help-center-button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(42,74,134,.5); }
+.help-center-button.hc-active { background: var(--hc-primary-light); }
+.help-center-button svg { width: 1.4rem; height: 1.4rem; transition: transform .3s; }
+.help-center-button.hc-active svg { transform: rotate(180deg); }
+.help-center-panel { position: absolute; width: 340px; max-width: calc(100vw - 3rem); background: #fff; border: 1px solid #e5e7eb; border-radius: .85rem; box-shadow: 0 20px 50px rgba(0,0,0,.25); overflow: hidden; transition: opacity .2s; }
+.hc-bottom-right .help-center-panel { bottom: 4rem; right: 0; }
+.help-center-header { background: linear-gradient(135deg, var(--hc-primary), var(--hc-primary-dark)); padding: .85rem 1rem; color: #fff; }
+.help-center-header .hc-head-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.help-center-header .hc-head-title { display: flex; align-items: center; gap: .5rem; font-weight: 600; font-size: .95rem; }
+.help-center-header .hc-subtitle { margin: .25rem 0 0; font-size: .8rem; color: #c7d2ec; }
+.help-center-header svg { width: 1.15rem; height: 1.15rem; }
+.hc-close { background: transparent; border: 0; padding: 0; color: rgba(255,255,255,.8); cursor: pointer; display: flex; }
+.hc-close:hover { color: #fff; }
+.help-center-list { max-height: 21rem; overflow-y: auto; }
+.help-center-item { display: flex; align-items: flex-start; gap: .75rem; padding: .8rem 1rem; text-decoration: none; border-bottom: 1px solid #f1f1f4; transition: background-color .15s; }
+.help-center-item:last-child { border-bottom: 0; }
+.help-center-item:hover { background: #f8fafc; }
+.hc-icon-box { flex: 0 0 auto; width: 2.5rem; height: 2.5rem; border-radius: .6rem; display: flex; align-items: center; justify-content: center; background: var(--hc-tint-50); color: var(--hc-primary); transition: background-color .15s; }
+.help-center-item:hover .hc-icon-box { background: var(--hc-tint-100); }
+.hc-icon-box svg { width: 1.25rem; height: 1.25rem; }
+.hc-item-body { min-width: 0; flex: 1 1 0%; }
+.hc-title { display: block; margin: 0; font-size: .875rem; font-weight: 600; color: #111827; line-height: 1.25; }
+.hc-desc { display: -webkit-box; margin: .15rem 0 0; font-size: .75rem; color: #6b7280; line-height: 1.3; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hc-arrow { flex: 0 0 auto; align-self: center; color: #9ca3af; display: flex; }
+.hc-arrow svg { width: 1rem; height: 1rem; }
+.help-center-footer { background: #f8fafc; border-top: 1px solid #eef0f3; padding: .7rem 1rem; }
+.help-center-footer a { display: flex; align-items: center; justify-content: center; gap: .4rem; font-size: .825rem; font-weight: 600; color: var(--hc-primary); text-decoration: none; }
+.help-center-footer a:hover { color: var(--hc-primary-light); }
+.help-center-footer svg { width: 1rem; height: 1rem; }
+
+/* Popover positioning for the teleported hmenu (clone uses absolute positioning under the trigger). */
+.hmenu { position: relative; }
+.hmenu > .hmenu-popover { position: absolute; left: auto; right: 0; top: calc(100% + .5rem); z-index: 100; }

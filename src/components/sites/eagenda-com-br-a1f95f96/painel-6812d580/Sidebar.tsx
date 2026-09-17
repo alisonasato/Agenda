@@ -1,0 +1,275 @@
+"use client";
+
+import { useEffect, useRef, useState, type ComponentType, type CSSProperties, type SVGProps } from "react";
+import {
+  BuildingIcon,
+  CalendarAddIcon,
+  CalendarIcon,
+  CaretDownIcon,
+  ChartIcon,
+  ChatIcon,
+  ChecklistIcon,
+  ClipboardIcon,
+  CloseCircleIcon,
+  CrownIcon,
+  DashboardIcon,
+  LinkIcon,
+  QuestionCircleIcon,
+  SearchOutlineIcon,
+  StarsIcon,
+  UsersIcon,
+} from "../shared/icons";
+
+type Icon = ComponentType<SVGProps<SVGSVGElement>>;
+type Leaf = { label: string; keywords?: string };
+type NavEntry =
+  | { kind: "link"; label: string; icon: Icon; active?: boolean; keywords?: string }
+  | { kind: "group"; label: string; icon: Icon; items: Leaf[] }
+  | { kind: "divider" };
+
+const NAV: NavEntry[] = [
+  { kind: "link", label: "Painel", icon: DashboardIcon, active: true },
+  { kind: "link", label: "Calendário", icon: CalendarIcon, keywords: "Ver Minha Agenda Agenda" },
+  { kind: "link", label: "Novo Agendamento", icon: CalendarAddIcon, keywords: "Incluir Agendamento Agenda" },
+  { kind: "link", label: "Agendamentos", icon: ChecklistIcon, keywords: "Listar Agendamentos Agenda" },
+  {
+    kind: "group",
+    label: "Gestão de Agendas",
+    icon: CalendarIcon,
+    items: [
+      { label: "Configuração" },
+      { label: "Links de Agendamento" },
+      { label: "Limites de Agendamentos" },
+      { label: "Listas de Bloqueio", keywords: "Bloqueios de Datas Supressão" },
+      { label: "Agendamentos Recorrentes", keywords: "Recorrências" },
+      { label: "Confirmar Agendamentos" },
+      { label: "Feriados" },
+    ],
+  },
+  { kind: "divider" },
+  {
+    kind: "group",
+    label: "Clientes",
+    icon: UsersIcon,
+    items: [{ label: "Listar Clientes", keywords: "Buscar" }, { label: "Acesso de Clientes" }],
+  },
+  {
+    kind: "group",
+    label: "Relatórios",
+    icon: ChartIcon,
+    items: [{ label: "Clientes" }, { label: "Consolidado" }, { label: "Agendamentos" }, { label: "Indicadores Gerenciais" }],
+  },
+  { kind: "link", label: "Formulários", icon: ClipboardIcon, keywords: "Gerenciar Formulários" },
+  {
+    kind: "group",
+    label: "Comunicação",
+    icon: ChatIcon,
+    items: [
+      { label: "Regras de Notificação" },
+      { label: "Notificações por Status" },
+      { label: "Modelos de Email" },
+      { label: "Acompanhamento" },
+      { label: "Pacotes de Envio", keywords: "Pacotes de Notificações" },
+    ],
+  },
+  { kind: "divider" },
+  { kind: "link", label: "Integrações", icon: LinkIcon },
+  {
+    kind: "group",
+    label: "Conta",
+    icon: BuildingIcon,
+    items: [
+      { label: "Tela de Agendamento" },
+      { label: "Dados da Conta", keywords: "Configurações Gerais Dados da Organização" },
+      { label: "Administrar Agendas", keywords: "Horários e Datas Painel de Controle" },
+      { label: "Administrar Equipe" },
+      { label: "Administrar Unidades" },
+      { label: "Administrar Contas" },
+    ],
+  },
+  {
+    kind: "group",
+    label: "Ajuda",
+    icon: QuestionCircleIcon,
+    items: [
+      { label: "Passo a Passo" },
+      { label: "Suporte via WhatsApp" },
+      { label: "Tutoriais" },
+      { label: "Vídeos no YouTube" },
+      { label: "Desenvolvimento" },
+      { label: "Aplicativo" },
+      { label: "Autorizar Suporte" },
+    ],
+  },
+];
+
+const norm = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+type SearchHit = { label: string; group?: string; icon: Icon; keys: string };
+const SEARCH_INDEX: SearchHit[] = NAV.flatMap((e): SearchHit[] => {
+  if (e.kind === "link") return [{ label: e.label, icon: e.icon, keys: norm(`${e.label} ${e.keywords ?? ""}`) }];
+  if (e.kind === "group")
+    return e.items.map((i) => ({ label: i.label, group: e.label, icon: e.icon, keys: norm(`${i.label} ${e.label} ${i.keywords ?? ""}`) }));
+  return [];
+});
+
+type SidebarProps = { mobileOpen: boolean; onCloseMobile: () => void };
+
+export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Ctrl + K focuses the page search, like the original.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const q = norm(query.trim());
+  const hits = q ? SEARCH_INDEX.filter((h) => h.keys.includes(q)) : [];
+
+  return (
+    <aside
+      id="sidebar"
+      className={`sidebar hui-enter fixed top-0 left-0 w-[288px] h-screen flex flex-col z-[60] border-r border-slate-200${mobileOpen ? " mobile-open" : ""}`}
+    >
+      <div id="logoContainer" className="sidebar-header flex items-center justify-between h-16 shrink-0 px-6">
+        <a href="#" className="sidebar-brand flex items-center gap-3 hover:opacity-80 transition-opacity">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/sites/eagenda-com-br-a1f95f96/shared/images/logo.png"
+            alt="eAgenda"
+            className="sidebar-logo sidebar-logo--light h-[1.875rem] w-auto select-none"
+            draggable={false}
+          />
+        </a>
+        <button
+          type="button"
+          onClick={onCloseMobile}
+          className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all"
+          aria-label="Fechar menu"
+        >
+          <CloseCircleIcon className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="shrink-0 px-5 pt-8">
+        <label className={`hui-search hui-search--pill${query ? " has-query" : ""}`}>
+          <SearchOutlineIcon className="hui-search-icon w-[18px] h-[18px]" />
+          <input
+            ref={inputRef}
+            type="text"
+            autoComplete="off"
+            spellCheck={false}
+            className="hui-search-input"
+            placeholder="Buscar páginas..."
+            aria-label="Buscar páginas"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Escape" && setQuery("")}
+          />
+          <kbd className="hui-search-kbd" aria-hidden="true">Ctrl + K</kbd>
+          <button type="button" className="hui-search-clear" aria-label="Limpar busca" onClick={() => setQuery("")}>
+            <CloseCircleIcon className="w-4 h-4" />
+          </button>
+        </label>
+      </div>
+
+      <nav className="sidebar-scroll-fade scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-2 px-5 pt-5" role="navigation" aria-label="Sidebar">
+        {q ? (
+          hits.length ? (
+            <div className="space-y-1">
+              {hits.map((h) => (
+                <a key={`${h.group ?? ""}-${h.label}`} href="#" className="snav-row nav-item nav-item-idle">
+                  <h.icon className="sidebar-icon w-[18px] h-[18px]" />
+                  <span className="snav-label sidebar-text font-medium">
+                    {h.label}
+                    {h.group && <span className="text-xs text-slate-400"> · {h.group}</span>}
+                  </span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p className="px-3 py-2 text-sm text-slate-400">Nenhuma página encontrada.</p>
+          )
+        ) : (
+          <div className="space-y-1.5">
+            {NAV.map((entry, i) => {
+              if (entry.kind === "divider") return <hr key={i} className="sidebar-zone-divider" aria-hidden="true" />;
+              if (entry.kind === "link") {
+                return (
+                  <a
+                    key={entry.label}
+                    href="#"
+                    className={`snav-row nav-item ${entry.active ? "nav-item-active" : "nav-item-idle"}`}
+                    aria-current={entry.active ? "page" : undefined}
+                  >
+                    <entry.icon className="sidebar-icon w-[18px] h-[18px]" />
+                    <span className="snav-label sidebar-text font-medium">{entry.label}</span>
+                  </a>
+                );
+              }
+              const open = openGroup === entry.label;
+              return (
+                  <div key={entry.label} className={`sidebar-group${open ? " is-open" : ""}`}>
+                    <button
+                      type="button"
+                      className="snav-row sidebar-section-toggle nav-item-idle"
+                      aria-expanded={open}
+                      onClick={() => setOpenGroup(open ? null : entry.label)}
+                    >
+                      <span className="sidebar-group-icon inline-flex shrink-0">
+                        <entry.icon className="sidebar-icon w-[18px] h-[18px]" />
+                      </span>
+                      <span className="snav-label sidebar-text">{entry.label}</span>
+                      <CaretDownIcon className="sidebar-chevron w-4 h-4 shrink-0" />
+                    </button>
+                    <div className="sidebar-group-content">
+                      <div className="sidebar-group-inner">
+                        <ul className="sidebar-sublist space-y-0.5">
+                          {entry.items.map((item) => (
+                            <li key={item.label}>
+                              <a href="#" className="snav-sub sidebar-text" tabIndex={open ? 0 : -1}>
+                                {item.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+              );
+            })}
+          </div>
+        )}
+      </nav>
+
+      <div className="sidebar-footer shrink-0 px-5 pt-1 pb-6">
+        <div className="sidebar-plan-card sidebar-plan-card--upgrade hui-enter" style={{ "--hui-enter-delay": "80ms" } as CSSProperties}>
+          <div className="sidebar-plan-head">
+            <span className="sidebar-plan-crown" aria-hidden="true">
+              <CrownIcon />
+            </span>
+            <span className="sidebar-plan-name">Plano Teste</span>
+            <span className="hchip hchip--success hchip--primary hchip--sm">Ativo</span>
+          </div>
+          <div className="sidebar-plan-cta-wrap">
+            <div className="sidebar-plan-cta-inner">
+              <a href="#" className="sidebar-plan-cta" title="Fazer upgrade">
+                <StarsIcon className="w-4 h-4 shrink-0 sidebar-plan-cta-spark" />
+                <span className="truncate">Fazer upgrade</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
