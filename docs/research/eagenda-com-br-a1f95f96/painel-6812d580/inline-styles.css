@@ -97,3 +97,5 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 .hdaterange { position: relative; }
 .hdaterange > .hdaterange-popover { min-width: 0; }
 .hfilterpop > .hfilterpop-popover { left: auto; right: 0; min-width: 0; }
+.hms-field { position: relative; }
+.hms-field > .hms-popover { position: absolute; top: calc(100% + .25rem); left: 0; width: 100%; z-index: 100; }
