@@ -35,6 +35,7 @@ export const ROUTES = {
   listasBloqueio: "/agendamentos/limites/lista_bloqueios",
   recorrencias: "/agendamentos/recorrencias",
   confirmarAgendamentos: "/agendamentos/listar?status=PENDING&interval=all",
+  feriados: "/agendamentos/feriados",
 } as const;
 
 type Leaf = { label: string; href?: string; keywords?: string };
@@ -59,7 +60,7 @@ const NAV: NavEntry[] = [
       { label: "Listas de Bloqueio", href: ROUTES.listasBloqueio, keywords: "Bloqueios de Datas Supressão" },
       { label: "Agendamentos Recorrentes", href: ROUTES.recorrencias, keywords: "Recorrências" },
       { label: "Confirmar Agendamentos", href: ROUTES.confirmarAgendamentos },
-      { label: "Feriados" },
+      { label: "Feriados", href: ROUTES.feriados },
     ],
   },
   { kind: "divider" },
