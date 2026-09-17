@@ -28,6 +28,7 @@ export const ROUTES = {
   clientes: "/clientes/listar",
   acessoClientes: "/users/clientes_autorizados/listas_acesso",
   relatorioClientes: "/relatorios/clientes",
+  relatorioConsolidado: "/relatorios/consolidado",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -78,7 +79,7 @@ const NAV: NavEntry[] = [
     icon: ChartIcon,
     items: [
       { label: "Clientes", href: ROUTES.relatorioClientes },
-      { label: "Consolidado" },
+      { label: "Consolidado", href: ROUTES.relatorioConsolidado },
       { label: "Agendamentos" },
       { label: "Indicadores Gerenciais" },
     ],

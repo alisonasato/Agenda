@@ -90,6 +90,7 @@ export function ClientsReport() {
                     <DateRangePopover
                       preset={"Todos os períodos" as Preset}
                       today={today}
+                      initialMonth={range.from}
                       onPreset={() => setDateOpen(false)}
                       onClear={() => setDateOpen(false)}
                     />

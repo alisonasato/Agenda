@@ -45,10 +45,15 @@ type DateRangePopoverProps = {
   today: Date;
   /** The report pages add a "Limpar período" footer under the calendars. */
   onClear?: () => void;
+  /** Month shown when the popover opens. Defaults to the current month; the reports open on the range start. */
+  initialMonth?: Date;
 };
 
-export function DateRangePopover({ preset, onPreset, today, onClear }: DateRangePopoverProps) {
-  const [month, setMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+export function DateRangePopover({ preset, onPreset, today, onClear, initialMonth }: DateRangePopoverProps) {
+  const [month, setMonth] = useState(() => {
+    const base = initialMonth ?? today;
+    return new Date(base.getFullYear(), base.getMonth(), 1);
+  });
 
   return (
     <div className="hselect-popover hdaterange-popover">
