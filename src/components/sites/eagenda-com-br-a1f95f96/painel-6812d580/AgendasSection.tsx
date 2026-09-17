@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CalendarDays, CalendarPlus, CalendarRange, Activity } from "lucide-react";
 import { CalendarIcon, CloseCircleIcon, SearchSolidIcon, SettingsIcon } from "../shared/icons";
+import { ROUTES } from "../shared/Sidebar";
 
 type Agenda = { name: string; today: number; tomorrow: number; next7: number; occupancy: string; active: boolean };
 
@@ -38,7 +39,7 @@ function Actions({ small }: { small?: boolean }) {
   const size = small ? " btn-icon-sm" : "";
   return (
     <>
-      <a href="#" title="Ver Agenda" className={`btn-icon btn-icon-solid${size}`}>
+      <a href={ROUTES.calendario} title="Ver Agenda" className={`btn-icon btn-icon-solid${size}`}>
         <CalendarIcon className="w-4 h-4" />
       </a>
       <a href="#" title="Configurar Agenda" className={`btn-icon btn-icon-flat${size} group/btn`}>
@@ -109,7 +110,7 @@ export function AgendasSection() {
                 {rows.map((a) => (
                   <tr key={a.name} className="group">
                     <td className="htable-cell">
-                      <a href="#" className="text-gray-900 hover:text-primary transition-colors duration-200">
+                      <a href={ROUTES.calendario} className="text-gray-900 hover:text-primary transition-colors duration-200">
                         <div className="font-semibold text-sm md:text-base inter-semibold truncate">{a.name}</div>
                       </a>
                     </td>
@@ -161,7 +162,7 @@ export function AgendasSection() {
               <div key={a.name} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <a href="#" className="text-gray-900 hover:text-primary transition-colors duration-200">
+                    <a href={ROUTES.calendario} className="text-gray-900 hover:text-primary transition-colors duration-200">
                       <h3 className="font-bold text-base text-gray-900 alatsi-regular mb-1">{a.name}</h3>
                     </a>
                   </div>

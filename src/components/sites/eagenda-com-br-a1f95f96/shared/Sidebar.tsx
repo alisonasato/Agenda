@@ -21,15 +21,22 @@ import {
 } from "./icons";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
+
+/** Only the cloned pages link somewhere; the rest of the menu is inert. */
+export const ROUTES = {
+  painel: "/",
+  calendario: "/agendamentos/calendar/18078",
+} as const;
+
 type Leaf = { label: string; keywords?: string };
 type NavEntry =
-  | { kind: "link"; label: string; icon: Icon; active?: boolean; keywords?: string }
+  | { kind: "link"; label: string; icon: Icon; href?: string; keywords?: string }
   | { kind: "group"; label: string; icon: Icon; items: Leaf[] }
   | { kind: "divider" };
 
 const NAV: NavEntry[] = [
-  { kind: "link", label: "Painel", icon: DashboardIcon },
-  { kind: "link", label: "Calendário", icon: CalendarIcon, keywords: "Ver Minha Agenda Agenda" },
+  { kind: "link", label: "Painel", icon: DashboardIcon, href: ROUTES.painel },
+  { kind: "link", label: "Calendário", icon: CalendarIcon, href: ROUTES.calendario, keywords: "Ver Minha Agenda Agenda" },
   { kind: "link", label: "Novo Agendamento", icon: CalendarAddIcon, keywords: "Incluir Agendamento Agenda" },
   { kind: "link", label: "Agendamentos", icon: ChecklistIcon, keywords: "Listar Agendamentos Agenda" },
   {
@@ -105,9 +112,9 @@ const NAV: NavEntry[] = [
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
-type SearchHit = { label: string; group?: string; icon: Icon; keys: string };
+type SearchHit = { label: string; group?: string; icon: Icon; href?: string; keys: string };
 const SEARCH_INDEX: SearchHit[] = NAV.flatMap((e): SearchHit[] => {
-  if (e.kind === "link") return [{ label: e.label, icon: e.icon, keys: norm(`${e.label} ${e.keywords ?? ""}`) }];
+  if (e.kind === "link") return [{ label: e.label, icon: e.icon, href: e.href, keys: norm(`${e.label} ${e.keywords ?? ""}`) }];
   if (e.kind === "group")
     return e.items.map((i) => ({ label: i.label, group: e.label, icon: e.icon, keys: norm(`${i.label} ${e.label} ${i.keywords ?? ""}`) }));
   return [];
@@ -151,7 +158,7 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
       onMouseLeave={peek ? () => setPeekOpen(false) : undefined}
     >
       <div id="logoContainer" className="sidebar-header flex items-center justify-between h-16 shrink-0 px-6">
-        <a href="#" className="sidebar-brand flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <a href={ROUTES.painel} className="sidebar-brand flex items-center gap-3 hover:opacity-80 transition-opacity">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/sites/eagenda-com-br-a1f95f96/shared/images/logo.png"
@@ -208,7 +215,7 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
           hits.length ? (
             <div className="space-y-1">
               {hits.map((h) => (
-                <a key={`${h.group ?? ""}-${h.label}`} href="#" className="snav-row nav-item nav-item-idle">
+                <a key={`${h.group ?? ""}-${h.label}`} href={h.href ?? "#"} className="snav-row nav-item nav-item-idle">
                   <h.icon className="sidebar-icon w-[18px] h-[18px]" />
                   <span className="snav-label sidebar-text font-medium">
                     {h.label}
@@ -228,7 +235,7 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
                 return (
                   <a
                     key={entry.label}
-                    href="#"
+                    href={entry.href ?? "#"}
                     className={`snav-row nav-item ${entry.label === active ? "nav-item-active" : "nav-item-idle"}`}
                     aria-current={entry.label === active ? "page" : undefined}
                   >
