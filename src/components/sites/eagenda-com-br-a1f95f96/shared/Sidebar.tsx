@@ -29,6 +29,7 @@ export const ROUTES = {
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
+  configurarAgendas: "/agendamentos/configurar",
 } as const;
 
 type Leaf = { label: string; href?: string; keywords?: string };
@@ -47,7 +48,7 @@ const NAV: NavEntry[] = [
     label: "Gestão de Agendas",
     icon: CalendarIcon,
     items: [
-      { label: "Configuração" },
+      { label: "Configuração", href: ROUTES.configurarAgendas },
       { label: "Links de Agendamento" },
       { label: "Limites de Agendamentos" },
       { label: "Listas de Bloqueio", keywords: "Bloqueios de Datas Supressão" },
