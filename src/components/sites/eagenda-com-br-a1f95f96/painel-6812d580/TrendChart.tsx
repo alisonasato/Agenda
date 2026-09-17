@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 import { CaretDownIcon, CheckReadIcon } from "../shared/icons";
 import { periodLabels, type Period } from "./periods";
-import { useDismiss } from "./useDismiss";
+import { useDismiss } from "../shared/useDismiss";
 
 Chart.register(BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
 

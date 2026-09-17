@@ -2,17 +2,30 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { FooterBar } from "./FooterBar";
-import { HelpCenter } from "./HelpCenter";
+import { HelpCenter, PAINEL_HELP, type HelpItem } from "./HelpCenter";
+import { MenuIcon } from "./icons";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
 const DESKTOP = "(min-width: 1024px)";
 
-type DashboardShellProps = { title: string; email: string; children: ReactNode };
+type DashboardShellProps = {
+  /** Topbar left content: a plain title or a custom header (calendar). */
+  title?: string;
+  header?: ReactNode;
+  email: string;
+  /** Sidebar entry marked as the current page. */
+  active: string;
+  /** Calendar mode: 72px icon rail that expands on hover (html.cal-sidebar-peek). */
+  peek?: boolean;
+  /** Tutorials listed in the floating help button. */
+  helpItems?: HelpItem[];
+  children: ReactNode;
+};
 
 // Page frame: fixed sidebar + topbar/main/footer column. The toggle collapses the
 // sidebar on desktop (body.sidebar-collapsed) and slides it in on mobile (.mobile-open).
-export function DashboardShell({ title, email, children }: DashboardShellProps) {
+export function DashboardShell({ title, header, email, active, peek = false, helpItems = PAINEL_HELP, children }: DashboardShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -20,6 +33,7 @@ export function DashboardShell({ title, email, children }: DashboardShellProps) 
     document.body.classList.toggle("sidebar-collapsed", collapsed);
   }, [collapsed]);
 
+  const openMobile = () => setMobileOpen(true);
   const toggle = () => {
     if (window.matchMedia(DESKTOP).matches) setCollapsed((c) => !c);
     else setMobileOpen((o) => !o);
@@ -34,17 +48,25 @@ export function DashboardShell({ title, email, children }: DashboardShellProps) 
             className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 lg:hidden ${mobileOpen ? "opacity-100" : "opacity-0 hidden"}`}
             onClick={() => setMobileOpen(false)}
           />
-          <Sidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
+          <Sidebar active={active} peek={peek} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
         </div>
         <div id="mainContent" className="flex-1 flex flex-col min-h-screen transition-all duration-300">
-          <Topbar title={title} email={email} onToggleSidebar={toggle} />
-          <main className="flex-1 bg-[#F7F9FB]">
-            <div className="mx-auto w-full max-w-[1550px] px-6 py-8 lg:px-10 min-w-0">{children}</div>
-          </main>
+          <Topbar title={title} header={header} email={email} onToggleSidebar={toggle} />
+          <main className="flex-1 bg-[#F7F9FB]">{children}</main>
           <FooterBar />
         </div>
       </div>
-      <HelpCenter />
+      {peek && (
+        <button
+          type="button"
+          onClick={openMobile}
+          aria-label="Abrir menu"
+          className="lg:hidden fixed top-3 left-3 z-[60] w-10 h-10 rounded-full bg-white shadow-md border border-slate-200 flex items-center justify-center text-gray-700"
+        >
+          <MenuIcon className="w-5 h-5" />
+        </button>
+      )}
+      <HelpCenter items={helpItems} />
     </>
   );
 }

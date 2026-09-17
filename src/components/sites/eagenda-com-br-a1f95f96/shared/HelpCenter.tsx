@@ -1,17 +1,27 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
-import { BookOpen, CalendarPlus, CircleHelp, ExternalLink, LayoutDashboard, Library, Link, X } from "lucide-react";
+import { useCallback, useRef, useState, type ComponentType, type SVGProps } from "react";
+import { BookOpen, CalendarPlus, CalendarX, CircleHelp, ExternalLink, LayoutDashboard, Library, Link, Repeat, X } from "lucide-react";
 import { useDismiss } from "./useDismiss";
 
 const DOCS = "https://www.eagenda.com.br/docs";
-const ITEMS = [
+
+export type HelpItem = { icon: ComponentType<SVGProps<SVGSVGElement>>; title: string; desc: string; href: string };
+
+// Each page lists its own tutorials.
+export const PAINEL_HELP: HelpItem[] = [
   { icon: LayoutDashboard, title: "Entendendo o painel inicial", desc: "Visão geral do painel e seus indicadores.", href: `${DOCS}/primeiros-passos/guia-painel-inicial-eagendas/` },
   { icon: CalendarPlus, title: "Configurar sua primeira agenda", desc: "Passo a passo para criar e configurar uma agenda.", href: `${DOCS}/primeiros-passos/configurarando-a-sua-primeira-agenda/` },
   { icon: Link, title: "Link de agendamento", desc: "Envie o link de agendamento para seus clientes.", href: `${DOCS}/primeiros-passos/link-de-agendamento-minha-agenda-virtual/` },
 ];
 
-export function HelpCenter() {
+export const CALENDAR_HELP: HelpItem[] = [
+  { icon: CalendarPlus, title: "Como incluir um agendamento", desc: "Crie um agendamento manualmente pela plataforma.", href: `${DOCS}/primeiros-passos/como-incluir-um-agendamento/` },
+  { icon: CalendarX, title: "Bloquear horários", desc: "Bloqueie horários específicos da sua agenda.", href: `${DOCS}/tutoriais/bloquear-horarios-no-eagenda/` },
+  { icon: Repeat, title: "Agendamentos recorrentes", desc: "Crie agendamentos que se repetem.", href: `${DOCS}/tutoriais/agendamentos-recorrentes-eagenda/` },
+];
+
+export function HelpCenter({ items = PAINEL_HELP }: { items?: HelpItem[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
@@ -45,7 +55,7 @@ export function HelpCenter() {
             <p className="hc-subtitle">Tutoriais relacionados a esta página</p>
           </div>
           <div className="help-center-list">
-            {ITEMS.map((it) => (
+            {items.map((it) => (
               <a key={it.title} href={it.href} target="_blank" rel="noopener noreferrer" className="help-center-item">
                 <span className="hc-icon-box">
                   <it.icon />

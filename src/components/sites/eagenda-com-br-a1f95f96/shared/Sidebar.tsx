@@ -18,7 +18,7 @@ import {
   SearchOutlineIcon,
   StarsIcon,
   UsersIcon,
-} from "../shared/icons";
+} from "./icons";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 type Leaf = { label: string; keywords?: string };
@@ -28,7 +28,7 @@ type NavEntry =
   | { kind: "divider" };
 
 const NAV: NavEntry[] = [
-  { kind: "link", label: "Painel", icon: DashboardIcon, active: true },
+  { kind: "link", label: "Painel", icon: DashboardIcon },
   { kind: "link", label: "Calendário", icon: CalendarIcon, keywords: "Ver Minha Agenda Agenda" },
   { kind: "link", label: "Novo Agendamento", icon: CalendarAddIcon, keywords: "Incluir Agendamento Agenda" },
   { kind: "link", label: "Agendamentos", icon: ChecklistIcon, keywords: "Listar Agendamentos Agenda" },
@@ -113,9 +113,17 @@ const SEARCH_INDEX: SearchHit[] = NAV.flatMap((e): SearchHit[] => {
   return [];
 });
 
-type SidebarProps = { mobileOpen: boolean; onCloseMobile: () => void };
+type SidebarProps = {
+  /** Label of the nav entry marked as the current page. */
+  active: string;
+  /** Calendar mode: icon rail that expands while hovered. */
+  peek?: boolean;
+  mobileOpen: boolean;
+  onCloseMobile: () => void;
+};
 
-export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
+export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: SidebarProps) {
+  const [peekOpen, setPeekOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -138,7 +146,9 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
   return (
     <aside
       id="sidebar"
-      className={`sidebar hui-enter fixed top-0 left-0 w-[288px] h-screen flex flex-col z-[60] border-r border-slate-200${mobileOpen ? " mobile-open" : ""}`}
+      className={`sidebar hui-enter fixed top-0 left-0 w-[288px] h-screen flex flex-col z-[60] border-r border-slate-200${mobileOpen ? " mobile-open" : ""}${peek && peekOpen ? " is-peek-open" : ""}`}
+      onMouseEnter={peek ? () => setPeekOpen(true) : undefined}
+      onMouseLeave={peek ? () => setPeekOpen(false) : undefined}
     >
       <div id="logoContainer" className="sidebar-header flex items-center justify-between h-16 shrink-0 px-6">
         <a href="#" className="sidebar-brand flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -147,6 +157,14 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             src="/sites/eagenda-com-br-a1f95f96/shared/images/logo.png"
             alt="eAgenda"
             className="sidebar-logo sidebar-logo--light h-[1.875rem] w-auto select-none"
+            draggable={false}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/sites/eagenda-com-br-a1f95f96/shared/images/logo-minimal.png"
+            alt=""
+            aria-hidden="true"
+            className="cal-peek-logo hidden h-8 w-8 select-none"
             draggable={false}
           />
         </a>
@@ -160,7 +178,7 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         </button>
       </div>
 
-      <div className="shrink-0 px-5 pt-8">
+      <div className="shrink-0 px-5 pt-8" data-sidebar-search-wrap>
         <label className={`hui-search hui-search--pill${query ? " has-query" : ""}`}>
           <SearchOutlineIcon className="hui-search-icon w-[18px] h-[18px]" />
           <input
@@ -180,6 +198,9 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             <CloseCircleIcon className="w-4 h-4" />
           </button>
         </label>
+        <div className="cal-peek-search hidden" aria-hidden="true">
+          <SearchOutlineIcon className="w-[18px] h-[18px]" />
+        </div>
       </div>
 
       <nav className="sidebar-scroll-fade scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-2 px-5 pt-5" role="navigation" aria-label="Sidebar">
@@ -208,8 +229,8 @@ export function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                   <a
                     key={entry.label}
                     href="#"
-                    className={`snav-row nav-item ${entry.active ? "nav-item-active" : "nav-item-idle"}`}
-                    aria-current={entry.active ? "page" : undefined}
+                    className={`snav-row nav-item ${entry.label === active ? "nav-item-active" : "nav-item-idle"}`}
+                    aria-current={entry.label === active ? "page" : undefined}
                   >
                     <entry.icon className="sidebar-icon w-[18px] h-[18px]" />
                     <span className="snav-label sidebar-text font-medium">{entry.label}</span>

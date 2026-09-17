@@ -1,0 +1,68 @@
+/* ── Inline <style> rules specific to /agendamentos/calendar/ (shared shell rules live in the painel inline-styles.css) ── */
+@font-face { font-family: Inter; font-style: normal; font-weight: 100 900; font-display: swap; src: url("/sites/eagenda-com-br-a1f95f96/shared/fonts/inter-latin.woff2") format("woff2"); }
+
+html, body { height: 100dvh; overflow: hidden; }
+#mainContent { min-height: 0; }
+#mainContent > nav.topbar { flex-shrink: 0; }
+.cal-topbar-head { display: flex; align-items: center; min-width: 0; }
+@media (max-width: 767px) {
+  .cal-topbar-center { display: none; }
+}
+@media (max-width: 1023px) {
+  .cal-topbar-cta { display: none; }
+}
+@media (min-width: 1024px) {
+  .cal-topbar-cta { position: absolute; left: 2.5rem; top: calc(50% - 1rem); }
+}
+@media (min-width: 768px) {
+  .cal-topbar-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 2px; max-width: 60%; pointer-events: none; }
+  .cal-topbar-center > button { pointer-events: auto; }
+  .cal-period-title { min-width: 0; margin: 0; padding: 0 .25rem; pointer-events: auto; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .cal-period-title { max-width: 15rem; }
+}
+#mainContent > nav.navbar, #mainContent > footer { display: none !important; }
+#mainContent > main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding: 0 !important; }
+
+/* Sidebar "peek" rail: 72px icon rail that expands over the content on hover.
+   Unprefixed (the original scopes these with html.cal-sidebar-peek) because this
+   stylesheet only loads on the calendar route. */
+@media (min-width: 1024px) {
+  aside#sidebar.sidebar { overflow: hidden; width: 4.5rem !important; margin-left: 0 !important; transition: width .22s, box-shadow .22s !important; }
+  #mainContent { margin-left: 4.5rem !important; width: calc(100vw - 4.5rem) !important; }
+  #sidebarCollapseToggle { display: none !important; }
+  aside#sidebar:not(.is-peek-open) * { pointer-events: none !important; }
+  aside#sidebar:not(.is-peek-open) [data-sidebar-search-wrap] .hui-search,
+  aside#sidebar:not(.is-peek-open) .snav-label,
+  aside#sidebar:not(.is-peek-open) .sidebar-chevron,
+  aside#sidebar:not(.is-peek-open) .sidebar-group-content,
+  aside#sidebar:not(.is-peek-open) .sidebar-footer { display: none !important; }
+  aside#sidebar #logoContainer { position: relative; }
+  aside#sidebar .cal-peek-logo { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); opacity: 0; transition: opacity .18s; pointer-events: none; display: block !important; }
+  aside#sidebar:not(.is-peek-open) .cal-peek-logo { opacity: 1; }
+  aside#sidebar .sidebar-logo { transition: opacity .18s; flex: 0 0 auto; max-width: none; }
+  aside#sidebar:not(.is-peek-open) .sidebar-logo { opacity: 0; }
+  aside#sidebar:not(.is-peek-open) [data-sidebar-search-wrap] { padding-left: 0 !important; padding-right: 0 !important; }
+  aside#sidebar:not(.is-peek-open) .cal-peek-search { height: 2.25rem; align-items: center; justify-content: center; color: #5b6472; display: flex !important; }
+  aside#sidebar:not(.is-peek-open) nav[role="navigation"] { padding-left: 0 !important; padding-right: 0 !important; overflow-y: hidden !important; }
+  aside#sidebar:not(.is-peek-open) .snav-row { width: 2.5rem; height: 2.5rem; padding: 0; margin-left: auto; margin-right: auto; justify-content: center; gap: 0; }
+  aside#sidebar:not(.is-peek-open) .sidebar-zone-divider { width: 2rem; margin: .5rem auto; }
+  aside#sidebar .snav-label, aside#sidebar .snav-sub { white-space: nowrap; }
+  aside#sidebar.is-peek-open { width: 288px !important; box-shadow: 0 16px 40px rgba(15,23,42,.14), 0 4px 12px rgba(15,23,42,.08); }
+  aside#sidebar.is-peek-open [data-sidebar-search-wrap] .hui-search,
+  aside#sidebar.is-peek-open .snav-label,
+  aside#sidebar.is-peek-open .sidebar-chevron,
+  aside#sidebar.is-peek-open .sidebar-group-content,
+  aside#sidebar.is-peek-open .sidebar-footer { animation: calPeekFade .18s ease .06s both; }
+}
+@keyframes calPeekFade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  aside#sidebar.sidebar { transition: none !important; }
+  aside#sidebar .cal-peek-logo, aside#sidebar .sidebar-logo { transition: none !important; }
+  aside#sidebar.is-peek-open .snav-label { animation: none; }
+}
+
+/* Clone-only: the "Exibição" popover is rendered under its trigger instead of teleported. */
+.hinline-anchor { position: relative; }
+.hinline-anchor > .hinline-popover { position: absolute; top: calc(100% + .5rem); left: 0; width: 320px; z-index: 100; }

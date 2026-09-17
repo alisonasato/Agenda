@@ -15,7 +15,7 @@ import {
   SidebarOpenIcon,
   SidebarThemeIcon,
   UserCircleIcon,
-} from "../shared/icons";
+} from "./icons";
 import { useDismiss } from "./useDismiss";
 
 const FLAGS = "/sites/eagenda-com-br-a1f95f96/shared/images/flags";
@@ -123,9 +123,9 @@ function Notifications() {
   );
 }
 
-type TopbarProps = { title: string; email: string; onToggleSidebar: () => void };
+type TopbarProps = { title?: string; header?: ReactNode; email: string; onToggleSidebar: () => void };
 
-export function Topbar({ title, email, onToggleSidebar }: TopbarProps) {
+export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
   const [blueSidebar, setBlueSidebar] = useState(false);
 
   return (
@@ -138,9 +138,11 @@ export function Topbar({ title, email, onToggleSidebar }: TopbarProps) {
         </span>
       </button>
       <div className="min-w-0 flex-1">
-        <div className="min-w-0 leading-tight">
-          <h1 className="truncate text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-slate-900 nunito-bold">{title}</h1>
-        </div>
+        {header ?? (
+          <div className="min-w-0 leading-tight">
+            <h1 className="truncate text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-slate-900 nunito-bold">{title}</h1>
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
         <div className="md:hidden">

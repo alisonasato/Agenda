@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { InstagramIcon, LinkedinIcon } from "../shared/icons";
+import { InstagramIcon, LinkedinIcon } from "./icons";
 
 const LINKS = ["FAQ", "Termos", "Privacidade", "Contato"];
 
