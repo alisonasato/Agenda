@@ -26,6 +26,8 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 export const ROUTES = {
   painel: "/",
   calendario: "/agendamentos/calendar/18078",
+  novoAgendamento: "/agendamentos/novo_agendamento",
+  agendamentos: "/agendamentos/listar",
 } as const;
 
 type Leaf = { label: string; keywords?: string };
@@ -37,8 +39,8 @@ type NavEntry =
 const NAV: NavEntry[] = [
   { kind: "link", label: "Painel", icon: DashboardIcon, href: ROUTES.painel },
   { kind: "link", label: "Calendário", icon: CalendarIcon, href: ROUTES.calendario, keywords: "Ver Minha Agenda Agenda" },
-  { kind: "link", label: "Novo Agendamento", icon: CalendarAddIcon, keywords: "Incluir Agendamento Agenda" },
-  { kind: "link", label: "Agendamentos", icon: ChecklistIcon, keywords: "Listar Agendamentos Agenda" },
+  { kind: "link", label: "Novo Agendamento", icon: CalendarAddIcon, href: ROUTES.novoAgendamento, keywords: "Incluir Agendamento Agenda" },
+  { kind: "link", label: "Agendamentos", icon: ChecklistIcon, href: ROUTES.agendamentos, keywords: "Listar Agendamentos Agenda" },
   {
     kind: "group",
     label: "Gestão de Agendas",

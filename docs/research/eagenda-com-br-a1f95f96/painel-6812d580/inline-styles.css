@@ -88,3 +88,11 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 /* Popover positioning for the teleported hmenu (clone uses absolute positioning under the trigger). */
 .hmenu { position: relative; }
 .hmenu > .hmenu-popover { position: absolute; left: auto; right: 0; top: calc(100% + .5rem); z-index: 100; }
+
+/* Clone-only: form popovers render under their own field (the original teleports them to <body>). */
+.hcombobox > .hcombobox-popover,
+.hautocomplete-control > .hautocomplete-popover,
+.hinline > .hinline-popover,
+.hdaterange > .hdaterange-popover { position: absolute; top: calc(100% + .25rem); left: 0; width: auto; min-width: 100%; z-index: 100; }
+.hdaterange { position: relative; }
+.hdaterange > .hdaterange-popover { min-width: 0; }
