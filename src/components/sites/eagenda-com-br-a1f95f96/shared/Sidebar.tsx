@@ -32,6 +32,7 @@ export const ROUTES = {
   configurarAgendas: "/agendamentos/configurar",
   linksAgendamento: "/agendamentos/link_agendamento",
   limitesAgendamentos: "/agendamentos/limites",
+  listasBloqueio: "/agendamentos/limites/lista_bloqueios",
 } as const;
 
 type Leaf = { label: string; href?: string; keywords?: string };
@@ -53,7 +54,7 @@ const NAV: NavEntry[] = [
       { label: "Configuração", href: ROUTES.configurarAgendas },
       { label: "Links de Agendamento", href: ROUTES.linksAgendamento },
       { label: "Limites de Agendamentos", href: ROUTES.limitesAgendamentos },
-      { label: "Listas de Bloqueio", keywords: "Bloqueios de Datas Supressão" },
+      { label: "Listas de Bloqueio", href: ROUTES.listasBloqueio, keywords: "Bloqueios de Datas Supressão" },
       { label: "Agendamentos Recorrentes", keywords: "Recorrências" },
       { label: "Confirmar Agendamentos" },
       { label: "Feriados" },

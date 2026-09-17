@@ -1,18 +1,9 @@
 "use client";
 
-import { useRef, useState, type CSSProperties, type ReactNode } from "react";
-import {
-  CalendarIcon,
-  CaretDownIcon,
-  CheckReadIcon,
-  ChecklistIcon,
-  ChevronRightIcon,
-  CloseCircleIcon,
-  SearchSolidIcon,
-  WidgetIcon,
-} from "../shared/icons";
-
-import { useDismiss } from "../shared/useDismiss";
+import { useState, type CSSProperties } from "react";
+import { CalendarIcon, ChecklistIcon, ChevronRightIcon, CloseCircleIcon, WidgetIcon } from "../shared/icons";
+import { InlineFilter } from "../shared/InlineFilter";
+import { ROUTES } from "../shared/Sidebar";
 
 const TYPES = [
   { value: "all", label: "Todos" },
@@ -25,90 +16,6 @@ const SERVICES: string[] = [];
 const INTERVALS = ["POR HORÁRIOS", "POR DIA", "POR SEMANA", "POR MÊS", "DIAS CORRIDOS"];
 
 const SLOTS = 10;
-
-/** Trigger + searchable popover, the same widget the other list pages use. */
-function InlineFilter({
-  label,
-  icon,
-  options,
-  values,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  options: string[];
-  values: string[];
-  onChange: (v: string[]) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
-  useDismiss(ref, open, () => setOpen(false));
-  const hits = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
-
-  return (
-    <div ref={ref} className="hinline">
-      <button type="button" className="hinline-trigger hinline-trigger--bare" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        {icon}
-        <span className="hinline-label">{label}</span>
-        {values.length > 0 && <span className="hinline-count">{values.length}</span>}
-        <span className="hinline-chevron" aria-hidden="true">
-          <CaretDownIcon className="w-3.5 h-3.5" />
-        </span>
-      </button>
-      {open && (
-        <div className="hselect-popover hinline-popover" style={{ width: 240 }}>
-          <div className="hinline-search-wrap">
-            <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
-            <input type="text" placeholder="Buscar..." className="hinline-search" value={query} onChange={(e) => setQuery(e.target.value)} />
-          </div>
-          <ul className="hautocomplete-options" role="listbox">
-            {hits.length === 0 ? (
-              <li className="hautocomplete-state">
-                <div className="hautocomplete-state-inner">
-                  <SearchSolidIcon className="w-4 h-4" />
-                  <span>Nenhum resultado encontrado</span>
-                </div>
-              </li>
-            ) : (
-              hits.map((o) => {
-                const selected = values.includes(o);
-                return (
-                  <li key={o}>
-                    <button
-                      type="button"
-                      className="hselect-option hautocomplete-option"
-                      role="option"
-                      aria-selected={selected}
-                      onClick={() => onChange(selected ? values.filter((v) => v !== o) : [...values, o])}
-                    >
-                      <span className="hautocomplete-option-check">{selected && <CheckReadIcon className="w-3 h-3" />}</span>
-                      <span className="hautocomplete-option-content">
-                        <span className="hselect-option-label">{o}</span>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })
-            )}
-          </ul>
-          <div className="hinline-footer">
-            {values.length > 0 ? (
-              <button type="button" className="hinline-footer-clear" onClick={() => onChange([])}>
-                Limpar
-              </button>
-            ) : (
-              <span aria-hidden="true" />
-            )}
-            <button type="button" className="hinline-footer-done" onClick={() => setOpen(false)}>
-              Concluir
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // The live account has no limits configured, so the table always renders its empty state.
 export function BookingLimits() {
@@ -134,7 +41,7 @@ export function BookingLimits() {
               <ChecklistIcon className="w-4 h-4" />
               Adicionar Limite
             </button>
-            <a href="#" className="hbtn hbtn--secondary hbtn--sm">
+            <a href={ROUTES.listasBloqueio} className="hbtn hbtn--secondary hbtn--sm">
               <CloseCircleIcon className="w-4 h-4" />
               Listas de Bloqueio
             </a>
