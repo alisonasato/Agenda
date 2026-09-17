@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored tooling that lives in this folder but isn't part of the app.
+    "Graft/**",
+    ".claude/skills/**",
   ]),
 ]);
 
