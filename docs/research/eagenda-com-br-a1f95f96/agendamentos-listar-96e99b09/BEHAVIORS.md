@@ -32,3 +32,10 @@
 - **1440:** search 252px at left, buttons at right; table 1072 wide.
 - **768:** same layout, action bar starts scrolling.
 - **<768:** search takes the full width and the button row wraps below it; table scrolls horizontally.
+
+## Empty-state variant rule
+The live page picks the "filtered" copy from the search box and the period only — not from the status
+tag. With `interval=all` and `status=PENDING` it still shows the default copy
+("Nenhum agendamento por aqui / Os agendamentos das suas agendas aparecerão nesta lista"),
+while the default `interval=next_7_days` shows "Nenhum agendamento encontrado…". The clone follows
+the same rule.

@@ -63,15 +63,22 @@ function ColumnsMenu({ visible, onToggle }: { visible: string[]; onToggle: (id: 
   );
 }
 
-// The live account has no appointments, so the table always renders its filtered empty state.
-export function AppointmentsList() {
+type AppointmentsListProps = {
+  /** The "Confirmar Agendamentos" entry deep-links here with a status and period preselected. */
+  initialStatus?: string;
+  initialPreset?: Preset;
+};
+
+// The live account has no appointments, so the table always renders its empty state.
+export function AppointmentsList({ initialStatus = "", initialPreset = "Próximos 7 dias" }: AppointmentsListProps = {}) {
   const [today] = useState(() => new Date());
   const [query, setQuery] = useState("");
-  const [preset, setPreset] = useState<Preset>("Próximos 7 dias");
-  const [status, setStatus] = useState("");
+  const [preset, setPreset] = useState<Preset>(initialPreset);
+  const [status, setStatus] = useState(initialStatus);
   const [columns, setColumns] = useState<string[]>([]);
 
   const shows = (id: string) => columns.includes(id);
+  const filtered = Boolean(query.trim()) || preset !== "Todos os períodos";
   const reset = () => {
     setQuery("");
     setStatus("");
@@ -149,9 +156,11 @@ export function AppointmentsList() {
               <div className="htable-empty" role="status" aria-live="polite">
                 <div className="hempty hempty--inline hui-reveal">
                   <SearchSolidIcon className="hempty-icon" />
-                  <h3 className="hempty-title nunito-bold">Nenhum agendamento encontrado</h3>
+                  <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum agendamento encontrado" : "Nenhum agendamento por aqui"}</h3>
                   <p className="hempty-desc inter-regular">
-                    Nenhum agendamento corresponde aos filtros aplicados. Ajuste o período ou limpe os filtros.
+                    {filtered
+                      ? "Nenhum agendamento corresponde aos filtros aplicados. Ajuste o período ou limpe os filtros."
+                      : "Os agendamentos das suas agendas aparecerão nesta lista."}
                   </p>
                 </div>
               </div>

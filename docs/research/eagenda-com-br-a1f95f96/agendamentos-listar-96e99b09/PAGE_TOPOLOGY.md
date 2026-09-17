@@ -23,3 +23,10 @@ DashboardShell (title "Listar Agendamentos", sidebar entry "Agendamentos")
 | Filtros / Visualizar | click-driven: menus (Tag · Colaborador / Ver Agenda · Lista de Espera) |
 | Status | click-driven: `.htag--active` alterna o filtro |
 | Colunas | click-driven: interruptores que mostram/escondem colunas opcionais |
+
+## Query-string state: "Confirmar Agendamentos"
+The sidebar entry **Confirmar Agendamentos** is not a separate page: it points at this same pathname
+with `?interval=all&status=PENDING`. Only the initial state differs — the "Pendentes" tag is active,
+the period reads "Todos os períodos", the sidebar marks that entry instead of "Agendamentos", and the
+empty state shows the unfiltered copy. The clone reads both params in
+`src/app/agendamentos/listar/page.tsx` and passes them to `AppointmentsList`.

@@ -8,11 +8,23 @@ export const metadata: Metadata = {
   icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
 };
 
-export default function AppointmentsPage() {
+// ?status=PENDING&interval=all is the sidebar's "Confirmar Agendamentos" entry.
+export default async function AppointmentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; interval?: string }>;
+}) {
+  const { status, interval } = await searchParams;
+  const pending = status === "PENDING";
+
   return (
-    <DashboardShell title="Listar Agendamentos" email="contato@exemplo.com.br" active="Agendamentos">
+    <DashboardShell
+      title="Listar Agendamentos"
+      email="contato@exemplo.com.br"
+      active={pending ? "Confirmar Agendamentos" : "Agendamentos"}
+    >
       <div className="mx-auto w-full max-w-[1550px] px-4 sm:px-6 lg:px-10 py-8 min-w-0">
-        <AppointmentsList />
+        <AppointmentsList initialStatus={status ?? ""} initialPreset={interval === "all" ? "Todos os períodos" : "Próximos 7 dias"} />
       </div>
     </DashboardShell>
   );
