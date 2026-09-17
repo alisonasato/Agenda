@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { CaretDownIcon, CloseCircleIcon, SearchSolidIcon, WidgetIcon } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
 import { AppointmentsFilters } from "./AppointmentsFilters";
-import type { Preset } from "./DateRangePopover";
+import type { Preset } from "../shared/DateRangePopover";
 
 const STATUS_TAGS = [
   { value: "", label: "Todos" },

@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "../shared/icons";
-import { MONTHS, WEEKDAYS_SHORT, addMonths, monthDays, sameDay } from "../agendamentos-calendar-18078-85bcf86b/calendarDates";
+import { MONTHS, WEEKDAYS_SHORT, addMonths, monthDays, sameDay } from "./calendarDates";
 
 export const PRESETS = ["Hoje", "Próximos 7 dias", "Próximos 30 dias", "Este mês", "Todos os períodos"] as const;
 export type Preset = (typeof PRESETS)[number];
@@ -39,7 +39,15 @@ function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
 }
 
 // Period picker: preset column + two months, as on the live filter bar.
-export function DateRangePopover({ preset, onPreset, today }: { preset: Preset; onPreset: (p: Preset) => void; today: Date }) {
+type DateRangePopoverProps = {
+  preset: Preset;
+  onPreset: (p: Preset) => void;
+  today: Date;
+  /** The report pages add a "Limpar período" footer under the calendars. */
+  onClear?: () => void;
+};
+
+export function DateRangePopover({ preset, onPreset, today, onClear }: DateRangePopoverProps) {
   const [month, setMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
 
   return (
@@ -65,6 +73,13 @@ export function DateRangePopover({ preset, onPreset, today }: { preset: Preset; 
           </div>
         </div>
       </div>
+      {onClear && (
+        <div className="hdaterange-footer">
+          <button type="button" className="hdaterange-clear" onClick={onClear}>
+            Limpar período
+          </button>
+        </div>
+      )}
     </div>
   );
 }

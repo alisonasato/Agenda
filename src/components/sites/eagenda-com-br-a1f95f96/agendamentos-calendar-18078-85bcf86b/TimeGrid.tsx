@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
-import { WEEKDAYS_SHORT, sameDay, startOfDay } from "./calendarDates";
+import { WEEKDAYS_SHORT, sameDay, startOfDay } from "../shared/calendarDates";
 
 // The agenda's working hours (08:00–17:00 on the live account), one row per hour.
 const FIRST_HOUR = 8;

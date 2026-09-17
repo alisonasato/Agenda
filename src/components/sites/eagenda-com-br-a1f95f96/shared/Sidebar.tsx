@@ -27,6 +27,7 @@ export const ROUTES = {
   painel: "/",
   clientes: "/clientes/listar",
   acessoClientes: "/users/clientes_autorizados/listas_acesso",
+  relatorioClientes: "/relatorios/clientes",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -75,7 +76,12 @@ const NAV: NavEntry[] = [
     kind: "group",
     label: "Relatórios",
     icon: ChartIcon,
-    items: [{ label: "Clientes" }, { label: "Consolidado" }, { label: "Agendamentos" }, { label: "Indicadores Gerenciais" }],
+    items: [
+      { label: "Clientes", href: ROUTES.relatorioClientes },
+      { label: "Consolidado" },
+      { label: "Agendamentos" },
+      { label: "Indicadores Gerenciais" },
+    ],
   },
   { kind: "link", label: "Formulários", icon: ClipboardIcon, keywords: "Gerenciar Formulários" },
   {

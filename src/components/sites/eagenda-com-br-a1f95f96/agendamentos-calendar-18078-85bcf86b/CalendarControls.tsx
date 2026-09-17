@@ -13,7 +13,7 @@ import {
 } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
 import { useIsMobile } from "../shared/useIsMobile";
-import type { CalendarView } from "./calendarDates";
+import type { CalendarView } from "../shared/calendarDates";
 
 const VIEWS: { value: CalendarView; label: string }[] = [
   { value: "day", label: "Dia" },

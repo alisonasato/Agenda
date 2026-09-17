@@ -1,4 +1,4 @@
-import { WEEKDAYS_SHORT, eventsOn, monthDays, sameDay } from "./calendarDates";
+import { WEEKDAYS_SHORT, eventsOn, monthDays, sameDay } from "../shared/calendarDates";
 
 type MonthGridProps = { month: Date; today: Date };
 

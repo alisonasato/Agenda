@@ -8,7 +8,7 @@ import { CalendarControls } from "./CalendarControls";
 import { MiniCalendar } from "./MiniCalendar";
 import { MonthGrid } from "./MonthGrid";
 import { TimeGrid } from "./TimeGrid";
-import { periodTitle, shiftDate, startOfDay, weekDays, type CalendarView } from "./calendarDates";
+import { periodTitle, shiftDate, startOfDay, weekDays, type CalendarView } from "../shared/calendarDates";
 
 // Whole calendar page: the topbar header (CTA + date nav) plus the island itself.
 export function CalendarIsland() {

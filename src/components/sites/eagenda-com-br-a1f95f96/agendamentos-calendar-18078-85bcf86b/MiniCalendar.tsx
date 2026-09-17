@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, CalendarEmptyIcon } from "../shared/icons";
-import { MONTHS, WEEKDAY_INITIALS, addMonths, monthDays, sameDay, startOfWeek } from "./calendarDates";
+import { MONTHS, WEEKDAY_INITIALS, addMonths, monthDays, sameDay, startOfWeek } from "../shared/calendarDates";
 
 type MiniCalendarProps = { selected: Date; today: Date; onSelect: (d: Date) => void };
 

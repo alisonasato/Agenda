@@ -15,7 +15,7 @@ import {
 } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
 import { useDismiss } from "../shared/useDismiss";
-import { DateRangePopover, type Preset } from "./DateRangePopover";
+import { DateRangePopover, type Preset } from "../shared/DateRangePopover";
 
 /** Trigger + popover pair used by every filter in the action bar. */
 function InlineFilter({
