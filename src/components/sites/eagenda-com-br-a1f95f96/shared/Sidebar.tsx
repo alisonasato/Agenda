@@ -26,6 +26,7 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 export const ROUTES = {
   painel: "/",
   clientes: "/clientes/listar",
+  acessoClientes: "/users/clientes_autorizados/listas_acesso",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -68,7 +69,7 @@ const NAV: NavEntry[] = [
     kind: "group",
     label: "Clientes",
     icon: UsersIcon,
-    items: [{ label: "Listar Clientes", href: ROUTES.clientes, keywords: "Buscar" }, { label: "Acesso de Clientes" }],
+    items: [{ label: "Listar Clientes", href: ROUTES.clientes, keywords: "Buscar" }, { label: "Acesso de Clientes", href: ROUTES.acessoClientes }],
   },
   {
     kind: "group",
