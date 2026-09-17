@@ -25,12 +25,13 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 /** Only the cloned pages link somewhere; the rest of the menu is inert. */
 export const ROUTES = {
   painel: "/",
+  clientes: "/clientes/listar",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
 } as const;
 
-type Leaf = { label: string; keywords?: string };
+type Leaf = { label: string; href?: string; keywords?: string };
 type NavEntry =
   | { kind: "link"; label: string; icon: Icon; href?: string; keywords?: string }
   | { kind: "group"; label: string; icon: Icon; items: Leaf[] }
@@ -60,7 +61,7 @@ const NAV: NavEntry[] = [
     kind: "group",
     label: "Clientes",
     icon: UsersIcon,
-    items: [{ label: "Listar Clientes", keywords: "Buscar" }, { label: "Acesso de Clientes" }],
+    items: [{ label: "Listar Clientes", href: ROUTES.clientes, keywords: "Buscar" }, { label: "Acesso de Clientes" }],
   },
   {
     kind: "group",
@@ -118,7 +119,7 @@ type SearchHit = { label: string; group?: string; icon: Icon; href?: string; key
 const SEARCH_INDEX: SearchHit[] = NAV.flatMap((e): SearchHit[] => {
   if (e.kind === "link") return [{ label: e.label, icon: e.icon, href: e.href, keys: norm(`${e.label} ${e.keywords ?? ""}`) }];
   if (e.kind === "group")
-    return e.items.map((i) => ({ label: i.label, group: e.label, icon: e.icon, keys: norm(`${i.label} ${e.label} ${i.keywords ?? ""}`) }));
+    return e.items.map((i) => ({ label: i.label, group: e.label, icon: e.icon, href: i.href, keys: norm(`${i.label} ${e.label} ${i.keywords ?? ""}`) }));
   return [];
 });
 
@@ -133,7 +134,12 @@ type SidebarProps = {
 
 export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: SidebarProps) {
   const [peekOpen, setPeekOpen] = useState(false);
-  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  // A group holding the current page starts open, like the original.
+  const activeGroup =
+    NAV.find((e) => e.kind === "group" && e.items.some((i) => i.label === active))?.kind === "group"
+      ? (NAV.find((e) => e.kind === "group" && e.items.some((i) => i.label === active)) as { label: string }).label
+      : null;
+  const [openGroup, setOpenGroup] = useState<string | null>(activeGroup);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -251,7 +257,7 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
                   <div key={entry.label} className={`sidebar-group${open ? " is-open" : ""}`}>
                     <button
                       type="button"
-                      className="snav-row sidebar-section-toggle nav-item-idle"
+                      className={`snav-row sidebar-section-toggle ${entry.label === activeGroup ? "sidebar-group-active" : "nav-item-idle"}`}
                       aria-expanded={open}
                       onClick={() => setOpenGroup(open ? null : entry.label)}
                     >
@@ -266,7 +272,12 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
                         <ul className="sidebar-sublist space-y-0.5">
                           {entry.items.map((item) => (
                             <li key={item.label}>
-                              <a href="#" className="snav-sub sidebar-text" tabIndex={open ? 0 : -1}>
+                              <a
+                                href={item.href ?? "#"}
+                                className={`snav-sub sidebar-text${item.label === active ? " nav-item-active" : ""}`}
+                                aria-current={item.label === active ? "page" : undefined}
+                                tabIndex={open ? 0 : -1}
+                              >
                                 {item.label}
                               </a>
                             </li>
