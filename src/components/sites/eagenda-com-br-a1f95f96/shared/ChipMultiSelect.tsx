@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { CaretDownIcon, CheckReadIcon, CloseCircleIcon, SearchSolidIcon } from "./icons";
+import { FloatingPanel } from "./FloatingPanel";
 import { useDismiss } from "./useDismiss";
 
 export type ChipOption = { id: string; label: string };
@@ -20,7 +21,8 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
-  useDismiss(ref, open, () => setOpen(false));
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDismiss(ref, open, () => setOpen(false), panelRef);
 
   const hits = options.filter((o) => o.label.toLowerCase().includes(query.trim().toLowerCase()));
   const toggle = (optionId: string) => onChange(values.includes(optionId) ? values.filter((v) => v !== optionId) : [...values, optionId]);
@@ -78,7 +80,7 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
           </span>
         </div>
         {open && (
-          <div className="hselect-popover hms-popover" onClick={(e) => e.stopPropagation()}>
+          <FloatingPanel anchor={ref} panelRef={panelRef} className="hselect-popover hms-popover" onClick={(e) => e.stopPropagation()}>
             <div className="hms-search">
               <SearchSolidIcon className="hms-search-icon w-4 h-4" />
               <input type="text" placeholder="Buscar..." className="hms-search-input" value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />
@@ -109,7 +111,7 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
                 Concluir
               </button>
             </div>
-          </div>
+          </FloatingPanel>
         )}
       </div>
     </div>

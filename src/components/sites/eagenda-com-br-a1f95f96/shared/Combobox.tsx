@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { CaretDownIcon, CheckReadIcon, CloseCircleIcon, SearchSolidIcon } from "./icons";
+import { FloatingPanel } from "./FloatingPanel";
 import { useDismiss } from "./useDismiss";
 
 export type Option = { value: string; label: string };
@@ -21,14 +22,18 @@ type ComboboxProps = {
    * box sits at the top of the popover, options are not clearable and carry is-selected.
    */
   searchInPopover?: boolean;
+  /** Only with searchInPopover: show the clear button once something is picked. */
+  clearable?: boolean;
 };
 
 // Single-select field with an inline search box (.hcombobox in the original).
-export function Combobox({ id, label, options, value, onChange, placeholder, required, disabled, searchInPopover }: ComboboxProps) {
+export function Combobox({ id, label, options, value, onChange, placeholder, required, disabled, searchInPopover, clearable }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
-  useDismiss(ref, open, () => setOpen(false));
+  const controlRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDismiss(ref, open, () => setOpen(false), panelRef);
 
   const selected = options.find((o) => o.value === value);
   const hits = options.filter((o) => o.label.toLowerCase().includes(query.trim().toLowerCase()));
@@ -39,7 +44,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
       <label htmlFor={`id_${id}`} className="hcombobox-label">
         {label} {required && <span className="hcombobox-req">*</span>}
       </label>
-      <div className="hcombobox-control">
+      <div ref={controlRef} className="hcombobox-control">
         {searchInPopover ? (
           <div className={`hcombobox-trigger${selected ? " is-filled" : ""}`} onClick={() => setOpen((o) => !o)}>
             <span className={`hcombobox-value${selected ? "" : " is-placeholder"}`}>{selected?.label ?? placeholder}</span>
@@ -65,7 +70,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
           />
         )}
         <div className="hcombobox-actions">
-          {selected && !searchInPopover && (
+          {selected && (!searchInPopover || clearable) && (
             <span
               className="hcombobox-clear"
               role="button"
@@ -82,7 +87,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
         </div>
       </div>
       {open && (
-        <div className="hselect-popover hcombobox-popover">
+        <FloatingPanel anchor={controlRef} panelRef={panelRef} className="hselect-popover hcombobox-popover">
           {searchInPopover && (
             <div className="hcombobox-search">
               <SearchSolidIcon className="w-4 h-4" />
@@ -130,7 +135,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
               ))
             )}
           </ul>
-        </div>
+        </FloatingPanel>
       )}
     </div>
   );
