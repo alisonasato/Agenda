@@ -16,10 +16,15 @@ type ComboboxProps = {
   required?: boolean;
   /** No options yet (e.g. "Selecione a agenda primeiro"): shows the placeholder and stays closed. */
   disabled?: boolean;
+  /**
+   * The modal-form flavour of the original: the trigger is always a plain box, the search
+   * box sits at the top of the popover, options are not clearable and carry is-selected.
+   */
+  searchInPopover?: boolean;
 };
 
 // Single-select field with an inline search box (.hcombobox in the original).
-export function Combobox({ id, label, options, value, onChange, placeholder, required, disabled }: ComboboxProps) {
+export function Combobox({ id, label, options, value, onChange, placeholder, required, disabled, searchInPopover }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -35,7 +40,11 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
         {label} {required && <span className="hcombobox-req">*</span>}
       </label>
       <div className="hcombobox-control">
-        {selected && !open ? (
+        {searchInPopover ? (
+          <div className={`hcombobox-trigger${selected ? " is-filled" : ""}`} onClick={() => setOpen((o) => !o)}>
+            <span className={`hcombobox-value${selected ? "" : " is-placeholder"}`}>{selected?.label ?? placeholder}</span>
+          </div>
+        ) : selected && !open ? (
           <div className="hcombobox-trigger is-filled" onClick={() => !disabled && setOpen(true)}>
             <span className="hcombobox-value">{selected.label}</span>
           </div>
@@ -56,7 +65,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
           />
         )}
         <div className="hcombobox-actions">
-          {selected && (
+          {selected && !searchInPopover && (
             <span
               className="hcombobox-clear"
               role="button"
@@ -74,6 +83,20 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
       </div>
       {open && (
         <div className="hselect-popover hcombobox-popover">
+          {searchInPopover && (
+            <div className="hcombobox-search">
+              <SearchSolidIcon className="w-4 h-4" />
+              <input
+                type="text"
+                className="hcombobox-search-input"
+                placeholder={placeholder}
+                aria-label={placeholder}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
+          )}
           <ul className="hcombobox-options" role="listbox">
             {hits.length === 0 ? (
               <li className="hcombobox-empty">
@@ -87,7 +110,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
                 <li key={o.value}>
                   <button
                     type="button"
-                    className="hselect-option"
+                    className={`hselect-option${searchInPopover && o.value === value ? " is-selected" : ""}`}
                     role="option"
                     aria-selected={o.value === value}
                     onClick={() => {

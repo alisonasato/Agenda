@@ -31,6 +31,7 @@ export const ROUTES = {
   relatorioConsolidado: "/relatorios/consolidado",
   relatorioAgendamentos: "/relatorios/agendamentos",
   relatorioIndicadores: "/relatorios/indicadores",
+  formularios: "/pesquisas/controle",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -87,7 +88,7 @@ const NAV: NavEntry[] = [
       { label: "Indicadores Gerenciais", href: ROUTES.relatorioIndicadores },
     ],
   },
-  { kind: "link", label: "Formulários", icon: ClipboardIcon, keywords: "Gerenciar Formulários" },
+  { kind: "link", label: "Formulários", icon: ClipboardIcon, href: ROUTES.formularios, keywords: "Gerenciar Formulários" },
   {
     kind: "group",
     label: "Comunicação",

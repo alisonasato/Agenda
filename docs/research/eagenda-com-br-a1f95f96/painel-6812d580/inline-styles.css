@@ -98,7 +98,8 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 .hdaterange > .hdaterange-popover { min-width: 0; }
 .hfilterpop > .hfilterpop-popover { left: auto; right: 0; min-width: 0; }
 .hms-field { position: relative; }
-.hms-field > .hms-popover { position: absolute; top: calc(100% + .25rem); left: 0; width: 100%; z-index: 100; }
+/* Aligned to the field's outer edge (it has a 1px border), like the teleported original. */
+.hms-field > .hms-popover { position: absolute; top: calc(100% + .25rem + 1px); left: -1px; width: calc(100% + 2px); z-index: 100; }
 .hdatepicker { position: relative; }
 .hdatepicker > .hdatepicker-popover { position: absolute; top: calc(100% + .25rem); left: 0; z-index: 100; }
 
@@ -122,3 +123,11 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 @media (prefers-reduced-motion: no-preference) {
   #indicadores .report-apply { transition: max-width .18s ease, opacity .18s ease; }
 }
+
+/* The original sizes teleported combobox panels to the field, not to their longest option. */
+.hcombobox > .hcombobox-popover { width: 100%; }
+/* Clone-only: the original teleports field popovers to <body>, so a modal never clips them.
+   ponytail: un-clip the modal while a popover is open; a modal tall enough to scroll would
+   spill instead - move popovers to a portal if one ever needs that. */
+.hmodal-panel:has(.hselect-popover),
+.hmodal-panel:has(.hselect-popover) .hmodal-body { overflow: visible; }
