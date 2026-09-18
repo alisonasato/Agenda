@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function NewAppointmentPage() {
   return (
     <DashboardShell title="Novo Agendamento" email="contato@exemplo.com.br" active="Novo Agendamento">
-      <div className="mx-auto w-full max-w-[1550px] px-4 sm:px-6 lg:px-10 py-8 min-w-0">
+      <div className="mx-auto w-full max-w-[1550px] px-6 py-8 lg:px-10">
         <NewAppointmentForm />
       </div>
     </DashboardShell>

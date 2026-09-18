@@ -27,3 +27,14 @@ both rebuilt as `shared/Combobox.tsx` and `shared/MultiSelect.tsx`.
 | Dia / Horário | dependent: Dia unlocks after Agenda, Horário after Dia |
 | Multi-selects | click-driven: chips add/remove, search panel with "Concluir" |
 | Save bar | the toast only appears once the form is dirty |
+
+
+## Update — 18/09/2026 (live site changed after the first clone)
+- **Participantes** lost the "Responsável pelo Atendimento" and "Membros da Equipe" fields;
+  the owner is now the logged-in user, sent as a hidden `owner_user` input. The section is
+  171px (was 248.5) and the form 849.5px at 1440 (docH 1023), 1230px at 390 (docH 1427).
+- The container is now `px-6 py-8 lg:px-10` (was `px-4 sm:px-6 …`), so at 390 the form is
+  342px wide.
+- The save bar is the shared `SaveBar`: save/pen icons and a toast shown only when the form
+  is dirty and the dock is out of view, as in the original.
+Re-measured against the live page after the change: identical at 1440 and 390.

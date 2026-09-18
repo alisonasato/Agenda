@@ -15,8 +15,6 @@ export const STATUSES: Option[] = [
   { value: "AWAITING_PAYMENT", label: "Aguardando Pagamento" },
 ];
 
-export const OWNERS: Option[] = [{ value: "1", label: "Maria Souza" }];
-
 export const CLIENTS: Option[] = [
   { value: "1", label: "Ana Ribeiro" },
   { value: "2", label: "Bruno Carvalho" },
@@ -28,11 +26,6 @@ export const TAGS: Option[] = [
   { value: "retorno", label: "Retorno" },
   { value: "primeira-vez", label: "Primeira vez" },
   { value: "online", label: "Online" },
-];
-
-export const TEAM: Option[] = [
-  { value: "1", label: "Maria Souza" },
-  { value: "2", label: "João Lima" },
 ];
 
 const WEEKDAYS = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];

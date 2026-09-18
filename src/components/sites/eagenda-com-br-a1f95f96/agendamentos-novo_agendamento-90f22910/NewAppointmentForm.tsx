@@ -6,7 +6,10 @@ import { MultiSelect } from "../shared/MultiSelect";
 import { ROUTES } from "../shared/Sidebar";
 import { CheckReadIcon, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
 import { SaveBar } from "../shared/SaveBar";
-import { ACTIONS, AGENDAS, CLIENTS, OWNERS, STATUSES, TAGS, TEAM, dayOptions, timeOptions } from "./formOptions";
+import { ACTIONS, AGENDAS, CLIENTS, STATUSES, TAGS, dayOptions, timeOptions } from "./formOptions";
+
+// Mock id for the logged-in user, who the live form now sets as the owner.
+const CURRENT_USER_ID = "1";
 
 function Checkbox({ id, label, defaultChecked, disabled }: { id: string; label: string; defaultChecked?: boolean; disabled?: boolean }) {
   return (
@@ -32,15 +35,12 @@ export function NewAppointmentForm() {
   const [tags, setTags] = useState<string[]>([]);
   const [clients, setClients] = useState<string[]>([]);
   const [companions, setCompanions] = useState<string[]>([]);
-  const [owner, setOwner] = useState("");
-  const [team, setTeam] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const dirty =
-    Boolean(agenda || day || time || owner) ||
+    Boolean(agenda || day || time) ||
     tags.length > 0 ||
     clients.length > 0 ||
     companions.length > 0 ||
-    team.length > 0 ||
     action !== "new" ||
     status !== "CONFIRMED";
 
@@ -144,13 +144,9 @@ export function NewAppointmentForm() {
                   </button>
                 </div>
               </div>
-              <div>
-                <Combobox id="owner_user" label="Responsável pelo Atendimento" options={OWNERS} value={owner} onChange={setOwner} placeholder="Selecione" />
-              </div>
-              <div>
-                <MultiSelect id="team" label="Membros da Equipe" options={TEAM} values={team} onChange={setTeam} placeholder="Buscar membros da equipe..." />
-              </div>
             </div>
+            {/* The live form no longer asks for the owner or team: the owner is the logged-in user. */}
+            <input type="hidden" name="owner_user" value={CURRENT_USER_ID} />
           </div>
         </section>
 
