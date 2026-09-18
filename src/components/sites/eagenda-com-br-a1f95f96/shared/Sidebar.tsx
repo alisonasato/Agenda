@@ -29,6 +29,7 @@ export const ROUTES = {
   acessoClientes: "/users/clientes_autorizados/listas_acesso",
   relatorioClientes: "/relatorios/clientes",
   relatorioConsolidado: "/relatorios/consolidado",
+  relatorioAgendamentos: "/relatorios/agendamentos",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -41,7 +42,8 @@ export const ROUTES = {
   feriados: "/agendamentos/feriados",
 } as const;
 
-type Leaf = { label: string; href?: string; keywords?: string };
+/** `key` disambiguates labels that appear twice (e.g. "Agendamentos"); it defaults to the label. */
+type Leaf = { label: string; key?: string; href?: string; keywords?: string };
 type NavEntry =
   | { kind: "link"; label: string; icon: Icon; href?: string; keywords?: string }
   | { kind: "group"; label: string; icon: Icon; items: Leaf[] }
@@ -80,7 +82,7 @@ const NAV: NavEntry[] = [
     items: [
       { label: "Clientes", href: ROUTES.relatorioClientes },
       { label: "Consolidado", href: ROUTES.relatorioConsolidado },
-      { label: "Agendamentos" },
+      { label: "Agendamentos", key: "relatorioAgendamentos", href: ROUTES.relatorioAgendamentos },
       { label: "Indicadores Gerenciais" },
     ],
   },
@@ -139,7 +141,7 @@ const SEARCH_INDEX: SearchHit[] = NAV.flatMap((e): SearchHit[] => {
 });
 
 type SidebarProps = {
-  /** Label of the nav entry marked as the current page. */
+  /** Label (or `key`) of the nav entry marked as the current page. */
   active: string;
   /** Calendar mode: icon rail that expands while hovered. */
   peek?: boolean;
@@ -151,8 +153,8 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
   const [peekOpen, setPeekOpen] = useState(false);
   // A group holding the current page starts open, like the original.
   const activeGroup =
-    NAV.find((e) => e.kind === "group" && e.items.some((i) => i.label === active))?.kind === "group"
-      ? (NAV.find((e) => e.kind === "group" && e.items.some((i) => i.label === active)) as { label: string }).label
+    NAV.find((e) => e.kind === "group" && e.items.some((i) => (i.key ?? i.label) === active))?.kind === "group"
+      ? (NAV.find((e) => e.kind === "group" && e.items.some((i) => (i.key ?? i.label) === active)) as { label: string }).label
       : null;
   const [openGroup, setOpenGroup] = useState<string | null>(activeGroup);
   const [query, setQuery] = useState("");
@@ -289,8 +291,8 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
                             <li key={item.label}>
                               <a
                                 href={item.href ?? "#"}
-                                className={`snav-sub sidebar-text${item.label === active ? " nav-item-active" : ""}`}
-                                aria-current={item.label === active ? "page" : undefined}
+                                className={`snav-sub sidebar-text${(item.key ?? item.label) === active ? " nav-item-active" : ""}`}
+                                aria-current={(item.key ?? item.label) === active ? "page" : undefined}
                                 tabIndex={open ? 0 : -1}
                               >
                                 {item.label}

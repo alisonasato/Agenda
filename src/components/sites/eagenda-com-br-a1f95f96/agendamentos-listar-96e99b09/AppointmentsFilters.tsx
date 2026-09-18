@@ -61,12 +61,16 @@ function OptionsPopover({
 }) {
   const [query, setQuery] = useState("");
   const hits = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
+  // Same rule as the original: no search box for static lists of 7 options or fewer.
+  const searchable = options.length > 7;
   return (
     <div className="hselect-popover hinline-popover" style={{ width: 240 }}>
-      <div className="hinline-search-wrap">
-        <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
-        <input type="text" placeholder="Buscar..." className="hinline-search" value={query} onChange={(e) => setQuery(e.target.value)} />
-      </div>
+      {searchable && (
+        <div className="hinline-search-wrap">
+          <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
+          <input type="text" placeholder="Buscar..." className="hinline-search" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+      )}
       <ul className="hautocomplete-options" role="listbox">
         {hits.length === 0 ? (
           <li className="hautocomplete-state">

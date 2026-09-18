@@ -19,10 +19,18 @@ export function InlineFilter({ label, icon, options, values, onChange }: InlineF
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, open, () => setOpen(false));
   const hits = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
+  // The original hides the search box for short static lists: x-show="!(isStatic && staticOptions.length <= 7)".
+  const searchable = options.length > 7;
 
   return (
     <div ref={ref} className="hinline">
-      <button type="button" className="hinline-trigger hinline-trigger--bare" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+      <button
+        type="button"
+        className={`hinline-trigger hinline-trigger--bare${values.length > 0 ? " is-active" : ""}`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
         {icon}
         <span className="hinline-label">{label}</span>
         {values.length > 0 && <span className="hinline-count">{values.length}</span>}
@@ -32,10 +40,12 @@ export function InlineFilter({ label, icon, options, values, onChange }: InlineF
       </button>
       {open && (
         <div className="hselect-popover hinline-popover" style={{ width: 240 }}>
-          <div className="hinline-search-wrap">
-            <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
-            <input type="text" placeholder="Buscar..." className="hinline-search" value={query} onChange={(e) => setQuery(e.target.value)} />
-          </div>
+          {searchable && (
+            <div className="hinline-search-wrap">
+              <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
+              <input type="text" placeholder="Buscar..." className="hinline-search" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+          )}
           <ul className="hautocomplete-options" role="listbox">
             {hits.length === 0 ? (
               <li className="hautocomplete-state">
