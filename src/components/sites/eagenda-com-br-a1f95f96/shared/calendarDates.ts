@@ -23,6 +23,41 @@ export const startOfWeek = (d: Date) => addDays(d, -d.getDay());
 export const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
 export const isoDay = (d: Date) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 
+const pad2 = (n: number) => String(n).padStart(2, "0");
+export const formatBR = (d: Date) => `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+/** Parses dd/mm/aaaa; null for anything that is not a real calendar date (e.g. 31/02/2026). */
+export function parseBR(text: string): Date | null {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(text.trim());
+  if (!m) return null;
+  const d = new Date(+m[3], +m[2] - 1, +m[1]);
+  return d.getDate() === +m[1] && d.getMonth() === +m[2] - 1 ? d : null;
+}
+
+/** Date-picker grid: always 6 weeks (42 cells), blanks before the 1st and after the last day. */
+export function pickerCells(month: Date): (Date | null)[] {
+  const lead = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
+  const total = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  return Array.from({ length: 42 }, (_, i) => {
+    const day = i - lead + 1;
+    return day >= 1 && day <= total ? new Date(month.getFullYear(), month.getMonth(), day) : null;
+  });
+}
+
+/** Whole days from `a` to `b` (DST-safe: counts calendar days, not 24h blocks). */
+export const daysBetween = (a: Date, b: Date) =>
+  Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000);
+
+/**
+ * "Últimos N dias" on the indicators page: today minus N days through today, compared
+ * with the window of the same length that ends the day before it starts.
+ */
+export function comparisonWindow(today: Date, days: number) {
+  const from = addDays(today, -days);
+  const prevTo = addDays(from, -1);
+  return { from, to: startOfDay(today), prevFrom: addDays(prevTo, -days), prevTo };
+}
+
 export function weekDays(anchor: Date): Date[] {
   const start = startOfWeek(anchor);
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));

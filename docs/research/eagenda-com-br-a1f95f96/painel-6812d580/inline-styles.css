@@ -99,3 +99,26 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 .hfilterpop > .hfilterpop-popover { left: auto; right: 0; min-width: 0; }
 .hms-field { position: relative; }
 .hms-field > .hms-popover { position: absolute; top: calc(100% + .25rem); left: 0; width: 100%; z-index: 100; }
+.hdatepicker { position: relative; }
+.hdatepicker > .hdatepicker-popover { position: absolute; top: calc(100% + .25rem); left: 0; z-index: 100; }
+
+/* Relatórios › Indicadores Gerenciais — the page's own <style> block, scoped to its container
+   (#indicadores) because the painel's KPI cards must keep their natural label height. */
+#indicadores .hkpi-label { min-height: 2.625rem; }
+#indicadores .chart-container { position: relative; min-height: 350px; }
+#indicadores .chart-empty {
+  min-height: 350px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+}
+@media (max-width: 768px) {
+  #indicadores .chart-container, #indicadores .chart-empty { min-height: 260px; }
+}
+#indicadores .report-apply {
+  display: inline-flex; align-items: center; flex-shrink: 0;
+  max-width: 0; opacity: 0; overflow: hidden;
+}
+#indicadores .report-apply.is-visible { max-width: 14rem; opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  #indicadores .report-apply { transition: max-width .18s ease, opacity .18s ease; }
+}

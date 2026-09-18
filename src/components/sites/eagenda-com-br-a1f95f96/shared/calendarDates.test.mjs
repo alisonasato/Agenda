@@ -1,4 +1,4 @@
-// Run: node src/components/sites/eagenda-com-br-a1f95f96/agendamentos-calendar-18078-85bcf86b/calendarDates.test.mjs
+// Run: node src/components/sites/eagenda-com-br-a1f95f96/shared/calendarDates.test.mjs
 // Titles and grids captured from the live page on 17/09/2026.
 import assert from "node:assert/strict";
 import { monthDays, periodTitle, shiftDate, weekDays, eventsOn } from "./calendarDates.ts";
@@ -36,3 +36,20 @@ import { addMonths } from "./calendarDates.ts";
 assert.equal(addMonths(addMonths(sep17, 1), -1).getDate(), 17);
 assert.equal(addMonths(new Date(2026, 0, 31), 1).getDate(), 28); // clamped to end of February
 console.log("month stepping ok");
+
+// Date picker and indicators helpers — values captured from /relatorios/indicadores on 18/09/2026.
+import { comparisonWindow, daysBetween, formatBR, parseBR, pickerCells } from "./calendarDates.ts";
+const sep18 = new Date(2026, 8, 18);
+const w = comparisonWindow(sep18, 90);
+assert.equal(`${formatBR(w.from)} - ${formatBR(w.to)}`, "20/06/2026 - 18/09/2026");
+assert.equal(`${formatBR(w.prevFrom)} - ${formatBR(w.prevTo)}`, "21/03/2026 - 19/06/2026");
+assert.equal(formatBR(parseBR("10/09/2026")), "10/09/2026");
+assert.equal(parseBR("31/02/2026"), null);
+assert.equal(parseBR("1/9/2026"), null);
+const cells = pickerCells(sep18);
+assert.equal(cells.length, 42);
+assert.deepEqual(cells.slice(0, 3).map((c) => c && c.getDate()), [null, null, 1]); // 1 Sep 2026 is a Tuesday
+assert.equal(cells.filter(Boolean).length, 30);
+assert.equal(daysBetween(w.from, w.to), 90);
+assert.equal(daysBetween(new Date(2026, 9, 1), new Date(2026, 10, 1)), 31); // across the October DST change
+console.log("picker + indicators ok");
