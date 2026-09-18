@@ -22,7 +22,7 @@ type ComboboxProps = {
    * box sits at the top of the popover, options are not clearable and carry is-selected.
    */
   searchInPopover?: boolean;
-  /** Only with searchInPopover: show the clear button once something is picked. */
+  /** Show the clear button once something is picked. Defaults to on for the in-field flavour, off for searchInPopover. */
   clearable?: boolean;
 };
 
@@ -35,7 +35,8 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
   const panelRef = useRef<HTMLDivElement>(null);
   useDismiss(ref, open, () => setOpen(false), panelRef);
 
-  const selected = options.find((o) => o.value === value);
+  // An empty value is "nothing picked", even when an option carries it ("Todas as agendas").
+  const selected = value ? options.find((o) => o.value === value) : undefined;
   const hits = options.filter((o) => o.label.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
@@ -70,7 +71,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
           />
         )}
         <div className="hcombobox-actions">
-          {selected && (!searchInPopover || clearable) && (
+          {selected && (clearable ?? !searchInPopover) && (
             <span
               className="hcombobox-clear"
               role="button"

@@ -4,7 +4,8 @@ import { useMemo, useState, type FormEvent } from "react";
 import { Combobox } from "../shared/Combobox";
 import { MultiSelect } from "../shared/MultiSelect";
 import { ROUTES } from "../shared/Sidebar";
-import { CheckReadIcon, ChevronLeftIcon, UsersIcon } from "../shared/icons";
+import { CheckReadIcon, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
+import { SaveBar } from "../shared/SaveBar";
 import { ACTIONS, AGENDAS, CLIENTS, OWNERS, STATUSES, TAGS, TEAM, dayOptions, timeOptions } from "./formOptions";
 
 function Checkbox({ id, label, defaultChecked, disabled }: { id: string; label: string; defaultChecked?: boolean; disabled?: boolean }) {
@@ -174,43 +175,16 @@ export function NewAppointmentForm() {
         </section>
       </div>
 
-      <div className="hsavebar">
-        <div className="hsavebar-progress" aria-hidden="true" />
-        <div className="hsavebar-dock">
-          <span className="hsavebar-dock-spacer" aria-hidden="true" />
-          <div className="hsavebar-dock-actions">
-            <a href={ROUTES.agendamentos} className="hbtn hbtn--secondary">
-              <ChevronLeftIcon className="w-4 h-4" />
-              Voltar
-            </a>
-            <button type="submit" className="hbtn hbtn--primary">
-              <CheckReadIcon className="w-4 h-4" />
-              <span className="hsavebar-btn-label">Salvar Agendamento</span>
-            </button>
-          </div>
-        </div>
-        <div className="hsavebar-toast" role="status" aria-live="polite" style={{ display: dirty || saved ? undefined : "none" }}>
-          <span className="hsavebar-toast-icon">
-            <CheckReadIcon className="w-4 h-4" />
-          </span>
-          <div className="hsavebar-toast-text">
-            <p className="hsavebar-toast-title">{saved ? "Protótipo sem gravação" : "Agendamento ainda não registrado"}</p>
-            <p className="hsavebar-toast-sub">
-              {saved ? "O clone não salva agendamentos." : "Conclua para criar o agendamento."}
-            </p>
-          </div>
-          <div className="hsavebar-toast-actions">
-            <a href={ROUTES.agendamentos} className="hbtn hbtn--secondary">
-              <ChevronLeftIcon className="w-4 h-4" />
-              Voltar
-            </a>
-            <button type="submit" className="hbtn hbtn--primary">
-              <CheckReadIcon className="w-4 h-4" />
-              <span className="hsavebar-btn-label">Salvar Agendamento</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <SaveBar
+        backHref={ROUTES.agendamentos}
+        saveLabel="Salvar Agendamento"
+        saveIcon={<SaveIcon />}
+        dirty={dirty}
+        toastIcon={<PenIcon className="w-4 h-4" />}
+        toastTitle={saved ? "Protótipo sem gravação" : "Agendamento ainda não registrado"}
+        toastSub={saved ? "O clone não salva agendamentos." : "Conclua para criar o agendamento."}
+        forceToast={saved}
+      />
     </form>
   );
 }

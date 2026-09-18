@@ -34,6 +34,7 @@ export const ROUTES = {
   formularios: "/pesquisas/controle",
   notificacoesRegras: "/notificacao/regras",
   notificacoesStatus: "/notificacao/regras_status",
+  novaRegraStatus: "/notificacao/regras_status/nova",
   modelosEmail: "/notificacao/email_template",
   modelosWhatsapp: "/notificacao/whatsapp_template",
   acompanhamento: "/notificacao/envios",
@@ -102,7 +103,7 @@ const NAV: NavEntry[] = [
     icon: ChatIcon,
     items: [
       { label: "Regras de Notificação", href: ROUTES.notificacoesRegras },
-      { label: "Notificações por Status" },
+      { label: "Notificações por Status", href: ROUTES.notificacoesStatus },
       { label: "Modelos de Email" },
       { label: "Acompanhamento" },
       { label: "Pacotes de Envio", keywords: "Pacotes de Notificações" },

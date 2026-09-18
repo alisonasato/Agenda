@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
-import { AddAppointmentIcon, CheckReadIcon, CloseCircleIcon, InboxIcon } from "../shared/icons";
+import { useState, type CSSProperties } from "react";
+import { AddAppointmentIcon, CheckReadIcon, InboxIcon } from "../shared/icons";
 import { ChipMultiSelect } from "../shared/ChipMultiSelect";
 import { Combobox } from "../shared/Combobox";
+import { Modal, ModalSubmit } from "../shared/Modal";
 
 const SURVEY_STAGES = [
   { value: "agendamento", label: "Agendamento - Deve ser preenchido no momento do agendamento" },
@@ -23,108 +24,79 @@ function SurveyFormModal({ onClose }: { onClose: () => void }) {
   const [template, setTemplate] = useState("");
   const [agendas, setAgendas] = useState<string[]>([]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
   return (
-    <div className="hmodal">
-      <div className="hmodal-wrapper hmodal-wrapper--auto hmodal-wrapper--scroll-inside" onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <div className="hmodal-backdrop hmodal-backdrop--opaque" aria-hidden="true" />
-        <div
-          className="hmodal-panel hmodal-panel--lg hmodal-panel--radius-lg hmodal-panel--shadow-lg hmodal-panel--scroll-inside"
-          tabIndex={-1}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="survey-form-modal-title"
-        >
-          <button type="button" className="hmodal-close" aria-label="Fechar" onClick={onClose}>
-            <CloseCircleIcon className="w-5 h-5" />
+    <Modal
+      id="survey-form-modal"
+      title="Novo Formulário"
+      onClose={onClose}
+      footer={
+        <>
+          <button type="button" className="hbtn hbtn--tertiary" onClick={onClose}>
+            Cancelar
           </button>
-          <div className="hmodal-header">
-            <h2 className="hmodal-title" id="survey-form-modal-title">
-              Novo Formulário
-            </h2>
-          </div>
-          <div className="hmodal-body-wrap">
-            <div className="hmodal-body" id="survey-form-modal-body">
-              <form id="survey-form" onSubmit={(e) => e.preventDefault()}>
-                <div className="space-y-4">
-                  <div className="hinput-field hinput-field--block">
-                    <label className="hinput-label" htmlFor="id_name">
-                      Nome do Formulário <span className="hinput-req">*</span>
-                    </label>
-                    <div className="hinput-wrap">
-                      <input id="id_name" className="hinput" type="text" name="name" placeholder="Ex: Pesquisa de Satisfação" required />
-                    </div>
-                  </div>
-
-                  <div className="hinput-field hinput-field--block">
-                    <label className="hinput-label" htmlFor="id_description">
-                      Descrição
-                    </label>
-                    <textarea name="description" id="id_description" rows={3} className="htextarea mt-1.5" placeholder="Descreva o objetivo do formulário..." />
-                  </div>
-
-                  <div>
-                    <Combobox
-                      id="survey_stage"
-                      label="Tipo de Formulário"
-                      options={SURVEY_STAGES}
-                      value={stage}
-                      onChange={setStage}
-                      placeholder="Selecione o tipo"
-                      searchInPopover
-                    />
-                  </div>
-
-                  <div>
-                    {/* The live account's picker offers no agendas here, so it opens on its empty state. */}
-                    <ChipMultiSelect id="id_calendar" label="Vincular às Agendas" placeholder="Selecione as agendas" options={[]} values={agendas} onChange={setAgendas} />
-                  </div>
-
-                  <label className="hcheckbox">
-                    <input type="checkbox" name="need_logged_user" className="hcheckbox-input" />
-                    <span className="hcheckbox-box" aria-hidden="true">
-                      <CheckReadIcon className="hcheckbox-check w-3 h-3" />
-                      <span className="hcheckbox-dash" aria-hidden="true" />
-                    </span>
-                    <span className="hcheckbox-label">Apenas usuários logados podem responder</span>
-                  </label>
-
-                  <div>
-                    <Combobox
-                      id="modelo_questoes"
-                      label="Importar Modelo Padronizado"
-                      options={TEMPLATES}
-                      value={template}
-                      onChange={setTemplate}
-                      placeholder="Não importar - criar do zero"
-                      searchInPopover
-                    />
-                    <p className="hinput-desc">Importa perguntas pré-definidas que você pode editar depois</p>
-                  </div>
-                </div>
-              </form>
+          <ModalSubmit id="survey-form-modal" form="survey-form" icon={<CheckReadIcon />} label="Salvar" />
+        </>
+      }
+    >
+      <form id="survey-form" onSubmit={(e) => e.preventDefault()}>
+        <div className="space-y-4">
+          <div className="hinput-field hinput-field--block">
+            <label className="hinput-label" htmlFor="id_name">
+              Nome do Formulário <span className="hinput-req">*</span>
+            </label>
+            <div className="hinput-wrap">
+              <input id="id_name" className="hinput" type="text" name="name" placeholder="Ex: Pesquisa de Satisfação" required />
             </div>
           </div>
-          <div className="hmodal-footer">
-            <button type="button" className="hbtn hbtn--tertiary" onClick={onClose}>
-              Cancelar
-            </button>
-            <button type="submit" form="survey-form" id="survey-form-modal-submit" className="hbtn hbtn--primary">
-              <CheckReadIcon />
-              Salvar
-              <span className="hmodal-submit-spinner">
-                <span className="hmodal-submit-dot" />
-              </span>
-            </button>
+
+          <div className="hinput-field hinput-field--block">
+            <label className="hinput-label" htmlFor="id_description">
+              Descrição
+            </label>
+            <textarea name="description" id="id_description" rows={3} className="htextarea mt-1.5" placeholder="Descreva o objetivo do formulário..." />
+          </div>
+
+          <div>
+            <Combobox
+              id="survey_stage"
+              label="Tipo de Formulário"
+              options={SURVEY_STAGES}
+              value={stage}
+              onChange={setStage}
+              placeholder="Selecione o tipo"
+              searchInPopover
+            />
+          </div>
+
+          <div>
+            {/* The live account's picker offers no agendas here, so it opens on its empty state. */}
+            <ChipMultiSelect id="id_calendar" label="Vincular às Agendas" placeholder="Selecione as agendas" options={[]} values={agendas} onChange={setAgendas} />
+          </div>
+
+          <label className="hcheckbox">
+            <input type="checkbox" name="need_logged_user" className="hcheckbox-input" />
+            <span className="hcheckbox-box" aria-hidden="true">
+              <CheckReadIcon className="hcheckbox-check w-3 h-3" />
+              <span className="hcheckbox-dash" aria-hidden="true" />
+            </span>
+            <span className="hcheckbox-label">Apenas usuários logados podem responder</span>
+          </label>
+
+          <div>
+            <Combobox
+              id="modelo_questoes"
+              label="Importar Modelo Padronizado"
+              options={TEMPLATES}
+              value={template}
+              onChange={setTemplate}
+              placeholder="Não importar - criar do zero"
+              searchInPopover
+            />
+            <p className="hinput-desc">Importa perguntas pré-definidas que você pode editar depois</p>
           </div>
         </div>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 }
 
