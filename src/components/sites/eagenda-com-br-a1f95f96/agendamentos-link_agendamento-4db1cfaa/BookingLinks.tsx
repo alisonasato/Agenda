@@ -17,8 +17,8 @@ import { useDismiss } from "../shared/useDismiss";
 
 // Mock organisation: the live page builds every link from the account's own slug.
 const ORG = "minhaempresa";
-const MAIN_LINK = `https://${ORG}.eagenda.com.br`;
-const ALL_AGENDAS_LINK = `https://eagenda.com.br/agendamentos/incluir/${ORG}/horarios`;
+const MAIN_LINK = `https://${ORG}.seiri.com.br`;
+const ALL_AGENDAS_LINK = `https://seiri.com.br/agendamentos/incluir/${ORG}/horarios`;
 const AGENDAS = [{ id: "18078", name: "Agenda Principal", slug: "" }];
 
 function LinkField({ url }: { url: string }) {
@@ -277,8 +277,8 @@ export function BookingLinks() {
                         <div className="flex-1 min-w-0">
                           <div className="hslug-field">
                             <div className="hslug-group">
-                              <span className="hslug-prefix" title={`eagenda.com.br/agenda/${ORG}/`}>
-                                eagenda.com.br/agenda/{ORG}/
+                              <span className="hslug-prefix" title={`seiri.com.br/agenda/${ORG}/`}>
+                                seiri.com.br/agenda/{ORG}/
                               </span>
                               <input
                                 id={`slug-agenda-${a.id}`}

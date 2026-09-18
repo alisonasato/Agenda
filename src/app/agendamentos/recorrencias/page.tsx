@@ -4,8 +4,8 @@ import { RecurringAppointments } from "@/components/sites/eagenda-com-br-a1f95f9
 
 // Clone of https://eagenda.com.br/agendamentos/recorrencias?version=3 (no recurrences, like the live account).
 export const metadata: Metadata = {
-  title: "Agendamentos Recorrentes - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Agendamentos Recorrentes - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function RecurringAppointmentsPage() {

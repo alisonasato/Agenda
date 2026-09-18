@@ -4,8 +4,8 @@ import { AppointmentsList } from "@/components/sites/eagenda-com-br-a1f95f96/age
 
 // Clone of https://eagenda.com.br/agendamentos/listar/?version=3 (empty list, like the live account).
 export const metadata: Metadata = {
-  title: "Listar Agendamentos - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Listar Agendamentos - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 // ?status=PENDING&interval=all is the sidebar's "Confirmar Agendamentos" entry.

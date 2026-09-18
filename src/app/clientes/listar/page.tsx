@@ -4,8 +4,8 @@ import { ClientsList } from "@/components/sites/eagenda-com-br-a1f95f96/clientes
 
 // Clone of https://eagenda.com.br/clientes/listar?version=3 (empty list, like the live account).
 export const metadata: Metadata = {
-  title: "Listar Clientes - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Listar Clientes - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function ClientsPage() {

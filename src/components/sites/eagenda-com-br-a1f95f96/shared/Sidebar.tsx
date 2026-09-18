@@ -186,14 +186,14 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
         <a href={ROUTES.painel} className="sidebar-brand flex items-center gap-3 hover:opacity-80 transition-opacity">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/sites/eagenda-com-br-a1f95f96/shared/images/logo.png"
-            alt="eAgenda"
+            src="/brand/logo.png"
+            alt="Seiri"
             className="sidebar-logo sidebar-logo--light h-[1.875rem] w-auto select-none"
             draggable={false}
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/sites/eagenda-com-br-a1f95f96/shared/images/logo-minimal.png"
+            src="/brand/logo-minimal.png"
             alt=""
             aria-hidden="true"
             className="cal-peek-logo hidden h-8 w-8 select-none"

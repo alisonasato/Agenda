@@ -4,8 +4,8 @@ import { ClientsReport } from "@/components/sites/eagenda-com-br-a1f95f96/relato
 
 // Clone of https://eagenda.com.br/relatorios/clientes/?version=3 (no data in the period, like the live account).
 export const metadata: Metadata = {
-  title: "Relatório de Clientes - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Relatório de Clientes - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function ClientsReportPage() {

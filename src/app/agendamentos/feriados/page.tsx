@@ -4,8 +4,8 @@ import { HolidaysPage } from "@/components/sites/eagenda-com-br-a1f95f96/agendam
 
 // Clone of https://eagenda.com.br/agendamentos/feriados/?version=3 (one mock agenda, empty holiday lists).
 export const metadata: Metadata = {
-  title: "Lista de Feriados - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Lista de Feriados - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function HolidaysRoute() {

@@ -4,8 +4,8 @@ import { BookingLimits } from "@/components/sites/eagenda-com-br-a1f95f96/agenda
 
 // Clone of https://eagenda.com.br/agendamentos/limites/?version=3 (no limits configured, like the live account).
 export const metadata: Metadata = {
-  title: "Limites de Agendamentos - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Limites de Agendamentos - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function BookingLimitsPage() {

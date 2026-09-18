@@ -4,21 +4,21 @@ import { useCallback, useRef, useState, type ComponentType, type SVGProps } from
 import { BookOpen, CalendarPlus, CalendarX, CircleHelp, ExternalLink, LayoutDashboard, Library, Link, Repeat, X } from "lucide-react";
 import { useDismiss } from "./useDismiss";
 
-const DOCS = "https://www.eagenda.com.br/docs";
+const DOCS = "https://www.seiri.com.br/docs";
 
 export type HelpItem = { icon: ComponentType<SVGProps<SVGSVGElement>>; title: string; desc: string; href: string };
 
 // Each page lists its own tutorials.
 export const PAINEL_HELP: HelpItem[] = [
-  { icon: LayoutDashboard, title: "Entendendo o painel inicial", desc: "Visão geral do painel e seus indicadores.", href: `${DOCS}/primeiros-passos/guia-painel-inicial-eagendas/` },
+  { icon: LayoutDashboard, title: "Entendendo o painel inicial", desc: "Visão geral do painel e seus indicadores.", href: `${DOCS}/primeiros-passos/guia-painel-inicial-seiri/` },
   { icon: CalendarPlus, title: "Configurar sua primeira agenda", desc: "Passo a passo para criar e configurar uma agenda.", href: `${DOCS}/primeiros-passos/configurarando-a-sua-primeira-agenda/` },
   { icon: Link, title: "Link de agendamento", desc: "Envie o link de agendamento para seus clientes.", href: `${DOCS}/primeiros-passos/link-de-agendamento-minha-agenda-virtual/` },
 ];
 
 export const CALENDAR_HELP: HelpItem[] = [
   { icon: CalendarPlus, title: "Como incluir um agendamento", desc: "Crie um agendamento manualmente pela plataforma.", href: `${DOCS}/primeiros-passos/como-incluir-um-agendamento/` },
-  { icon: CalendarX, title: "Bloquear horários", desc: "Bloqueie horários específicos da sua agenda.", href: `${DOCS}/tutoriais/bloquear-horarios-no-eagenda/` },
-  { icon: Repeat, title: "Agendamentos recorrentes", desc: "Crie agendamentos que se repetem.", href: `${DOCS}/tutoriais/agendamentos-recorrentes-eagenda/` },
+  { icon: CalendarX, title: "Bloquear horários", desc: "Bloqueie horários específicos da sua agenda.", href: `${DOCS}/tutoriais/bloquear-horarios-no-seiri/` },
+  { icon: Repeat, title: "Agendamentos recorrentes", desc: "Crie agendamentos que se repetem.", href: `${DOCS}/tutoriais/agendamentos-recorrentes-seiri/` },
 ];
 
 export function HelpCenter({ items = PAINEL_HELP }: { items?: HelpItem[] }) {

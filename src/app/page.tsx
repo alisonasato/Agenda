@@ -8,8 +8,8 @@ import { UsageCards } from "@/components/sites/eagenda-com-br-a1f95f96/painel-68
 
 // Clone of https://eagenda.com.br/painel/?version=3 — account data replaced with mock values.
 export const metadata: Metadata = {
-  title: "Painel de Controle - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Painel de Controle - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function Home() {

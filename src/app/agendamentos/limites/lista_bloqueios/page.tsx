@@ -4,8 +4,8 @@ import { BlockLists } from "@/components/sites/eagenda-com-br-a1f95f96/agendamen
 
 // Clone of https://eagenda.com.br/agendamentos/limites/lista_bloqueios?version=3 (no blocks, like the live account).
 export const metadata: Metadata = {
-  title: "Listas de Bloqueio - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Listas de Bloqueio - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function BlockListsPage() {

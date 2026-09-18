@@ -4,8 +4,8 @@ import { BookingLinks } from "@/components/sites/eagenda-com-br-a1f95f96/agendam
 
 // Clone of https://eagenda.com.br/agendamentos/link_agendamento/?version=3 (mock organisation slug).
 export const metadata: Metadata = {
-  title: "Links de Agendamento - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Links de Agendamento - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function BookingLinksPage() {

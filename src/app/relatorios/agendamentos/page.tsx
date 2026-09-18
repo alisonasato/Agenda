@@ -4,8 +4,8 @@ import { AppointmentsReport } from "@/components/sites/eagenda-com-br-a1f95f96/r
 
 // Clone of https://eagenda.com.br/relatorios/agendamentos/?version=3 (no report generated yet, like the live account).
 export const metadata: Metadata = {
-  title: "Relatório de Agendamentos - eAgenda",
-  icons: { icon: "/sites/eagenda-com-br-a1f95f96/shared/images/favicon.png" },
+  title: "Relatório de Agendamentos - Seiri",
+  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function AppointmentsReportPage() {

@@ -18,7 +18,7 @@ import {
 } from "./icons";
 import { useDismiss } from "./useDismiss";
 
-const FLAGS = "/sites/eagenda-com-br-a1f95f96/shared/images/flags";
+const FLAGS = "/brand/flags";
 const LANGUAGES = [
   { label: "English", flag: "england_flag.svg" },
   { label: "Deutsch", flag: "germany_flag.svg" },

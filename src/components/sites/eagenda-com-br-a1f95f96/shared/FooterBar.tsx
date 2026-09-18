@@ -18,7 +18,7 @@ export function FooterBar() {
           ))}
         </nav>
         <div className="flex items-center gap-3 text-xs text-gray-500 lato-regular">
-          <span>© eAgenda</span>
+          <span>© Seiri</span>
           <span className="text-gray-300">·</span>
           <a href="https://mupisystems.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">
             Mupi Systems
