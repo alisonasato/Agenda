@@ -20,6 +20,7 @@ type ChipMultiSelectProps = {
 export function ChipMultiSelect({ id, label, placeholder, options, values, onChange }: ChipMultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   useDismiss(ref, open, () => setOpen(false), panelRef);
@@ -28,7 +29,7 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
   const toggle = (optionId: string) => onChange(values.includes(optionId) ? values.filter((v) => v !== optionId) : [...values, optionId]);
 
   return (
-    <div className="hms">
+    <div ref={rootRef} className="hms">
       <label htmlFor={id} className="hms-label">
         {label}
       </label>
@@ -80,7 +81,7 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
           </span>
         </div>
         {open && (
-          <FloatingPanel anchor={ref} panelRef={panelRef} className="hselect-popover hms-popover" onClick={(e) => e.stopPropagation()}>
+          <FloatingPanel anchor={ref} flipAnchor={rootRef} panelRef={panelRef} className="hselect-popover hms-popover" onClick={(e) => e.stopPropagation()}>
             <div className="hms-search">
               <SearchSolidIcon className="hms-search-icon w-4 h-4" />
               <input type="text" placeholder="Buscar..." className="hms-search-input" value={query} onChange={(e) => setQuery(e.target.value)} autoFocus />

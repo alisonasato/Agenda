@@ -87,7 +87,7 @@ export function Combobox({ id, label, options, value, onChange, placeholder, req
         </div>
       </div>
       {open && (
-        <FloatingPanel anchor={controlRef} panelRef={panelRef} className="hselect-popover hcombobox-popover">
+        <FloatingPanel anchor={controlRef} flipAnchor={ref} panelRef={panelRef} className="hselect-popover hcombobox-popover">
           {searchInPopover && (
             <div className="hcombobox-search">
               <SearchSolidIcon className="w-4 h-4" />
