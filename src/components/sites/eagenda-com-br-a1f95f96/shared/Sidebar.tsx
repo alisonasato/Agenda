@@ -41,6 +41,7 @@ export const ROUTES = {
   pacotesEnvio: "/users/pacotes/notificacoes",
   extrato: "/planos/transactions",
   planos: "/users/planos",
+  integracoes: "/integracoes",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -111,7 +112,7 @@ const NAV: NavEntry[] = [
     ],
   },
   { kind: "divider" },
-  { kind: "link", label: "Integrações", icon: LinkIcon },
+  { kind: "link", label: "Integrações", icon: LinkIcon, href: ROUTES.integracoes },
   {
     kind: "group",
     label: "Conta",

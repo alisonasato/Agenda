@@ -12,8 +12,10 @@ const classesOf = (sel) => [...sel.matchAll(/\.((?:\\.|[\w-])+)/g)].map((m) => u
 const keepSelector = (sel) => {
   // Drop other themes, dark mode and unrelated attribute-driven states.
   if (/\[data-theme|\.dark\b|prefers-color-scheme/.test(sel)) return false;
-  // Classes and ids ("#id" entries in the used list) must all be present in the markup.
-  const names = [...classesOf(sel), ...[...sel.matchAll(/#([\w-]+)/g)].map((m) => `#${m[1]}`)];
+  // Classes and ids ("#id" entries in the used list) must all be present in the markup, except
+  // inside :not(...), which matches exactly when the class is absent.
+  const positive = sel.replace(/:not\([^()]*\)/g, "");
+  const names = [...classesOf(positive), ...[...positive.matchAll(/#([\w-]+)/g)].map((m) => `#${m[1]}`)];
   if (names.length) return names.every((c) => used.has(c));
   // Class-free selectors: only generic element / root selectors.
   return !/[#[]/.test(sel) || /^(:root|:host|\*|html|body)/.test(sel.trim());

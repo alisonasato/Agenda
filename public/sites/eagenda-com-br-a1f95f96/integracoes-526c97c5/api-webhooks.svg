@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- API & Webhooks — grafo de eventos.
+       Paleta calma: nós ardósia, só o nó de origem no azul accent. -->
+  <path d="M24 12.5V24L12 36.5" fill="none" stroke="#CBD5E1" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24 24 36 36.5" fill="none" stroke="#CBD5E1" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="24" cy="10" r="6.2" fill="#0A70D6"/>
+  <circle cx="10.5" cy="38" r="6.2" fill="#94A3B8"/>
+  <circle cx="37.5" cy="38" r="6.2" fill="#94A3B8"/>
+  <circle cx="24" cy="10" r="2.5" fill="#FFFFFF"/>
+  <circle cx="10.5" cy="38" r="2.5" fill="#FFFFFF"/>
+  <circle cx="37.5" cy="38" r="2.5" fill="#FFFFFF"/>
+</svg>

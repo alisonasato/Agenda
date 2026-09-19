@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Sites (Embed) — janela de navegador com código incorporado.
+       Paleta calma: ardósia + um único toque do azul accent da plataforma. -->
+  <rect x="3" y="6" width="42" height="36" rx="7" fill="#F1F5F9"/>
+  <path d="M3 13a7 7 0 0 1 7-7h28a7 7 0 0 1 7 7v3H3z" fill="#64748B"/>
+  <circle cx="9.5" cy="11" r="1.8" fill="#FFFFFF" opacity=".9"/>
+  <circle cx="15.5" cy="11" r="1.8" fill="#FFFFFF" opacity=".65"/>
+  <circle cx="21.5" cy="11" r="1.8" fill="#FFFFFF" opacity=".4"/>
+  <path d="M18 24.5 12.5 29l5.5 4.5" fill="none" stroke="#0A70D6" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 24.5 35.5 29 30 33.5" fill="none" stroke="#0A70D6" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M26.2 22.4l-4.4 13.2" fill="none" stroke="#94A3B8" stroke-width="3.2" stroke-linecap="round"/>
+</svg>
