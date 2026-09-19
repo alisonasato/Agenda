@@ -98,7 +98,6 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 .hdaterange > .hdaterange-popover { min-width: 0; top: calc(100% + .375rem); }
 .hfilterpop > .hfilterpop-popover { left: auto; right: 0; min-width: 0; }
 .hdatepicker { position: relative; }
-.hdatepicker > .hdatepicker-popover { position: absolute; top: calc(100% + .25rem); left: 0; z-index: 100; }
 
 /* Relatórios › Indicadores Gerenciais — the page's own <style> block, scoped to its container
    (#indicadores) because the painel's KPI cards must keep their natural label height. */
@@ -237,3 +236,20 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 .cfg-opt-list { display: flex; flex-direction: column; }
 .cfg-opt-list > .cfg-opt:not(:last-child) { border-bottom: 1px solid color-mix(in srgb, var(--color-border, #e4e7ec) 70%, transparent); }
 #org-settings-panel .cfg-opt { padding: .625rem 0; }
+
+/* ── Administrar Agendas: the page's own <style> (bulk-action tool cards), copied verbatim ── */
+.ctrl-tool { display: flex; align-items: center; gap: .875rem; width: 100%; text-align: left; cursor: pointer; background: var(--color-surface, #fff); border: 1px solid var(--color-border, #e4e7ec); border-radius: var(--hui-radius-lg, 1rem); box-shadow: var(--hui-shadow-sm, 0 1px 2px rgba(17, 24, 39, .04), 0 2px 8px rgba(17, 24, 39, .05)); padding: 1rem 1.125rem; transition: transform .15s ease, background-color .15s ease; }
+.ctrl-tool:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--color-muted, #667085) 3%, #fff); }
+.ctrl-tool:focus-visible { outline: 2px solid var(--color-primary, #0a70d6); outline-offset: 2px; }
+.ctrl-tool-glyph { flex-shrink: 0; color: var(--color-primary, #0a70d6); }
+.ctrl-tool--danger .ctrl-tool-glyph { color: var(--color-danger, #f31260); }
+.ctrl-tool-title { display: block; font-size: .9375rem; font-weight: 700; color: #101828; line-height: 1.3; letter-spacing: -.01em; }
+.ctrl-tool-desc { display: block; margin-top: .125rem; font-size: .8125rem; color: #667085; line-height: 1.45; }
+.ctrl-tool-arrow { flex-shrink: 0; align-self: center; color: #98a2b3; transition: transform .15s ease; }
+.ctrl-tool:hover .ctrl-tool-arrow { transform: translateX(2px); }
+@media (prefers-reduced-motion: reduce) {
+  .ctrl-tool, .ctrl-tool-arrow { transition: none; }
+  .ctrl-tool:hover { transform: none; }
+}
+/* Stronger labels in this page's modals (scoped to the page: its modals render inside it). */
+#agenda-admin .hmodal-body .hinput-label, #agenda-admin .hmodal-body .hcombobox-label, #agenda-admin .hmodal-body .hms-label { font-weight: 600; color: #344054; }

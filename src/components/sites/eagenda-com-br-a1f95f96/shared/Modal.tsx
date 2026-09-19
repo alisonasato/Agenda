@@ -7,11 +7,15 @@ type ModalProps = {
   /** The original's modal id, e.g. "rule-form-modal"; ids for the title/body/submit derive from it. */
   id: string;
   title: string;
+  /** .hmodal-subtitle under the title. */
+  subtitle?: string;
+  /** Wrap header, body and footer in a <form class="hmodal-form"> (the bulk-action modals do). */
+  asForm?: boolean;
   onClose: () => void;
   /** Buttons for .hmodal-footer. */
   footer: ReactNode;
   /** hmodal-panel size; the original uses lg for most forms. */
-  size?: "lg" | "2xl" | "4xl";
+  size?: "md" | "lg" | "2xl" | "4xl";
   children: ReactNode;
 };
 
@@ -19,12 +23,29 @@ type ModalProps = {
  * The original's hModal (large panel, scroll inside): closes on the close button, a click on
  * the backdrop, or Escape — unless a field popover is open, which takes the Escape itself.
  */
-export function Modal({ id, title, onClose, footer, size = "lg", children }: ModalProps) {
+export function Modal({ id, title, subtitle, asForm, onClose, footer, size = "lg", children }: ModalProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector("body > .hselect-popover") && onClose();
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  const content = (
+    <>
+      <div className="hmodal-header">
+        <h2 className="hmodal-title" id={`${id}-title`}>
+          {title}
+        </h2>
+        {subtitle && <p className="hmodal-subtitle">{subtitle}</p>}
+      </div>
+      <div className="hmodal-body-wrap">
+        <div className="hmodal-body" id={`${id}-body`}>
+          {children}
+        </div>
+      </div>
+      <div className="hmodal-footer">{footer}</div>
+    </>
+  );
 
   return (
     <div className="hmodal">
@@ -40,17 +61,13 @@ export function Modal({ id, title, onClose, footer, size = "lg", children }: Mod
           <button type="button" className="hmodal-close" aria-label="Fechar" onClick={onClose}>
             <CloseCircleIcon className="w-5 h-5" />
           </button>
-          <div className="hmodal-header">
-            <h2 className="hmodal-title" id={`${id}-title`}>
-              {title}
-            </h2>
-          </div>
-          <div className="hmodal-body-wrap">
-            <div className="hmodal-body" id={`${id}-body`}>
-              {children}
-            </div>
-          </div>
-          <div className="hmodal-footer">{footer}</div>
+          {asForm ? (
+            <form className="hmodal-form" method="post" onSubmit={(e) => e.preventDefault()}>
+              {content}
+            </form>
+          ) : (
+            content
+          )}
         </div>
       </div>
     </div>

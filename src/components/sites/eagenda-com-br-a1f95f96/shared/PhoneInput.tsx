@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import itiCountries from "intl-tel-input/build/js/data.js";
 import "intl-tel-input/build/css/intlTelInput.css";
 import { CaretDownIcon, SearchSolidIcon } from "./icons";
+import { useAnchoredPopover } from "./useAnchoredPopover";
 import { useDismiss } from "./useDismiss";
 
 // Port of the original's hPhoneInput (intl-tel-input 18.1.6 data + libphonenumber utils).
@@ -124,7 +125,6 @@ export function PhoneInput({ name, id, label }: PhoneInputProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [panelStyle, setPanelStyle] = useState<CSSProperties>({ position: "fixed", visibility: "hidden" });
   useDismiss(rootRef, open, () => setOpen(false), panelRef);
 
   useEffect(() => {
@@ -199,33 +199,14 @@ export function PhoneInput({ name, id, label }: PhoneInputProps) {
     }
   };
 
-  // The original's placement: 6px under the field (above when it doesn't fit), clamped to the viewport.
+  const panelStyle = useAnchoredPopover(open, anchorRef, panelRef);
+  // Once placed (visible — hidden elements can't take focus): scroll to the current country and focus the search box.
+  const placed = open && panelStyle.visibility !== "hidden";
   useLayoutEffect(() => {
-    if (!open) return;
-    const place = () => {
-      const r = anchorRef.current?.getBoundingClientRect();
-      const panel = panelRef.current;
-      if (!r || !panel) return;
-      const margin = 8;
-      const below = window.innerHeight - r.bottom;
-      const up = below < panel.offsetHeight + margin && r.top > below;
-      const left = Math.max(margin, Math.min(r.left, window.innerWidth - panel.offsetWidth - margin));
-      setPanelStyle(
-        up
-          ? { position: "fixed", left, bottom: window.innerHeight - r.top + 6, top: "auto", zIndex: 100050 }
-          : { position: "fixed", left, top: r.bottom + 6, bottom: "auto", zIndex: 100050 },
-      );
-    };
-    place();
+    if (!placed) return;
     panelRef.current?.querySelector(".hphone-option.is-selected")?.scrollIntoView({ block: "center" });
     panelRef.current?.querySelector<HTMLInputElement>(".hphone-search-input")?.focus();
-    window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, true);
-    return () => {
-      window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place, true);
-    };
-  }, [open]);
+  }, [placed]);
 
   const q = search.trim().toLowerCase();
   const filtered = q
@@ -246,7 +227,6 @@ export function PhoneInput({ name, id, label }: PhoneInputProps) {
           aria-label="Selecionar país"
           onClick={() => {
             setSearch("");
-            setPanelStyle({ position: "fixed", visibility: "hidden" });
             setOpen((o) => !o);
           }}
         >
