@@ -10,6 +10,8 @@ type ModalProps = {
   onClose: () => void;
   /** Buttons for .hmodal-footer. */
   footer: ReactNode;
+  /** hmodal-panel size; the original uses lg for most forms. */
+  size?: "lg" | "2xl" | "4xl";
   children: ReactNode;
 };
 
@@ -17,7 +19,7 @@ type ModalProps = {
  * The original's hModal (large panel, scroll inside): closes on the close button, a click on
  * the backdrop, or Escape — unless a field popover is open, which takes the Escape itself.
  */
-export function Modal({ id, title, onClose, footer, children }: ModalProps) {
+export function Modal({ id, title, onClose, footer, size = "lg", children }: ModalProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector("body > .hselect-popover") && onClose();
     document.addEventListener("keydown", onKey);
@@ -29,7 +31,7 @@ export function Modal({ id, title, onClose, footer, children }: ModalProps) {
       <div className="hmodal-wrapper hmodal-wrapper--auto hmodal-wrapper--scroll-inside" onClick={(e) => e.target === e.currentTarget && onClose()}>
         <div className="hmodal-backdrop hmodal-backdrop--opaque" aria-hidden="true" />
         <div
-          className="hmodal-panel hmodal-panel--lg hmodal-panel--radius-lg hmodal-panel--shadow-lg hmodal-panel--scroll-inside"
+          className={`hmodal-panel hmodal-panel--${size} hmodal-panel--radius-lg hmodal-panel--shadow-lg hmodal-panel--scroll-inside`}
           tabIndex={-1}
           role="dialog"
           aria-modal="true"
