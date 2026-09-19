@@ -9,7 +9,8 @@ export type ChipOption = { id: string; label: string };
 
 type ChipMultiSelectProps = {
   id: string;
-  label: string;
+  /** Omitted where the original renders the field without a label. */
+  label?: string;
   placeholder: string;
   options: ChipOption[];
   values: string[];
@@ -31,9 +32,11 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
 
   return (
     <div ref={rootRef} className="hms">
-      <label htmlFor={id} className="hms-label">
-        {label} {required && <span className="hms-req">*</span>}
-      </label>
+      {label && (
+        <label htmlFor={id} className="hms-label">
+          {label} {required && <span className="hms-req">*</span>}
+        </label>
+      )}
       <div ref={ref} className="hms-field" onClick={() => setOpen(true)}>
         <div className="hms-rail">
           <div className="hms-rail-track">

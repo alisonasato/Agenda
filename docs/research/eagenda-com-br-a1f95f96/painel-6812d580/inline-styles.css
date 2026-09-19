@@ -253,3 +253,7 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 }
 /* Stronger labels in this page's modals (scoped to the page: its modals render inside it). */
 #agenda-admin .hmodal-body .hinput-label, #agenda-admin .hmodal-body .hcombobox-label, #agenda-admin .hmodal-body .hms-label { font-weight: 600; color: #344054; }
+
+/* django_ckeditor_5 word counter (styles.css): Words | Characters in a row under the editor. */
+.ck.ck-word-count{display:flex;margin-top:10px}
+.ck-word-count__words{margin-right:10px}

@@ -17,6 +17,7 @@ import {
   Paragraph,
   PasteFromOffice,
   SourceEditing,
+  WordCount,
 } from "ckeditor5";
 import ptBr from "ckeditor5/translations/pt-br.js";
 import "ckeditor5/ckeditor5.css";
@@ -30,6 +31,8 @@ type RichTextEditorProps = {
   language?: string;
   maxLength?: number;
   className?: string;
+  /** Shows the "Palavras / Caracteres" counter under the editor (django_ckeditor_5 word count). */
+  wordCount?: boolean;
 };
 
 /**
@@ -38,8 +41,9 @@ type RichTextEditorProps = {
  * (its UI is English); the product wants Portuguese, so the pt-BR bundle is loaded. The editor
  * replaces a hidden textarea.
  */
-export function RichTextEditor({ editorRef, name, id, language, maxLength, className }: RichTextEditorProps) {
+export function RichTextEditor({ editorRef, name, id, language, maxLength, className, wordCount }: RichTextEditorProps) {
   const hostRef = useRef<HTMLTextAreaElement>(null);
+  const countRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     // destroy() shows the source textarea again, which a dev (StrictMode) remount would leave visible.
@@ -47,7 +51,8 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
     let editor: ClassicEditor | undefined;
     let cancelled = false;
     ClassicEditor.create(hostRef.current!, {
-      plugins: [Essentials, Autoformat, Paragraph, Heading, Bold, Italic, Link, List, ListProperties, BlockQuote, Font, Alignment, PasteFromOffice, SourceEditing],
+      plugins: [Essentials, Autoformat, Paragraph, Heading, Bold, Italic, Link, List, ListProperties, BlockQuote, Font, Alignment, PasteFromOffice, SourceEditing, ...(wordCount ? [WordCount] : [])],
+      ...(wordCount && { wordCount: { container: countRef.current! } }),
       toolbar: [
         "heading", "|", "bold", "italic", "link", "bulletedList", "numberedList", "blockQuote", "undo", "redo",
         "fontFamily", "fontSize", "fontColor", "fontBackgroundColor", "alignment", "|", "sourceEditing",
@@ -87,7 +92,13 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
       if (editorRef) editorRef.current = null;
       if (editor) destroy(editor);
     };
-  }, [editorRef, language]);
+  }, [editorRef, language, wordCount]);
 
-  return <textarea ref={hostRef} name={name} id={id} className={className} maxLength={maxLength} rows={10} style={{ display: "none" }} />;
+  return (
+    <>
+      <textarea ref={hostRef} name={name} id={id} className={className} maxLength={maxLength} rows={10} style={{ display: "none" }} />
+      {/* The editor is inserted right after the textarea, so the counter lands below it. */}
+      {wordCount && <span ref={countRef} className="word-count" id={`${id}_script-word-count`} />}
+    </>
+  );
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { ColorPicker } from "../shared/ColorPicker";
 import { Combobox } from "../shared/Combobox";
 import { FilePicker } from "../shared/FilePicker";
 import { PhoneInput } from "../shared/PhoneInput";
 import { SaveBar } from "../shared/SaveBar";
-import { COUNTRY_OPTIONS, lookupCep as resolveCep, useGeoCascade } from "../shared/useGeoCascade";
+import { CepField, fillFromCep, type CepAddress } from "../shared/CepField";
+import { COUNTRY_OPTIONS, useGeoCascade } from "../shared/useGeoCascade";
 import { ROUTES } from "../shared/Sidebar";
 import { AddAppointmentIcon, CaretDownIcon, CheckboxMark, ExternalLinkIcon, FlowIcon, InfoIcon, PenIcon, RefreshIcon, SaveIcon } from "../shared/icons";
 
@@ -178,9 +179,6 @@ function Option({ name, label, help, defaultChecked, className, style }: {
   );
 }
 
-type CepStatus = { type: "loading" | "success" | "error"; msg: string } | null;
-const CEP_COLORS = { loading: "#71717a", success: "#17c964", error: "#f31260" };
-
 export function BookingScreenSettings() {
   const [tab, setTab] = useState<Tab>("identity");
   const [flow, setFlow] = useState<Flow>("auto");
@@ -203,39 +201,11 @@ export function BookingScreenSettings() {
   };
 
   const geo = useGeoCascade();
-  const [cep, setCep] = useState("");
-  const [cepStatus, setCepStatus] = useState<CepStatus>(null);
   const addressRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!cepStatus || cepStatus.type === "loading") return;
-    const t = setTimeout(() => setCepStatus(null), cepStatus.type === "success" ? 3000 : 5000);
-    return () => clearTimeout(t);
-  }, [cepStatus]);
-
-  /**
-   * The original posts the CEP to its own backend, which resolves it and fills the address,
-   * then cascades country → state → city. The prototype asks ViaCEP (public) directly and
-   * matches the state and city by name.
-   */
-  const lookupCep = async () => {
-    if (cep.replace(/\D/g, "").length !== 8 || cepStatus?.type === "loading") return;
-    setCepStatus({ type: "loading", msg: "Buscando..." });
-    try {
-      const data = await resolveCep(cep);
-      const fill = (id: string, v?: string) => {
-        const el = addressRef.current?.querySelector<HTMLInputElement>(`#${id}`);
-        if (el && v) el.value = v;
-      };
-      fill("id_street", data.logradouro);
-      fill("id_neighbourhood", data.bairro);
-      fill("id_complement", data.complemento);
-      await geo.setByNames(data.estado, data.localidade);
-      markDirty();
-      setCepStatus({ type: "success", msg: "Endereço preenchido!" });
-    } catch (e) {
-      setCepStatus({ type: "error", msg: e instanceof Error ? e.message : "Erro ao consultar CEP" });
-    }
+  const fillAddress = async (data: CepAddress) => {
+    fillFromCep(addressRef.current, data);
+    await geo.setByNames(data.estado, data.localidade);
+    markDirty();
   };
 
   const flowText =
@@ -617,47 +587,7 @@ export function BookingScreenSettings() {
                 }
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="hinput-field hinput-field--block">
-                    <label className="hinput-label" htmlFor="id_cep">
-                      CEP
-                    </label>
-                    <div className="hinput-wrap">
-                      <input
-                        id="id_cep"
-                        maxLength={9}
-                        className="hinput"
-                        type="text"
-                        name="cep"
-                        placeholder="00000-000"
-                        style={{ paddingRight: "2.25rem" }}
-                        value={cep}
-                        disabled={cepStatus?.type === "loading"}
-                        onChange={(e) => {
-                          const v = e.target.value.replace(/\D/g, "").slice(0, 8);
-                          setCep(v.length > 5 ? v.replace(/^(\d{5})(\d{0,3})/, "$1-$2") : v);
-                        }}
-                        onBlur={lookupCep}
-                      />
-                      <div
-                        className={cepStatus ? undefined : "hidden"}
-                        style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", lineHeight: 0, fontSize: 0, pointerEvents: "none" }}
-                      >
-                        <svg className={`cep-loading animate-spin w-4 h-4 text-primary${cepStatus?.type === "loading" ? "" : " hidden"}`} fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        <svg className={`cep-success w-4 h-4 text-success${cepStatus?.type === "success" ? "" : " hidden"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <svg className={`cep-error w-4 h-4 text-error${cepStatus?.type === "error" ? "" : " hidden"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="text-xs" hidden={!cepStatus}>
-                      {cepStatus && <span style={{ color: CEP_COLORS[cepStatus.type] }}>{cepStatus.msg}</span>}
-                    </div>
-                  </div>
+                  <CepField onFound={fillAddress} />
                   <div id="addr_country_wrapper">
                     <Combobox
                       id="country"

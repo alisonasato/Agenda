@@ -5,7 +5,7 @@ import { CloseCircleIcon, GalleryIcon } from "./icons";
 
 const MAX_BYTES = 1048576;
 
-type FilePickerProps = { name: string; label: string; desc: string };
+type FilePickerProps = { name: string; label: string; desc?: string };
 
 /**
  * .hfilepicker image cell (port of the original's inline Alpine component): click or drop to
@@ -76,7 +76,7 @@ export function FilePicker({ name, label, desc }: FilePickerProps) {
           </button>
         )}
       </div>
-      <p className="hfilepicker-desc">{desc}</p>
+      {desc && <p className="hfilepicker-desc">{desc}</p>}
       {error && <p className="hfilepicker-error">{error}</p>}
     </div>
   );
