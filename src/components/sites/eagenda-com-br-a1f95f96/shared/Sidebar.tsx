@@ -43,6 +43,7 @@ export const ROUTES = {
   planos: "/users/planos",
   integracoes: "/integracoes",
   telaAgendamento: "/users/tela_agendamento",
+  dadosConta: "/users/organization/business",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -120,7 +121,7 @@ const NAV: NavEntry[] = [
     icon: BuildingIcon,
     items: [
       { label: "Tela de Agendamento", href: ROUTES.telaAgendamento },
-      { label: "Dados da Conta", keywords: "Configurações Gerais Dados da Organização" },
+      { label: "Dados da Conta", href: ROUTES.dadosConta, keywords: "Configurações Gerais Dados da Organização" },
       { label: "Administrar Agendas", keywords: "Horários e Datas Painel de Controle" },
       { label: "Administrar Equipe" },
       { label: "Administrar Unidades" },

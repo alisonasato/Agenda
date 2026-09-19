@@ -229,3 +229,11 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 
 /* From the original's css/components/select3.css (loaded on every dashboard page): rich-text editors are at least 300px tall. */
 .ck.ck-content.ck-editor__editable { min-height: 300px; }
+
+/* ── Configurações Gerais: its page <style> is the cfg-* block of Tela de Agendamento with these
+   differences, scoped to the steps panel so neither page changes the other. ── */
+#org-settings-panel .cfg-content { gap: .625rem; }
+@media (min-width: 768px) { #org-settings-panel .cfg-content { gap: .5rem; } }
+.cfg-opt-list { display: flex; flex-direction: column; }
+.cfg-opt-list > .cfg-opt:not(:last-child) { border-bottom: 1px solid color-mix(in srgb, var(--color-border, #e4e7ec) 70%, transparent); }
+#org-settings-panel .cfg-opt { padding: .625rem 0; }
