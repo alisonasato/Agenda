@@ -95,7 +95,7 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 .hinline > .hinline-popover,
 .hdaterange > .hdaterange-popover { position: absolute; top: calc(100% + .25rem); left: 0; width: auto; min-width: 100%; z-index: 100; }
 .hdaterange { position: relative; }
-.hdaterange > .hdaterange-popover { min-width: 0; }
+.hdaterange > .hdaterange-popover { min-width: 0; top: calc(100% + .375rem); }
 .hfilterpop > .hfilterpop-popover { left: auto; right: 0; min-width: 0; }
 .hdatepicker { position: relative; }
 .hdatepicker > .hdatepicker-popover { position: absolute; top: calc(100% + .25rem); left: 0; z-index: 100; }
@@ -189,3 +189,6 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 }
 .hetvar-code { display: block; font-size: .75rem; font-weight: 700; color: var(--color-primary, #0a70d6); }
 .hetvar-desc { display: block; font-size: .6875rem; color: #667085; line-height: 1.35; }
+
+/* Clone-only: the "Filtros" menu (hMenu align end) hangs from its trigger's right edge. */
+.hinline > .hmenu-filters { position: absolute; top: calc(100% + .375rem); left: auto; right: 0; z-index: 100; }

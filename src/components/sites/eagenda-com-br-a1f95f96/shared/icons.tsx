@@ -457,3 +457,11 @@ export const ChatBubbleIcon = (p: IconProps) => (
     <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12c0 1.6.376 3.112 1.043 4.453c.178.356.237.763.134 1.148l-.595 2.226a1.3 1.3 0 0 0 1.591 1.592l2.226-.596a1.63 1.63 0 0 1 1.149.133A9.96 9.96 0 0 0 12 22" />
   </Solar>
 );
+
+/** Empty state for a filtered table ("Nenhum resultado encontrado"). */
+export const SearchEmptyIcon = (p: IconProps) => (
+  <Solar {...p}>
+    <path d="M20.313 11.157a9.157 9.157 0 1 1-18.313 0a9.157 9.157 0 0 1 18.313 0" opacity=".5" />
+    <path d="m17.1 18.122l3.666 3.666a.723.723 0 0 0 1.023-1.022L18.122 17.1a9 9 0 0 1-1.022 1.022" />
+  </Solar>
+);

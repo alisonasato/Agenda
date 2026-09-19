@@ -10,13 +10,19 @@ type FloatingPanelProps = {
   flipAnchor?: RefObject<HTMLElement | null>;
   panelRef: RefObject<HTMLDivElement | null>;
   className: string;
+  /** Panel width: the anchor width by default, a fixed width, or "auto" to leave it to the CSS. */
+  width?: number | "auto";
+  /** Distance from the anchor (the original uses 4px for fields, 6px for menus and period pickers). */
+  gap?: number;
   children: ReactNode;
   onClick?: (e: React.MouseEvent) => void;
 };
 
-const GAP = 4;
 // First paint: laid out but invisible, so the real height can be measured before placing it.
 const MEASURING: CSSProperties = { position: "fixed", top: 0, left: 0, visibility: "hidden", zIndex: 100050 };
+
+const panelWidth = (width: number | "auto" | undefined, anchor: RefObject<HTMLElement | null>) =>
+  width === "auto" ? undefined : (width ?? anchor.current?.getBoundingClientRect().width);
 
 /**
  * A field popover rendered on <body> with fixed positioning, like the original's teleported
@@ -24,9 +30,9 @@ const MEASURING: CSSProperties = { position: "fixed", top: 0, left: 0, visibilit
  * field when there isn't room below and there is more above (the original's checkDropPosition).
  * Follows the field on scroll and resize.
  */
-export function FloatingPanel({ anchor, flipAnchor, panelRef, className, children, onClick }: FloatingPanelProps) {
+export function FloatingPanel({ anchor, flipAnchor, panelRef, className, width, gap = 4, children, onClick }: FloatingPanelProps) {
   // Measured at the final width so wrapped options give the real height.
-  const [style, setStyle] = useState<CSSProperties>(() => ({ ...MEASURING, width: anchor.current?.getBoundingClientRect().width }));
+  const [style, setStyle] = useState<CSSProperties>(() => ({ ...MEASURING, width: panelWidth(width, anchor) }));
 
   useLayoutEffect(() => {
     const place = () => {
@@ -34,13 +40,13 @@ export function FloatingPanel({ anchor, flipAnchor, panelRef, className, childre
       if (!r) return;
       const height = panelRef.current?.offsetHeight ?? 0;
       const top = (flipAnchor?.current ?? anchor.current)!.getBoundingClientRect().top;
-      const below = window.innerHeight - r.bottom - GAP;
-      const above = top - GAP;
-      const base = { position: "fixed" as const, left: r.left, width: r.width, zIndex: 100050 };
+      const below = window.innerHeight - r.bottom - gap;
+      const above = top - gap;
+      const base = { position: "fixed" as const, left: r.left, width: panelWidth(width, anchor), zIndex: 100050 };
       setStyle(
         height > below && above > below
-          ? { ...base, bottom: window.innerHeight - top + GAP, top: "auto" }
-          : { ...base, top: r.bottom + GAP, bottom: "auto" },
+          ? { ...base, bottom: window.innerHeight - top + gap, top: "auto" }
+          : { ...base, top: r.bottom + gap, bottom: "auto" },
       );
     };
     place();
@@ -50,7 +56,7 @@ export function FloatingPanel({ anchor, flipAnchor, panelRef, className, childre
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
     };
-  }, [anchor, flipAnchor, panelRef]);
+  }, [anchor, flipAnchor, panelRef, width, gap]);
 
   return createPortal(
     <div ref={panelRef} className={className} style={style} onClick={onClick}>

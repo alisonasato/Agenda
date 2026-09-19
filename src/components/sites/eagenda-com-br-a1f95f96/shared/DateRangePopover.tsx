@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type ReactNode, type RefObject } from "react";
+import { FloatingPanel } from "./FloatingPanel";
 import { ChevronLeftIcon, ChevronRightIcon } from "../shared/icons";
-import { MONTHS, WEEKDAYS_SHORT, addMonths, monthDays, sameDay } from "./calendarDates";
+import { MONTHS, WEEKDAYS_SHORT, addMonths, pickerCells, sameDay } from "./calendarDates";
 
 export const PRESETS = ["Hoje", "Próximos 7 dias", "Próximos 30 dias", "Este mês", "Todos os períodos"] as const;
 export type Preset = (typeof PRESETS)[number];
 
+// Always 42 cells (6 rows, blanks around the month), like the original's daysOf().
 function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
-  const days = monthDays(month);
-  const lead = days.findIndex((d) => d.getMonth() === month.getMonth());
   return (
     <div className="hdaterange-cal">
       <div className="hdaterange-cal-title">
@@ -21,18 +21,15 @@ function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
         ))}
       </div>
       <div className="hdaterange-grid">
-        {days.slice(0, lead).map((d) => (
-          <div key={`pad-${d.toISOString()}`} className="hdaterange-cell" />
-        ))}
-        {days
-          .filter((d) => d.getMonth() === month.getMonth())
-          .map((d) => (
-            <div key={d.toISOString()} className="hdaterange-cell">
+        {pickerCells(month).map((d, i) => (
+          <div key={i} className="hdaterange-cell">
+            {d && (
               <button type="button" className={`hdaterange-day${sameDay(d, today) ? " is-today" : ""}`}>
                 {d.getDate()}
               </button>
-            </div>
-          ))}
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -40,23 +37,27 @@ function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
 
 // Period picker: preset column + two months, as on the live filter bar.
 type DateRangePopoverProps = {
-  preset: Preset;
+  /** The active preset; none while no period is picked. */
+  preset?: Preset;
   onPreset: (p: Preset) => void;
   today: Date;
   /** The report pages add a "Limpar período" footer under the calendars. */
   onClear?: () => void;
   /** Month shown when the popover opens. Defaults to the current month; the reports open on the range start. */
   initialMonth?: Date;
+  /** Teleport the panel to <body> under this trigger (6px below, like the original); needs `panelRef` for dismissal. */
+  anchor?: RefObject<HTMLElement | null>;
+  panelRef?: RefObject<HTMLDivElement | null>;
 };
 
-export function DateRangePopover({ preset, onPreset, today, onClear, initialMonth }: DateRangePopoverProps) {
+export function DateRangePopover({ preset, onPreset, today, onClear, initialMonth, anchor, panelRef }: DateRangePopoverProps) {
   const [month, setMonth] = useState(() => {
     const base = initialMonth ?? today;
     return new Date(base.getFullYear(), base.getMonth(), 1);
   });
 
-  return (
-    <div className="hselect-popover hdaterange-popover">
+  const body = (
+    <>
       <div className="hdaterange-body">
         <div className="hdaterange-presets-col">
           {PRESETS.map((p) => (
@@ -85,6 +86,14 @@ export function DateRangePopover({ preset, onPreset, today, onClear, initialMont
           </button>
         </div>
       )}
-    </div>
+    </>
+  );
+
+  return anchor && panelRef ? (
+    <FloatingPanel anchor={anchor} panelRef={panelRef} className="hselect-popover hdaterange-popover" width="auto" gap={6}>
+      {body}
+    </FloatingPanel>
+  ) : (
+    <div className="hselect-popover hdaterange-popover">{body}</div>
   );
 }

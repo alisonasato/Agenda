@@ -105,7 +105,7 @@ const NAV: NavEntry[] = [
       { label: "Regras de Notificação", href: ROUTES.notificacoesRegras },
       { label: "Notificações por Status", href: ROUTES.notificacoesStatus },
       { label: "Modelos de Email", href: ROUTES.modelosEmail },
-      { label: "Acompanhamento" },
+      { label: "Acompanhamento", href: ROUTES.acompanhamento },
       { label: "Pacotes de Envio", keywords: "Pacotes de Notificações" },
     ],
   },

@@ -75,7 +75,7 @@ function OptionsPopover({
         {hits.length === 0 ? (
           <li className="hautocomplete-state">
             <div className="hautocomplete-state-inner">
-              <SearchSolidIcon className="w-4 h-4" />
+              <SearchSolidIcon className="w-6 h-6" />
               <span>Nenhum resultado encontrado</span>
             </div>
           </li>

@@ -2,6 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { CaretDownIcon, CheckReadIcon, SearchSolidIcon } from "./icons";
+import { FloatingPanel } from "./FloatingPanel";
 import { useDismiss } from "./useDismiss";
 
 type InlineFilterProps = {
@@ -12,12 +13,13 @@ type InlineFilterProps = {
   onChange: (values: string[]) => void;
 };
 
-/** Action-bar filter: trigger with a count badge + searchable multi-select popover (.hinline). */
+/** Action-bar filter: trigger with a count badge + searchable multi-select popover (.hinline), teleported to <body> like the original. */
 export function InlineFilter({ label, icon, options, values, onChange }: InlineFilterProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
-  useDismiss(ref, open, () => setOpen(false));
+  const panelRef = useRef<HTMLDivElement>(null);
+  useDismiss(ref, open, () => setOpen(false), panelRef);
   const hits = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
   // The original hides the search box for short static lists: x-show="!(isStatic && staticOptions.length <= 7)".
   const searchable = options.length > 7;
@@ -39,7 +41,7 @@ export function InlineFilter({ label, icon, options, values, onChange }: InlineF
         </span>
       </button>
       {open && (
-        <div className="hselect-popover hinline-popover" style={{ width: 240 }}>
+        <FloatingPanel anchor={ref} panelRef={panelRef} className="hselect-popover hinline-popover" width={240}>
           {searchable && (
             <div className="hinline-search-wrap">
               <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
@@ -50,7 +52,7 @@ export function InlineFilter({ label, icon, options, values, onChange }: InlineF
             {hits.length === 0 ? (
               <li className="hautocomplete-state">
                 <div className="hautocomplete-state-inner">
-                  <SearchSolidIcon className="w-4 h-4" />
+                  <SearchSolidIcon className="w-6 h-6" />
                   <span>Nenhum resultado encontrado</span>
                 </div>
               </li>
@@ -88,7 +90,7 @@ export function InlineFilter({ label, icon, options, values, onChange }: InlineF
               Concluir
             </button>
           </div>
-        </div>
+        </FloatingPanel>
       )}
     </div>
   );
