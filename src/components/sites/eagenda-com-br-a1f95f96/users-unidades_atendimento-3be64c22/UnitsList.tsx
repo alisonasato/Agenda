@@ -1,127 +1,29 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
+import { emptyFilters, FilterPopover, type FilterField } from "../shared/FilterPopover";
 import { ScrollRail } from "../shared/ScrollRail";
 import { ROUTES } from "../shared/Sidebar";
-import { useAnchoredPopover } from "../shared/useAnchoredPopover";
-import { useDismiss } from "../shared/useDismiss";
-import { AddAppointmentIcon, CaretDownIcon, CloseCircleIcon, FunnelIcon, InboxIcon, SearchSolidIcon } from "../shared/icons";
+import { AddAppointmentIcon, CloseCircleIcon, InboxIcon, SearchSolidIcon } from "../shared/icons";
 
 const COLUMNS = ["Unidade", "Endereço", "Contato", "Agendas"];
 const SLOTS = 10;
 const KPIS = ["Unidades", "Agendas vinculadas", "Com contato"];
 
-/** The "Filtros" popover fields: [key, label, placeholder]. */
-const FIELDS = [
-  ["name", "Nome da Unidade", "Ex.: Unidade Centro"],
-  ["slug", "Slug", "Ex.: unidade-centro"],
-  ["email", "Email", "Ex.: unidade@email.com"],
-  ["phone", "Telefone", "Com ou sem máscara"],
-  ["whatsapp", "WhatsApp", "Somente números ou formatado"],
-  ["city", "Cidade", "Ex.: São Paulo"],
-  ["state", "Estado", "Ex.: SP"],
-] as const;
-type Values = Record<(typeof FIELDS)[number][0], string>;
-const EMPTY = Object.fromEntries(FIELDS.map(([k]) => [k, ""])) as Values;
-
-/**
- * hFilterPopover: a draft of text filters; "Aplicar" commits it, closing any other way reverts to
- * the last applied values, so the count always reflects the applied filter.
- */
-function FilterPopover() {
-  const [open, setOpen] = useState(false);
-  const [applied, setApplied] = useState(EMPTY);
-  const [draft, setDraft] = useState(EMPTY);
-  const ref = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const style = useAnchoredPopover(open, ref, panelRef);
-  const close = () => {
-    setOpen(false);
-    setDraft(applied);
-  };
-  useDismiss(ref, open, close, panelRef);
-
-  const count = Object.values(applied).filter((v) => v.trim()).length;
-  const commit = (v: Values) => {
-    setApplied(v);
-    setDraft(v);
-  };
-
-  return (
-    <div ref={ref} className="hinline hfilterpop">
-      <button
-        type="button"
-        className={`hinline-trigger hinline-trigger--bare${count > 0 ? " is-active" : ""}${open ? " is-open" : ""}`}
-        aria-expanded={open}
-        aria-haspopup="dialog"
-        onClick={() => (open ? close() : setOpen(true))}
-      >
-        <FunnelIcon className="hinline-icon w-4 h-4" />
-        <span className="hinline-label">Filtros</span>
-        <span className="hinline-count" style={count > 0 ? undefined : { display: "none" }}>
-          {count}
-        </span>
-        <span className={`hinline-chevron${open ? " is-open" : ""}`} aria-hidden="true">
-          <CaretDownIcon className="w-3.5 h-3.5" />
-        </span>
-      </button>
-      {open &&
-        createPortal(
-          <div ref={panelRef} className="hselect-popover hfilterpop-popover" role="dialog" style={style}>
-            <p className="hfilterpop-title">Filtrar unidades</p>
-            <div className="hfilterpop-grid">
-              {FIELDS.map(([key, label, placeholder]) => (
-                <div key={key} className="hinput-field hinput-field--block">
-                  <label className="hinput-label" htmlFor={`filter-unidade-${key}`}>
-                    {label}
-                  </label>
-                  <div className="hinput-wrap">
-                    <input
-                      id={`filter-unidade-${key}`}
-                      autoComplete="off"
-                      className="hinput hinput--sm"
-                      type="text"
-                      placeholder={placeholder}
-                      value={draft[key]}
-                      onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
-                      onKeyDown={(e) => {
-                        if (e.key !== "Enter") return;
-                        e.preventDefault();
-                        commit(draft);
-                        setOpen(false);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="hfilterpop-footer">
-              {/* "Limpar" applies the cleared filter but keeps the popover open, as the original. */}
-              <button type="button" className="hinline-footer-clear" onClick={() => commit(EMPTY)}>
-                Limpar
-              </button>
-              <button
-                type="button"
-                className="hinline-footer-done"
-                onClick={() => {
-                  commit(draft);
-                  setOpen(false);
-                }}
-              >
-                Aplicar
-              </button>
-            </div>
-          </div>,
-          document.body,
-        )}
-    </div>
-  );
-}
+const FILTERS: FilterField[] = [
+  ["filter-unidade-name", "Nome da Unidade", "Ex.: Unidade Centro"],
+  ["filter-unidade-slug", "Slug", "Ex.: unidade-centro"],
+  ["filter-unidade-email", "Email", "Ex.: unidade@email.com"],
+  ["filter-unidade-phone", "Telefone", "Com ou sem máscara"],
+  ["filter-unidade-whatsapp", "WhatsApp", "Somente números ou formatado"],
+  ["filter-unidade-city", "Cidade", "Ex.: São Paulo"],
+  ["filter-unidade-state", "Estado", "Ex.: SP"],
+];
 
 /** The account has no units: the list, KPIs and filters all stay empty (default empty state). */
 export function UnitsList() {
   const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState(() => emptyFilters(FILTERS));
 
   return (
     <>
@@ -151,7 +53,7 @@ export function UnitsList() {
               Nova Unidade
             </a>
             <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
-              <FilterPopover />
+              <FilterPopover title="Filtrar unidades" fields={FILTERS} value={filters} onChange={setFilters} />
             </ScrollRail>
           </div>
         </div>

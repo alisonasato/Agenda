@@ -47,6 +47,8 @@ export const ROUTES = {
   adminAgendas: "/painel/controle",
   adminEquipe: "/users/adm_equipe",
   adminUnidades: "/users/unidades_atendimento",
+  adminContas: "/users/organizacao/contas",
+  novaConta: "/users/organizacao/contas/nova",
   calendario: "/agendamentos/calendar/18078",
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
@@ -128,7 +130,7 @@ const NAV: NavEntry[] = [
       { label: "Administrar Agendas", href: ROUTES.adminAgendas, keywords: "Horários e Datas Painel de Controle" },
       { label: "Administrar Equipe", href: ROUTES.adminEquipe },
       { label: "Administrar Unidades", href: ROUTES.adminUnidades },
-      { label: "Administrar Contas" },
+      { label: "Administrar Contas", href: ROUTES.adminContas },
     ],
   },
   {
