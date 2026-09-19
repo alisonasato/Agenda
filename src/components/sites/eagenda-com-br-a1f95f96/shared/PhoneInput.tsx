@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import allCountries from "intl-tel-input/build/js/data.js";
+import itiCountries from "intl-tel-input/build/js/data.js";
 import "intl-tel-input/build/css/intlTelInput.css";
 import { CaretDownIcon, SearchSolidIcon } from "./icons";
 import { useDismiss } from "./useDismiss";
@@ -20,6 +20,13 @@ function loadUtils() {
   });
   return utilsPromise;
 }
+
+// intl-tel-input names countries in English ("Brazil (Brasil)"); the product wants Portuguese, so
+// the names come from the browser’s pt-BR region names and the list is sorted in Portuguese.
+const regionNames = new Intl.DisplayNames(["pt-BR"], { type: "region" });
+const allCountries = itiCountries
+  .map((c) => ({ ...c, name: regionNames.of(c.iso2.toUpperCase()) ?? c.name }))
+  .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
 const digitsOf = (v: string) => v.replace(/\D/g, "");
 type Mask = { len: number; mask: string };

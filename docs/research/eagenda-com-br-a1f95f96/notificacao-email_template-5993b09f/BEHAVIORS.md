@@ -10,8 +10,8 @@ same version from npm (`ckeditor5@43.2.0`) and reuses the original's configurati
 Other details:
 - The toolbar groups the overflow into "⋮", as the original does. At 1440 inside the modal, 11
   items stay visible.
-- The UI strings are English on the live page too: its config says `pt-br`, but no translation
-  bundle is loaded.
+- The UI is in Portuguese (pt-BR translation bundle). This is a deliberate product choice: the
+  original loads no translation and shows English.
 - The original's page `<style>` (`.het-*`) is copied verbatim into `inline-styles.css`. It
   restyles the toolbar and editable with HeroUI borders and gives them the shared `--het-h`
   height.

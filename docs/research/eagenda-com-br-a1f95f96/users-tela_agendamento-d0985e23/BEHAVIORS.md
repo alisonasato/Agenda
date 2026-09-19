@@ -62,3 +62,8 @@
   isn't cloned.
 - "Adicionar Etapa 1" in Grupos links to `#`, because the group editor isn't cloned.
 - The popover enter transitions (scale 0.95).
+
+## Portuguese interface (deliberate change)
+- The rich-text editor UI uses CKEditor's pt-BR bundle. The original shows English.
+- The phone country list shows pt-BR names (`Intl.DisplayNames`), sorted in Portuguese. The
+  original shows intl-tel-input's English names, e.g. "Brazil (Brasil)".

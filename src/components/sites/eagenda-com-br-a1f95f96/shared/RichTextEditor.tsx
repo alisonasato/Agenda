@@ -18,6 +18,7 @@ import {
   PasteFromOffice,
   SourceEditing,
 } from "ckeditor5";
+import ptBr from "ckeditor5/translations/pt-br.js";
 import "ckeditor5/ckeditor5.css";
 
 type RichTextEditorProps = {
@@ -25,7 +26,7 @@ type RichTextEditorProps = {
   editorRef?: RefObject<ClassicEditor | null>;
   name: string;
   id: string;
-  /** Content language; the original leaves the default ("en") on most forms. */
+  /** Content language (lang/dir of the text); defaults to pt-br. */
   language?: string;
   maxLength?: number;
   className?: string;
@@ -33,8 +34,9 @@ type RichTextEditorProps = {
 
 /**
  * The original’s rich-text fields: CKEditor 5 (v43.2.0, via django_ckeditor_5) with the same
- * toolbar, heading, font-family and font-size options everywhere. Its UI strings are English on
- * the live pages too (no translation bundle is loaded). The editor replaces a hidden textarea.
+ * toolbar, heading, font-family and font-size options everywhere. The original loads no translation
+ * (its UI is English); the product wants Portuguese, so the pt-BR bundle is loaded. The editor
+ * replaces a hidden textarea.
  */
 export function RichTextEditor({ editorRef, name, id, language, maxLength, className }: RichTextEditorProps) {
   const hostRef = useRef<HTMLTextAreaElement>(null);
@@ -72,7 +74,9 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
           "Verdana, Geneva, sans-serif",
         ],
       },
-      ...(language ? { language } : {}),
+      translations: [ptBr],
+      // Heading titles (Paragraph, Heading 1…) are translated by CKEditor itself.
+      language: { ui: "pt-br", content: language ?? "pt-br" },
     }).then((e) => {
       if (cancelled) return void destroy(e);
       editor = e;
