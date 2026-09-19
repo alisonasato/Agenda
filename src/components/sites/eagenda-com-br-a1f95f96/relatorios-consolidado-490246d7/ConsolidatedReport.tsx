@@ -4,6 +4,7 @@ import { useRef, useState, type CSSProperties } from "react";
 import {
   CalendarIcon,
   CaretDownIcon,
+  CheckboxMark,
   CheckReadIcon,
   ClipboardIcon,
   CloseCircleIcon,
@@ -132,7 +133,7 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
                 <label className="hcheckbox hcheckbox--sm">
                   <input type="checkbox" id="report-export-lgpd-ack" className="hcheckbox-input" checked={ack} onChange={(e) => setAck(e.target.checked)} />
                   <span className="hcheckbox-box" aria-hidden="true">
-                    <CheckReadIcon className="hcheckbox-check w-3 h-3" />
+                    <CheckboxMark />
                     <span className="hcheckbox-dash" aria-hidden="true" />
                   </span>
                   <span className="hcheckbox-label">Li e estou ciente das responsabilidades acima.</span>

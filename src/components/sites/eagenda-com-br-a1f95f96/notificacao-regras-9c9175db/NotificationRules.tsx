@@ -7,6 +7,7 @@ import {
   CaretDownIcon,
   CaretUpIcon,
   ChatIcon,
+  CheckboxMark,
   CheckReadIcon,
   CloseCircleIcon,
   InboxIcon,
@@ -69,7 +70,7 @@ function Checkbox({ name, label, checked, onChange }: { name: string; label: str
     <label className="hcheckbox hcheckbox--sm">
       <input type="checkbox" name={name} id={`id_${name}`} className="hcheckbox-input" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span className="hcheckbox-box" aria-hidden="true">
-        <CheckReadIcon className="hcheckbox-check w-3 h-3" />
+        <CheckboxMark />
         <span className="hcheckbox-dash" aria-hidden="true" />
       </span>
       <span className="hcheckbox-label">{label}</span>

@@ -10,7 +10,7 @@ import { ScrollRail } from "../shared/ScrollRail";
 import { ROUTES } from "../shared/Sidebar";
 
 // CKEditor touches `window` on import, so it only loads in the browser.
-const EmailEditor = dynamic(() => import("./EmailEditor").then((m) => m.EmailEditor), { ssr: false });
+const RichTextEditor = dynamic(() => import("../shared/RichTextEditor").then((m) => m.RichTextEditor), { ssr: false });
 
 const LINKS = [
   { label: "Regras de Notificação", href: ROUTES.notificacoesRegras, Icon: BellIcon },
@@ -154,7 +154,7 @@ function EmailTemplateModal({ onClose }: { onClose: () => void }) {
               Corpo do Email <span className="hinput-req">*</span>
             </label>
             <div className="het-editor mt-1.5">
-              <EmailEditor editorRef={editorRef} />
+              <RichTextEditor editorRef={editorRef} name="email_body_html" id="id_email_body_html" className="w-full" language="pt-br" />
             </div>
           </div>
           <div className="min-w-0">

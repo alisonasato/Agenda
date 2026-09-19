@@ -19,8 +19,7 @@ type SaveBarProps = {
 /**
  * The original's form save bar: an inline dock with Voltar / Salvar at the end of the form,
  * plus a floating toast repeating those actions. The toast shows only while the form is
- * dirty and the dock is scrolled out of view, lined up with the dock on desktop and full
- * width below the sidebar breakpoint.
+ * dirty and the dock is scrolled out of view, lined up with the dock, and edge to edge up to 640px.
  */
 export function SaveBar({ backHref, saveLabel, saveIcon, dirty, toastIcon, toastTitle, toastSub, forceToast }: SaveBarProps) {
   const dock = useRef<HTMLDivElement>(null);
@@ -32,17 +31,24 @@ export function SaveBar({ backHref, saveLabel, saveIcon, dirty, toastIcon, toast
     if (!el) return;
     const measure = () => {
       const r = el.getBoundingClientRect();
-      setDockHidden(r.top >= window.innerHeight || r.bottom <= 0);
-      setEdges(window.innerWidth >= 1024 ? { left: r.left, right: window.innerWidth - r.right } : { left: 0, right: 0 });
+      // Hidden = still below the viewport (scrolled past it counts as seen), as in the original.
+      setDockHidden(r.top >= window.innerHeight);
+      // Up to 640px the toast runs edge to edge; above that it lines up with the dock.
+      setEdges(window.innerWidth <= 640 ? { left: 0, right: 0 } : { left: Math.round(r.left), right: Math.round(window.innerWidth - r.right) });
     };
     measure();
     window.addEventListener("scroll", measure, { passive: true });
     window.addEventListener("resize", measure);
+    // Content that loads late (e.g. a rich-text editor) moves the dock without any scroll/resize.
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.body);
     return () => {
       window.removeEventListener("scroll", measure);
       window.removeEventListener("resize", measure);
+      ro.disconnect();
     };
-  }, []);
+    // Re-measured on every edit too, like the original (its change handler schedules a measure).
+  }, [dirty]);
 
   const actions = (
     <>

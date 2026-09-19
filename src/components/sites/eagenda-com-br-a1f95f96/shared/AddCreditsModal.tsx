@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CardIcon, CaretDownIcon, CaretUpIcon, CheckReadIcon, InfoIcon } from "./icons";
+import { CardIcon, CaretDownIcon, CaretUpIcon, CheckboxMark, InfoIcon } from "./icons";
 import { Modal, ModalSubmit } from "./Modal";
 
 const PRESETS = ["50000", "100000", "250000", "500000"];
@@ -23,7 +23,7 @@ function Checkbox({ id, label, checked, onChange, small }: { id?: string; label?
     <label className={`hcheckbox${small ? " hcheckbox--sm" : ""}`}>
       <input type="checkbox" id={id} className={`${small ? "mt-0.5 " : ""}hcheckbox-input`} checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span className="hcheckbox-box" aria-hidden="true">
-        <CheckReadIcon className="hcheckbox-check w-3 h-3" />
+        <CheckboxMark />
         <span className="hcheckbox-dash" aria-hidden="true" />
       </span>
       {label && <span className="hcheckbox-label">{label}</span>}

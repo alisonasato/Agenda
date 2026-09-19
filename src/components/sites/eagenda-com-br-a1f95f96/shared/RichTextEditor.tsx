@@ -20,12 +20,23 @@ import {
 } from "ckeditor5";
 import "ckeditor5/ckeditor5.css";
 
+type RichTextEditorProps = {
+  /** Receives the editor instance (e.g. to set data or insert text); optional. */
+  editorRef?: RefObject<ClassicEditor | null>;
+  name: string;
+  id: string;
+  /** Content language; the original leaves the default ("en") on most forms. */
+  language?: string;
+  maxLength?: number;
+  className?: string;
+};
+
 /**
- * The original's "Corpo do Email" field: CKEditor 5 (v43.2.0, via django_ckeditor_5) with the
- * same toolbar, heading, font-family and font-size options. Its UI strings are English on the
- * live page too (the pt-br translation bundle isn't loaded).
+ * The original’s rich-text fields: CKEditor 5 (v43.2.0, via django_ckeditor_5) with the same
+ * toolbar, heading, font-family and font-size options everywhere. Its UI strings are English on
+ * the live pages too (no translation bundle is loaded). The editor replaces a hidden textarea.
  */
-export function EmailEditor({ editorRef }: { editorRef: RefObject<ClassicEditor | null> }) {
+export function RichTextEditor({ editorRef, name, id, language, maxLength, className }: RichTextEditorProps) {
   const hostRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -61,18 +72,18 @@ export function EmailEditor({ editorRef }: { editorRef: RefObject<ClassicEditor 
           "Verdana, Geneva, sans-serif",
         ],
       },
-      language: "pt-br",
+      ...(language ? { language } : {}),
     }).then((e) => {
       if (cancelled) return void destroy(e);
       editor = e;
-      editorRef.current = e;
+      if (editorRef) editorRef.current = e;
     });
     return () => {
       cancelled = true;
-      editorRef.current = null;
+      if (editorRef) editorRef.current = null;
       if (editor) destroy(editor);
     };
-  }, [editorRef]);
+  }, [editorRef, language]);
 
-  return <textarea ref={hostRef} name="email_body_html" id="id_email_body_html" className="w-full" rows={10} style={{ display: "none" }} />;
+  return <textarea ref={hostRef} name={name} id={id} className={className} maxLength={maxLength} rows={10} style={{ display: "none" }} />;
 }

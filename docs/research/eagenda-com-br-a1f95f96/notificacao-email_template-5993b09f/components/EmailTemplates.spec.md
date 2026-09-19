@@ -1,4 +1,4 @@
-# EmailTemplates / EmailEditor
+# EmailTemplates
 
 `src/components/sites/eagenda-com-br-a1f95f96/notificacao-email_template-5993b09f/`
 
@@ -10,7 +10,5 @@
   - uses the `Combobox` with `searchInPopover`;
   - its state is `example`, plus an `editorRef` for the example text and variable insertion.
 
-## EmailEditor.tsx
-`ClassicEditor.create` runs on a hidden textarea (`name="email_body_html"`), as in the original.
-The page loads it with `next/dynamic` and `ssr: false`. After every `destroy()` it hides the
-textarea again, because a StrictMode remount would otherwise leave it visible.
+## Editor
+The body field uses `shared/RichTextEditor` (it was a local `EmailEditor` until Tela de Agendamento needed the same editor), loaded with `next/dynamic` and `ssr: false`.

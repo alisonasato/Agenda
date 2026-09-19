@@ -192,3 +192,40 @@ aside.sidebar .sidebar-text { opacity: 1; max-width: 18.5rem; overflow: hidden; 
 
 /* Clone-only: the "Filtros" menu (hMenu align end) hangs from its trigger's right edge. */
 .hinline > .hmenu-filters { position: absolute; top: calc(100% + .375rem); left: auto; right: 0; z-index: 100; }
+
+/* ── Tela de Agendamento: the page's own <style> block (cfg-*), copied verbatim ── */
+.cfg-nav-col { margin-bottom: 1.5rem; }
+@media (min-width: 1024px) {
+  .cfg-nav-col { position: sticky; top: 5rem; align-self: start; margin-bottom: 0; }
+}
+.cfg-nav--stepper { padding: .5rem .625rem 0; }
+.cfg-nav-action { padding: 0 .625rem; }
+@media (max-width: 1023px) {
+  .cfg-nav--stepper { padding: .875rem 1rem; background: var(--color-surface, #fff); border: 1px solid var(--color-border, #e4e7ec); border-radius: 1rem; box-shadow: var(--hui-shadow-sm, 0 1px 2px rgba(16, 24, 40, .06)); overflow-x: auto; }
+  .cfg-nav-action { padding: 0; }
+}
+.cfg-form { width: 100%; }
+.cfg-content { width: 100%; display: flex; flex-direction: column; gap: .5rem; background: var(--color-surface, #fff); border: 1px solid var(--color-border, #e4e7ec); border-radius: var(--hui-radius-lg, 1rem); box-shadow: var(--hui-shadow-sm, 0 1px 2px rgba(17, 24, 39, .04), 0 2px 8px rgba(17, 24, 39, .05)); padding: .5rem; }
+.cfg-group { background: color-mix(in srgb, var(--color-muted, #667085) 4%, #fff); border: 1px solid color-mix(in srgb, var(--color-border, #e4e7ec) 65%, transparent); border-radius: .875rem; padding: 1.125rem 1.25rem; box-shadow: inset 0 1px 2px rgba(16, 24, 40, .035); }
+.cfg-group-head { margin-bottom: .875rem; }
+.cfg-group-title { font-size: .9375rem; font-weight: 600; color: #101828; line-height: 1.3; letter-spacing: -.01em; }
+.cfg-group-desc { margin-top: .125rem; font-size: .8125rem; color: #667085; line-height: 1.45; }
+.cfg-group-body { width: 100%; }
+.cfg-form .hinput-label, .cfg-form .hcombobox-label { font-weight: 600; color: #344054; }
+.cfg-subhead { font-size: .75rem; font-weight: 700; color: #344054; text-transform: uppercase; letter-spacing: .04em; }
+.cfg-subhead-desc { margin: .125rem 0 .625rem; font-size: .75rem; color: #667085; line-height: 1.45; }
+.cfg-opt { display: flex; align-items: flex-start; padding: .25rem 0; }
+.cfg-opt-help { margin: .25rem 0 0 1.75rem; font-size: .75rem; color: #667085; line-height: 1.45; }
+.cfg-field-error { margin-top: .375rem; font-size: .75rem; color: var(--color-danger, #f31260); }
+.cfg-form-errors { margin-bottom: 1rem; padding: .75rem 1rem; border-radius: .75rem; background: color-mix(in srgb, var(--color-danger, #f31260) 8%, #fff); color: var(--color-danger, #f31260); font-size: .8125rem; }
+.cfg-editor { border-radius: var(--field-radius, .75rem); background: var(--field-bg, #fff); box-shadow: var(--field-shadow); padding: .5rem; overflow: hidden; }
+.cfg-expander { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .625rem .875rem; border-radius: .75rem; border: 1px dashed var(--color-border, #e4e7ec); background: var(--color-surface, #fff); font-size: .8125rem; color: #667085; cursor: pointer; transition: border-color .15s var(--hui-ease, ease), color .15s var(--hui-ease, ease); }
+.cfg-expander:hover { border-color: color-mix(in srgb, var(--color-accent, #0a70d6) 40%, transparent); color: #344054; }
+.cfg-expander-chevron { display: inline-flex; transition: transform .2s var(--hui-ease, ease); }
+.cfg-radio-tile { display: flex; flex-direction: column; align-items: center; gap: .375rem; padding: .5rem .75rem; border-radius: .75rem; border: 1.5px solid var(--color-border, #e4e7ec); background: var(--color-surface, #fff); font-size: .75rem; color: #344054; user-select: none; transition: border-color .15s var(--hui-ease, ease), background-color .15s var(--hui-ease, ease), color .15s var(--hui-ease, ease); }
+.cfg-radio-tile:hover { border-color: color-mix(in srgb, var(--color-accent, #0a70d6) 40%, transparent); }
+.peer:checked + .cfg-radio-tile { border-color: var(--color-accent, #0a70d6); color: var(--color-accent, #0a70d6); background: color-mix(in srgb, var(--color-accent, #0a70d6) 5%, #fff); }
+.peer:focus-visible + .cfg-radio-tile { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent, #0a70d6) 25%, transparent); }
+
+/* From the original's css/components/select3.css (loaded on every dashboard page): rich-text editors are at least 300px tall. */
+.ck.ck-content.ck-editor__editable { min-height: 300px; }

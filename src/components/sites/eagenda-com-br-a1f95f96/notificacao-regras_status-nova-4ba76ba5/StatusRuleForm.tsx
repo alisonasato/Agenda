@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CheckReadIcon, PenIcon, SaveIcon, WalletIcon } from "../shared/icons";
+import { CheckboxMark, PenIcon, SaveIcon, WalletIcon } from "../shared/icons";
 import { AddCreditsModal } from "../shared/AddCreditsModal";
 import { ChipMultiSelect } from "../shared/ChipMultiSelect";
 import { Combobox } from "../shared/Combobox";
@@ -50,7 +50,7 @@ function Checkbox({ name, label, checked, onChange }: { name: string; label: str
     <label className="hcheckbox">
       <input type="checkbox" name={name} id={`id_${name}`} value="true" className="hcheckbox-input" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span className="hcheckbox-box" aria-hidden="true">
-        <CheckReadIcon className="hcheckbox-check w-3 h-3" />
+        <CheckboxMark />
         <span className="hcheckbox-dash" aria-hidden="true" />
       </span>
       <span className="hcheckbox-label">{label}</span>

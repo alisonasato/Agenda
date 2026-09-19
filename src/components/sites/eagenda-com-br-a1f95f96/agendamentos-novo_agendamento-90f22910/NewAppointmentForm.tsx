@@ -4,7 +4,7 @@ import { useMemo, useState, type FormEvent } from "react";
 import { Combobox } from "../shared/Combobox";
 import { MultiSelect } from "../shared/MultiSelect";
 import { ROUTES } from "../shared/Sidebar";
-import { CheckReadIcon, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
+import { CheckboxMark, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
 import { SaveBar } from "../shared/SaveBar";
 import { ACTIONS, AGENDAS, CLIENTS, STATUSES, TAGS, dayOptions, timeOptions } from "./formOptions";
 
@@ -17,7 +17,7 @@ function Checkbox({ id, label, defaultChecked, disabled }: { id: string; label: 
       <label className={`hcheckbox${disabled ? " is-disabled" : ""}`}>
         <input type="checkbox" name={id} id={id} defaultChecked={defaultChecked} disabled={disabled} className="hcheckbox-input" />
         <span className="hcheckbox-box" aria-hidden="true">
-          <CheckReadIcon className="hcheckbox-check" />
+          <CheckboxMark />
           <span className="hcheckbox-dash" aria-hidden="true" />
         </span>
         <span className="hcheckbox-label">{label}</span>

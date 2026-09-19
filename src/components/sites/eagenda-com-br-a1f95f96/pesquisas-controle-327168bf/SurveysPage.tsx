@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { AddAppointmentIcon, CheckReadIcon, InboxIcon } from "../shared/icons";
+import { AddAppointmentIcon, CheckboxMark, CheckReadIcon, InboxIcon } from "../shared/icons";
 import { ChipMultiSelect } from "../shared/ChipMultiSelect";
 import { Combobox } from "../shared/Combobox";
 import { Modal, ModalSubmit } from "../shared/Modal";
@@ -76,7 +76,7 @@ function SurveyFormModal({ onClose }: { onClose: () => void }) {
           <label className="hcheckbox">
             <input type="checkbox" name="need_logged_user" className="hcheckbox-input" />
             <span className="hcheckbox-box" aria-hidden="true">
-              <CheckReadIcon className="hcheckbox-check w-3 h-3" />
+              <CheckboxMark />
               <span className="hcheckbox-dash" aria-hidden="true" />
             </span>
             <span className="hcheckbox-label">Apenas usuários logados podem responder</span>
