@@ -244,7 +244,6 @@ const NAV: NavEntry[] = [
       { label: "Suporte via WhatsApp" },
       { label: "Tutoriais" },
       { label: "Vídeos no YouTube", hide: "simple" },
-      { label: "Desenvolvimento", hide: "simple" },
       { label: "Aplicativo" },
       { label: "Autorizar Suporte" },
     ],
