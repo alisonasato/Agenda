@@ -14,10 +14,11 @@ type ChipMultiSelectProps = {
   options: ChipOption[];
   values: string[];
   onChange: (values: string[]) => void;
+  required?: boolean;
 };
 
 /** Multi-select that shows the picks as chips in the field (.hms in the original). */
-export function ChipMultiSelect({ id, label, placeholder, options, values, onChange }: ChipMultiSelectProps) {
+export function ChipMultiSelect({ id, label, placeholder, options, values, onChange, required }: ChipMultiSelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
@@ -31,7 +32,7 @@ export function ChipMultiSelect({ id, label, placeholder, options, values, onCha
   return (
     <div ref={rootRef} className="hms">
       <label htmlFor={id} className="hms-label">
-        {label}
+        {label} {required && <span className="hms-req">*</span>}
       </label>
       <div ref={ref} className="hms-field" onClick={() => setOpen(true)}>
         <div className="hms-rail">

@@ -15,7 +15,7 @@ type ModalProps = {
   /** Buttons for .hmodal-footer. */
   footer: ReactNode;
   /** hmodal-panel size; the original uses lg for most forms. */
-  size?: "md" | "lg" | "2xl" | "4xl";
+  size?: "md" | "lg" | "xl" | "2xl" | "4xl";
   children: ReactNode;
 };
 

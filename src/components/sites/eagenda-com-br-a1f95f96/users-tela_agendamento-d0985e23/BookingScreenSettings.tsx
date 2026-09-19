@@ -2,24 +2,18 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import countries from "../../../../../public/sites/eagenda-com-br-a1f95f96/shared/geo/countries.json";
-import statesBr from "../../../../../public/sites/eagenda-com-br-a1f95f96/shared/geo/states-br.json";
 import { ColorPicker } from "../shared/ColorPicker";
 import { Combobox } from "../shared/Combobox";
 import { FilePicker } from "../shared/FilePicker";
 import { PhoneInput } from "../shared/PhoneInput";
 import { SaveBar } from "../shared/SaveBar";
+import { COUNTRY_OPTIONS, lookupCep as resolveCep, useGeoCascade } from "../shared/useGeoCascade";
 import { ROUTES } from "../shared/Sidebar";
 import { AddAppointmentIcon, CaretDownIcon, CheckboxMark, ExternalLinkIcon, FlowIcon, InfoIcon, PenIcon, RefreshIcon, SaveIcon } from "../shared/icons";
 
 // CKEditor touches `window` on import, so it only loads in the browser.
 const RichTextEditor = dynamic(() => import("../shared/RichTextEditor").then((m) => m.RichTextEditor), { ssr: false });
 
-const CITIES_URL = "/sites/eagenda-com-br-a1f95f96/shared/geo/cities-br.json";
-const BRAZIL = "31";
-const toOptions = (rows: string[][]) => rows.map(([value, label]) => ({ value, label }));
-const COUNTRY_OPTIONS = toOptions(countries);
-const STATE_OPTIONS = toOptions(statesBr);
 
 // Mock account (the live page shows the real business name and public slug here).
 const ACCOUNT = { name: "Minha Empresa", slug: "minhaempresa" };
@@ -208,22 +202,10 @@ export function BookingScreenSettings() {
     markDirty();
   };
 
-  const [country, setCountry] = useState(BRAZIL);
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [cities, setCities] = useState<Record<string, string[][]> | null>(null);
+  const geo = useGeoCascade();
   const [cep, setCep] = useState("");
   const [cepStatus, setCepStatus] = useState<CepStatus>(null);
   const addressRef = useRef<HTMLDivElement>(null);
-
-  // Cities are ~140 KB, so they load only once the Endereço step is opened.
-  useEffect(() => {
-    if (current !== "address" || cities) return;
-    fetch(CITIES_URL)
-      .then((r) => r.json())
-      .then(setCities)
-      .catch(() => {});
-  }, [current, cities]);
 
   useEffect(() => {
     if (!cepStatus || cepStatus.type === "loading") return;
@@ -231,22 +213,16 @@ export function BookingScreenSettings() {
     return () => clearTimeout(t);
   }, [cepStatus]);
 
-  const stateOptions = country === BRAZIL ? STATE_OPTIONS : [];
-  const cityOptions = state && cities?.[state] ? toOptions(cities[state]) : [];
-
   /**
    * The original posts the CEP to its own backend, which resolves it and fills the address,
    * then cascades country → state → city. The prototype asks ViaCEP (public) directly and
    * matches the state and city by name.
    */
   const lookupCep = async () => {
-    const digits = cep.replace(/\D/g, "");
-    if (digits.length !== 8 || cepStatus?.type === "loading") return;
+    if (cep.replace(/\D/g, "").length !== 8 || cepStatus?.type === "loading") return;
     setCepStatus({ type: "loading", msg: "Buscando..." });
     try {
-      const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-      const data = await res.json();
-      if (!res.ok || data.erro) throw new Error("CEP não encontrado");
+      const data = await resolveCep(cep);
       const fill = (id: string, v?: string) => {
         const el = addressRef.current?.querySelector<HTMLInputElement>(`#${id}`);
         if (el && v) el.value = v;
@@ -254,13 +230,7 @@ export function BookingScreenSettings() {
       fill("id_street", data.logradouro);
       fill("id_neighbourhood", data.bairro);
       fill("id_complement", data.complemento);
-      const stateRow = statesBr.find(([, n]) => n === data.estado);
-      setCountry(BRAZIL);
-      setState(stateRow?.[0] ?? "");
-      const all = cities ?? (await (await fetch(CITIES_URL)).json());
-      if (!cities) setCities(all);
-      const cityRow = stateRow ? (all[stateRow[0]] as string[][] | undefined)?.find(([, n]) => n === data.localidade) : undefined;
-      setCity(cityRow?.[0] ?? "");
+      await geo.setByNames(data.estado, data.localidade);
       markDirty();
       setCepStatus({ type: "success", msg: "Endereço preenchido!" });
     } catch (e) {
@@ -693,11 +663,9 @@ export function BookingScreenSettings() {
                       id="country"
                       label="País"
                       options={COUNTRY_OPTIONS}
-                      value={country}
+                      value={geo.country}
                       onChange={(v) => {
-                        setCountry(v);
-                        setState("");
-                        setCity("");
+                        geo.setCountry(v);
                         markDirty();
                       }}
                       placeholder="Buscar país..."
@@ -709,11 +677,10 @@ export function BookingScreenSettings() {
                     <Combobox
                       id="state"
                       label="Estado"
-                      options={stateOptions}
-                      value={state}
+                      options={geo.stateOptions}
+                      value={geo.state}
                       onChange={(v) => {
-                        setState(v);
-                        setCity("");
+                        geo.setState(v);
                         markDirty();
                       }}
                       placeholder="Buscar estado..."
@@ -723,10 +690,10 @@ export function BookingScreenSettings() {
                     <Combobox
                       id="city"
                       label="Município"
-                      options={cityOptions}
-                      value={city}
+                      options={geo.cityOptions}
+                      value={geo.city}
                       onChange={(v) => {
-                        setCity(v);
+                        geo.setCity(v);
                         markDirty();
                       }}
                       placeholder="Buscar município..."

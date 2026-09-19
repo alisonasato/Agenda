@@ -11,10 +11,12 @@ type InlineFilterProps = {
   options: string[];
   values: string[];
   onChange: (values: string[]) => void;
+  /** Server-searched lists (alpineMultiselectAjax) always show the search box. */
+  searchable?: boolean;
 };
 
 /** Action-bar filter: trigger with a count badge + searchable multi-select popover (.hinline), teleported to <body> like the original. */
-export function InlineFilter({ label, icon, options, values, onChange }: InlineFilterProps) {
+export function InlineFilter({ label, icon, options, values, onChange, searchable: alwaysSearch }: InlineFilterProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -22,7 +24,7 @@ export function InlineFilter({ label, icon, options, values, onChange }: InlineF
   useDismiss(ref, open, () => setOpen(false), panelRef);
   const hits = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
   // The original hides the search box for short static lists: x-show="!(isStatic && staticOptions.length <= 7)".
-  const searchable = options.length > 7;
+  const searchable = alwaysSearch || options.length > 7;
 
   return (
     <div ref={ref} className="hinline">
