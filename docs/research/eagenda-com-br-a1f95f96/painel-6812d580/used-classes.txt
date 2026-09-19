@@ -2,3 +2,4 @@ min-h-screen flex flex-row items-stretch w-full sidebar-container fixed inset-0 
 is-open sidebar-collapsed hc-active has-query bg-slate-100 scale-95 scale-100 opacity-100 origin-top-right
 opacity-100 mobile-open
 #sidebar #logoContainer #mainContent #sidebarOverlay #sidebarCollapseToggle #onboarding-checklist
+ is-on sidebar-search-result sidebar-search-group is-kbd-active is-kbd-press sidebar-menu-toggle cursor-pointer
