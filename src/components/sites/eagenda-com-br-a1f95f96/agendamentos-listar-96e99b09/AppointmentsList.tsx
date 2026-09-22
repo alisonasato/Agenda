@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CaretDownIcon, CloseCircleIcon, SearchSolidIcon, WidgetIcon } from "../shared/icons";
+import { CaretDownIcon, CloseCircleIcon, SearchSolidIcon, SlidersIcon } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
 import { AppointmentsFilters } from "./AppointmentsFilters";
 import type { Preset } from "../shared/DateRangePopover";
@@ -35,7 +35,7 @@ function ColumnsMenu({ visible, onToggle }: { visible: string[]; onToggle: (id: 
   return (
     <div ref={ref} className="relative">
       <button type="button" className="hbtn hbtn--secondary hbtn--sm" onClick={() => setOpen((o) => !o)}>
-        <WidgetIcon className="w-4 h-4" />
+        <SlidersIcon className="w-4 h-4" />
         <span>Colunas</span>
         <span className="inline-flex transition-transform">
           <CaretDownIcon className="w-3.5 h-3.5" />

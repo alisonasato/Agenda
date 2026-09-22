@@ -8,15 +8,16 @@
 - **Período** (`Próximos 7 dias` by default): popover 650×254 with presets
   Hoje · Próximos 7 dias · Próximos 30 dias · Este mês · Todos os períodos, plus two month
   calendars with ‹ › navigation; today carries `.is-today`.
-- **Agenda:** searchable list of the account's agendas; selections show a count badge on the trigger.
-- **Serviço:** same widget, empty for this account ("Nenhum resultado encontrado").
-- **Filtros:** menu with "Tag" and "Colaborador".
-- **Visualizar:** menu with "Ver Agenda" and "Lista de Espera".
+- **Visualizar:** menu with "Ver Agenda" and "Lista de Espera", teleported 6px under the trigger.
+  - Icons: eye on the trigger, calendar and clock on the items; Exportar uses a download icon and
+    Colunas a sliders icon.
+- On 2026-09-22 the live action bar dropped the Agenda, Serviço and Filtros widgets. It now reads
+  período · | · Visualizar · | · Exportar.
 - **Status tags:** Todos · Confirmados · Pendentes · Atendidos · Não compareceu · Cancelados.
 - **Limpar filtros:** resets search, status and period.
 - **Colunas:** toggles for Tags · Responsável · CPF · Email · Telefone · Comentários, divider,
   Respostas Formulários. Each adds/removes its column (`col_tags`, `col_owner`, `col_comment`).
-- **Novo Agendamento:** opens the form page (the live site opens it in a new tab).
+- **Novo Agendamento:** opens the form page in a new tab, like the original.
 
 ## Hover states
 - `.htag` and `.hbtn--secondary` darken on hover; column rows highlight with `hover:bg-gray-50`.
