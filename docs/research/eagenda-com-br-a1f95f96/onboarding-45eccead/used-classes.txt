@@ -1,0 +1,19 @@
+absolute animate-spin bg-accent bg-accent/10 bg-border bg-danger/5 bg-surface bg-white/60 border border-2
+border-accent border-border border-danger/25 cursor-default cursor-pointer duration-200 duration-300 flex
+flex-1 flex-col flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40
+focus-visible:ring-offset-2 focus-visible:ring-primary/40 focus:outline-none font-[600] font-[700] font-bold
+font-medium font-semibold gap-1.5 gap-2.5 gap-3 gap-4 gap-5 grid grid-cols-1 group group-hover:-translate-x-0.5
+group-hover:bg-accent group-hover:gap-2.5 group-hover:text-white group-hover:translate-x-0.5 h-1.5 h-12 h-4 h-5
+h-6 h-7 h-8 h-full halertdialog-backdrop halertdialog-backdrop--opaque halertdialog-body halertdialog-close
+halertdialog-container halertdialog-dialog halertdialog-dialog--md halertdialog-footer halertdialog-header
+halertdialog-heading halertdialog-icon halertdialog-icon--accent halertdialog-loading halertdialog-spinner hbtn
+hbtn--ghost hbtn--lg hbtn--primary hbtn--secondary hbtn--sm hbtn--tertiary hidden hover:-translate-y-0.5
+hover:border-accent hover:text-danger inline-flex inset-0 items-center items-start justify-between justify-center
+leading-[1.06] leading-[1.08] leading-relaxed leading-snug leading-tight max-w-2xl max-w-lg mb-1 mb-1.5 mb-10 mb-3
+mb-4 md:grid-cols-2 min-h-full min-w-0 mt-0.5 mt-10 mt-4 mt-5 mt-6 mt-8 mx-1.5 mx-auto onb-dot-active onb-in
+onb-orb-in onb-rise onb-scroll opacity-25 opacity-75 overflow-hidden overflow-y-auto p-6 pb-1 pb-3 pt-24 pt-5 pt-6
+px-4 px-5 px-6 py-3 py-8 relative rounded-2xl rounded-3xl rounded-full rounded-lg rounded-xl shrink-0 sm:block
+sm:flex sm:p-7 sm:pt-8 sm:px-8 sm:text-[46px] sm:w-10 text-[10px] text-[12px] text-[13px] text-[14px] text-[16px]
+text-[19px] text-[22px] text-[38px] text-accent text-balance text-center text-danger text-danger/70 text-foreground
+text-left text-muted text-pretty text-sm text-white tracking-[.16em] transition-all transition-colors
+transition-transform truncate uppercase w-12 w-4 w-5 w-6 w-7 w-8 w-auto w-full w-px z-10

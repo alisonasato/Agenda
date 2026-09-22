@@ -61,6 +61,7 @@ const PATHS = {
   recorrencias: "/agendamentos/recorrencias",
   confirmarAgendamentos: "/agendamentos/listar?status=PENDING&interval=all",
   feriados: "/agendamentos/feriados",
+  passoAPasso: "/onboarding",
 } as const;
 /** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
 export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };
@@ -243,7 +244,7 @@ const NAV: NavEntry[] = [
     label: "Ajuda",
     icon: QuestionCircleIcon,
     items: [
-      { label: "Passo a Passo" },
+      { label: "Passo a Passo", href: ROUTES.passoAPasso },
       { label: "Suporte via WhatsApp" },
       { label: "Tutoriais" },
       { label: "Vídeos no YouTube", hide: "simple" },
