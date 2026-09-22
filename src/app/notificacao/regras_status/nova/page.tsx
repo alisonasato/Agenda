@@ -5,7 +5,6 @@ import { StatusRuleForm } from "@/components/sites/eagenda-com-br-a1f95f96/notif
 // Clone of https://eagenda.com.br/notificacao/regras_status/nova?version=3.
 export const metadata: Metadata = {
   title: "Criar Regra de Notificação por Status - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 // The live page highlights nothing in the sidebar, hence the empty `active`.

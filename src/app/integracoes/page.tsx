@@ -5,7 +5,6 @@ import { Integrations } from "@/components/sites/eagenda-com-br-a1f95f96/integra
 // Clone of https://eagenda.com.br/integracoes/?version=3 (nothing connected, like the live account).
 export const metadata: Metadata = {
   title: "Integrações e Apps - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function IntegrationsPage() {

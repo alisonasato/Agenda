@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/basePath";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import {
   ActivityIcon,
@@ -18,7 +19,7 @@ import {
 } from "./icons";
 import { useDismiss } from "./useDismiss";
 
-const FLAGS = "/brand/flags";
+const FLAGS = withBase("/brand/flags");
 const LANGUAGES = [
   { label: "English", flag: "england_flag.svg" },
   { label: "Deutsch", flag: "germany_flag.svg" },

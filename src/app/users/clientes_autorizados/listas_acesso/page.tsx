@@ -5,7 +5,6 @@ import { ClientAccessLists } from "@/components/sites/eagenda-com-br-a1f95f96/us
 // Clone of https://eagenda.com.br/users/clientes_autorizados/listas_acesso/?version=3 (no lists, like the live account).
 export const metadata: Metadata = {
   title: "Listas de Controle de Acesso - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function ClientAccessPage() {

@@ -5,7 +5,6 @@ import { IndicatorsReport } from "@/components/sites/eagenda-com-br-a1f95f96/rel
 // Clone of https://eagenda.com.br/relatorios/indicadores/?version=3 (every indicator at zero, like the live account).
 export const metadata: Metadata = {
   title: "Indicadores Gerenciais - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function IndicatorsReportPage() {

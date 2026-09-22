@@ -5,7 +5,6 @@ import { BookingScreenSettings } from "@/components/sites/eagenda-com-br-a1f95f9
 // Clone of https://eagenda.com.br/users/tela_agendamento/?version=3 (mock business name and slug).
 export const metadata: Metadata = {
   title: "Tela de Agendamento - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function BookingScreenPage() {

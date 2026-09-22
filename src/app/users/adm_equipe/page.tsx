@@ -5,7 +5,6 @@ import { TeamAdmin } from "@/components/sites/eagenda-com-br-a1f95f96/users-adm_
 // Clone of https://eagenda.com.br/users/adm_equipe/?version=3 (only the owner, as a mock user).
 export const metadata: Metadata = {
   title: "Administrar Equipe - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function TeamAdminPage() {

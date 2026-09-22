@@ -5,7 +5,6 @@ import { AgendaAdmin } from "@/components/sites/eagenda-com-br-a1f95f96/painel-c
 // Clone of https://eagenda.com.br/painel/controle?version=3 (no agendas or manual hours listed, like the live account).
 export const metadata: Metadata = {
   title: "Administrar Agendas - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function AgendaAdminPage() {

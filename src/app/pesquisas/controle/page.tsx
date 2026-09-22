@@ -5,7 +5,6 @@ import { SurveysPage } from "@/components/sites/eagenda-com-br-a1f95f96/pesquisa
 // Clone of https://eagenda.com.br/pesquisas/controle/?version=3 (no forms yet, like the live account).
 export const metadata: Metadata = {
   title: "Formulários - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function SurveysControlPage() {

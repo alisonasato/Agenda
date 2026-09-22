@@ -5,7 +5,6 @@ import { StatusRules } from "@/components/sites/eagenda-com-br-a1f95f96/notifica
 // Clone of https://eagenda.com.br/notificacao/regras_status?version=3 (no rules and no credits, like the live account).
 export const metadata: Metadata = {
   title: "Notificações por Status - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function StatusRulesPage() {

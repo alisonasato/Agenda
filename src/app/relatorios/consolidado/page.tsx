@@ -5,7 +5,6 @@ import { ConsolidatedReport } from "@/components/sites/eagenda-com-br-a1f95f96/r
 // Clone of https://eagenda.com.br/relatorios/consolidado?version=3 (no data in the period, like the live account).
 export const metadata: Metadata = {
   title: "Relatório Consolidado - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function ConsolidatedReportPage() {

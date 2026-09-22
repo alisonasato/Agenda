@@ -5,7 +5,6 @@ import { AccountForm } from "@/components/sites/eagenda-com-br-a1f95f96/users-or
 // Clone of https://eagenda.com.br/users/organizacao/contas/nova?version=3 ("Adicionar conta").
 export const metadata: Metadata = {
   title: "Nova Conta - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function NewAccountPage() {

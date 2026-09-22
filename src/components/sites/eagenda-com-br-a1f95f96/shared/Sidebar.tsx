@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/basePath";
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ComponentType, type CSSProperties, type SVGProps } from "react";
 import {
   BuildingIcon,
@@ -24,7 +25,7 @@ import {
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
 /** Only the cloned pages link somewhere; the rest of the menu is inert. */
-export const ROUTES = {
+const PATHS = {
   painel: "/",
   clientes: "/clientes/listar",
   acessoClientes: "/users/clientes_autorizados/listas_acesso",
@@ -61,6 +62,8 @@ export const ROUTES = {
   confirmarAgendamentos: "/agendamentos/listar?status=PENDING&interval=all",
   feriados: "/agendamentos/feriados",
 } as const;
+/** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
+export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };
 
 type Mode = "simple" | "full";
 /**
@@ -463,9 +466,9 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
       <div id="logoContainer" className="sidebar-header flex items-center justify-between h-16 shrink-0 px-6">
         <a href={ROUTES.painel} className="sidebar-brand flex items-center gap-3 hover:opacity-80 transition-opacity">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo.png" alt="Seiri" className="sidebar-logo sidebar-logo--light h-[1.875rem] w-auto select-none" draggable={false} />
+          <img src={withBase("/brand/logo.png")} alt="Seiri" className="sidebar-logo sidebar-logo--light h-[1.875rem] w-auto select-none" draggable={false} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-minimal.png" alt="" aria-hidden="true" className="cal-peek-logo hidden h-8 w-8 select-none" draggable={false} />
+          <img src={withBase("/brand/logo-minimal.png")} alt="" aria-hidden="true" className="cal-peek-logo hidden h-8 w-8 select-none" draggable={false} />
         </a>
         <button
           type="button"

@@ -5,7 +5,6 @@ import { NewAppointmentForm } from "@/components/sites/eagenda-com-br-a1f95f96/a
 // Clone of https://eagenda.com.br/agendamentos/novo_agendamento/?version=3 (mock options, no backend).
 export const metadata: Metadata = {
   title: "Novo Agendamento - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function NewAppointmentPage() {

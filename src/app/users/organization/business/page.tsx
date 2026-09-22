@@ -6,7 +6,6 @@ import { OrgSettings } from "@/components/sites/eagenda-com-br-a1f95f96/users-or
 // the sidebar's Conta › Dados da Conta). The eight steps are the original's htmx partials.
 export const metadata: Metadata = {
   title: "Configurações Gerais - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function OrgSettingsPage() {

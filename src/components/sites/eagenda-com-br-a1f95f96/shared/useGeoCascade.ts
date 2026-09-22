@@ -1,10 +1,11 @@
+import { withBase } from "@/lib/basePath";
 import { useState } from "react";
 import countries from "../../../../../public/sites/eagenda-com-br-a1f95f96/shared/geo/countries.json";
 import statesBr from "../../../../../public/sites/eagenda-com-br-a1f95f96/shared/geo/states-br.json";
 
 // The original's country/state/city comboboxes query the server; the prototype ships the same data
 // (scripts/download-geo-eagenda.mjs): all countries, and Brazil's states and cities.
-const CITIES_URL = "/sites/eagenda-com-br-a1f95f96/shared/geo/cities-br.json";
+const CITIES_URL = withBase("/sites/eagenda-com-br-a1f95f96/shared/geo/cities-br.json");
 export const BRAZIL = "31";
 const toOptions = (rows: string[][]) => rows.map(([value, label]) => ({ value, label }));
 export const COUNTRY_OPTIONS = toOptions(countries);

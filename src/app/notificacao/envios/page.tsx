@@ -5,7 +5,6 @@ import { NotificationTracking } from "@/components/sites/eagenda-com-br-a1f95f96
 // Clone of https://eagenda.com.br/notificacao/envios?version=3 (nothing scheduled, like the live account).
 export const metadata: Metadata = {
   title: "Acompanhamento de Notificações - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function NotificationTrackingPage() {

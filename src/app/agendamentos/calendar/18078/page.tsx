@@ -6,7 +6,6 @@ import "./calendar.css";
 // (agenda data replaced with mock values).
 export const metadata: Metadata = {
   title: "Calendário - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function CalendarPage() {

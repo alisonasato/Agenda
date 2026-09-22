@@ -5,7 +5,6 @@ import { AgendaSettings } from "@/components/sites/eagenda-com-br-a1f95f96/agend
 // Clone of https://eagenda.com.br/agendamentos/configurar/?version=3 (one mock agenda).
 export const metadata: Metadata = {
   title: "Configuração de Agendas - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function AgendaSettingsPage() {

@@ -5,7 +5,6 @@ import { AccountsList } from "@/components/sites/eagenda-com-br-a1f95f96/users-o
 // Clone of https://eagenda.com.br/users/organizacao/contas?version=3 (an organization with no sub-accounts).
 export const metadata: Metadata = {
   title: "Contas da Organização - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function AccountsPage() {

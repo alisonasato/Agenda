@@ -5,7 +5,6 @@ import { EmailTemplates } from "@/components/sites/eagenda-com-br-a1f95f96/notif
 // Clone of https://eagenda.com.br/notificacao/email_template?version=3 (no templates yet, like the live account).
 export const metadata: Metadata = {
   title: "Modelos de Email - Seiri",
-  icons: { icon: "/brand/favicon.png" },
 };
 
 export default function EmailTemplatesPage() {

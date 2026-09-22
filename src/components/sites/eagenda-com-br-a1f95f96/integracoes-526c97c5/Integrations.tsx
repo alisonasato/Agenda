@@ -1,5 +1,6 @@
 "use client";
 
+import { withBase } from "@/lib/basePath";
 import { useState, type CSSProperties } from "react";
 import {
   BookIcon,
@@ -15,7 +16,7 @@ import {
   UsersIcon,
 } from "../shared/icons";
 
-const ASSETS = "/sites/eagenda-com-br-a1f95f96/integracoes-526c97c5";
+const ASSETS = withBase("/sites/eagenda-com-br-a1f95f96/integracoes-526c97c5");
 
 type Integration = {
   name: string;
