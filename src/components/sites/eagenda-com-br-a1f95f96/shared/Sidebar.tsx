@@ -62,6 +62,7 @@ const PATHS = {
   confirmarAgendamentos: "/agendamentos/listar?status=PENDING&interval=all",
   feriados: "/agendamentos/feriados",
   passoAPasso: "/onboarding",
+  aplicativo: "/users/gerar-qrcode-config",
 } as const;
 /** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
 export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };
@@ -248,7 +249,7 @@ const NAV: NavEntry[] = [
       { label: "Suporte via WhatsApp" },
       { label: "Tutoriais" },
       { label: "Vídeos no YouTube", hide: "simple" },
-      { label: "Aplicativo" },
+      { label: "Aplicativo", href: ROUTES.aplicativo },
       { label: "Autorizar Suporte" },
     ],
   },
