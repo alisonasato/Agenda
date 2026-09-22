@@ -1,34 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { withBase } from "@/lib/basePath";
-import { ArrowRightIcon, ChevronLeftIcon, CloseCircleIcon, UserCircleIcon, UsersIcon } from "../shared/icons";
+import { CloseCircleIcon } from "../shared/icons";
+import { Step1Usage } from "./Step1Usage";
+import { Step2Profile } from "./Step2Profile";
+import { Step3Agenda } from "./Step3Agenda";
+import { Step4Schedule } from "./Step4Schedule";
+import { Step5Location } from "./Step5Location";
+import { Step6Notifications } from "./Step6Notifications";
+import { Step7Google } from "./Step7Google";
+import { FinishScreen } from "./FinishScreen";
+import type { Phase } from "./types";
 
 const STEP_LABELS = ["Início", "Perfil", "Agenda", "Horários", "Atendimento", "Avisos", "Google Agenda"];
-const HELLO = withBase("/sites/eagenda-com-br-a1f95f96/onboarding-45eccead/hello.json");
-
-/** Step 1 shows the welcome question ("ask") and then the usage-mode cards ("config"). */
-type Phase = "ask" | "config";
-
-/** The welcome animation, played by lottie-web exactly like the original. */
-function HelloAnimation() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-    let animation: { destroy: () => void } | undefined;
-    let cancelled = false;
-    import("lottie-web").then(({ default: lottie }) => {
-      if (cancelled || !container) return;
-      animation = lottie.loadAnimation({ container, renderer: "svg", loop: true, autoplay: true, path: HELLO });
-    });
-    return () => {
-      cancelled = true;
-      animation?.destroy();
-    };
-  }, []);
-  return <div ref={ref} className="onb-orb-in mx-auto mb-10" style={{ width: 240, height: 240, "--d": "0ms" } as React.CSSProperties} aria-hidden="true" />;
-}
 
 /** The dots above the stage: filled up to the current step, hidden while a step only asks a question. */
 function Stepper({ step }: { step: number }) {
@@ -57,26 +42,7 @@ function Stepper({ step }: { step: number }) {
   );
 }
 
-/** One of the two usage-mode cards; choosing either submits step 1 in the original. */
-function UsageCard({ icon, title, desc, delay }: { icon: React.ReactNode; title: string; desc: string; delay: number }) {
-  return (
-    <button
-      type="submit"
-      className="onb-rise group bg-surface border border-border rounded-3xl p-6 sm:p-7 cursor-pointer transition-all duration-200 hover:border-accent hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2"
-      style={{ "--d": `${delay}ms` } as React.CSSProperties}
-    >
-      <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent transition-colors">{icon}</div>
-      <div className="text-[22px] font-[700] text-foreground mb-1.5">{title}</div>
-      <p className="text-[16px] leading-relaxed text-muted">{desc}</p>
-      <span className="inline-flex items-center gap-1.5 text-sm font-bold text-accent mt-4 transition-transform group-hover:gap-2.5">
-        Escolher
-        <ArrowRightIcon className="w-4 h-4" />
-      </span>
-    </button>
-  );
-}
-
-/** "Quer continuar depois?" — the confirmation behind both "Sair" buttons. */
+/** "Quer continuar depois?" — the confirmation behind both exit buttons. */
 function SkipDialog({ onClose }: { onClose: () => void }) {
   return (
     <div className="halertdialog">
@@ -124,10 +90,17 @@ function SkipDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** Clone of /onboarding/ (Ajuda › Passo a Passo): the 7-step wizard, with step 1 built out. */
+/** Clone of /onboarding/ (Ajuda › Passo a Passo): the 7-step wizard that prepares the agenda. */
 export function OnboardingWizard() {
+  const [step, setStep] = useState(1);
   const [phase, setPhase] = useState<Phase>("ask");
   const [skipping, setSkipping] = useState(false);
+  const go = (next: number) => {
+    setStep(next);
+    setPhase("ask");
+  };
+  const props = { phase, setPhase, onNext: () => go(step + 1), onBack: () => go(step - 1) };
+
   return (
     <main className="relative h-full flex flex-col overflow-hidden">
       <header className="flex-shrink-0 flex items-center justify-between gap-3 px-5 sm:px-8 pt-5 pb-1">
@@ -151,83 +124,20 @@ export function OnboardingWizard() {
         </div>
       </header>
 
-      {phase === "config" && <Stepper step={1} />}
+      {phase === "config" && step <= STEP_LABELS.length && <Stepper step={step} />}
 
       <div className="relative flex-1 overflow-hidden">
         <div id="step-wrapper" className="relative h-full">
           <div id="step-content" className="h-full overflow-y-auto onb-scroll">
             <div className="h-full">
-              {phase === "ask" ? (
-                <section className="min-h-full flex flex-col items-center justify-center text-center px-6 py-8">
-                  <HelloAnimation />
-                  <p className="onb-in text-[13px] font-bold uppercase tracking-[.16em] text-accent mb-3" style={{ "--d": "900ms" } as React.CSSProperties}>
-                    VAMOS PREPARAR SUA AGENDA
-                  </p>
-                  <h1
-                    className="onb-in text-[38px] sm:text-[46px] leading-[1.08] text-balance font-[700] text-foreground"
-                    style={{ "--d": "1050ms" } as React.CSSProperties}
-                  >
-                    Olá, Maria!
-                  </h1>
-                  <p
-                    className="onb-in text-[19px] leading-relaxed text-pretty text-muted max-w-lg mx-auto mt-4"
-                    style={{ "--d": "1200ms" } as React.CSSProperties}
-                  >
-                    Vou te fazer algumas perguntas rápidas e deixar sua agenda pronta para atender. São 7 passos e você pode sair quando quiser.
-                  </p>
-                  <div className="onb-in flex flex-col items-center gap-4 mt-10" style={{ "--d": "1350ms" } as React.CSSProperties}>
-                    <button type="button" className="group hbtn hbtn--primary hbtn--lg" onClick={() => setPhase("config")}>
-                      Começar a configuração
-                      <ArrowRightIcon className="transition-transform group-hover:translate-x-0.5" />
-                    </button>
-                    <button type="button" className="text-muted hbtn hbtn--ghost hbtn--lg" onClick={() => setSkipping(true)}>
-                      Pular e configurar depois
-                    </button>
-                  </div>
-                </section>
-              ) : (
-                <section className="min-h-full flex flex-col items-center justify-center text-center px-6 py-8">
-                  <p className="onb-in text-[13px] font-bold uppercase tracking-[.16em] text-accent mb-3" style={{ "--d": "0ms" } as React.CSSProperties}>
-                    ETAPA 1 DE 7
-                  </p>
-                  <h1
-                    className="onb-in text-[38px] sm:text-[46px] leading-[1.06] text-balance font-[700] text-foreground"
-                    style={{ "--d": "90ms" } as React.CSSProperties}
-                  >
-                    Como você vai usar o Seiri?
-                  </h1>
-                  <p
-                    className="onb-in text-[19px] leading-relaxed text-pretty text-muted max-w-lg mx-auto mt-5"
-                    style={{ "--d": "180ms" } as React.CSSProperties}
-                  >
-                    Escolhendo “Para equipes” eu já te ajudo a convidar as pessoas no fim.
-                  </p>
-                  <form
-                    className="onb-in grid grid-cols-1 md:grid-cols-2 gap-5 text-left max-w-2xl w-full mt-8"
-                    style={{ "--d": "270ms" } as React.CSSProperties}
-                    onSubmit={(e) => e.preventDefault()}
-                  >
-                    <UsageCard
-                      icon={<UserCircleIcon className="w-7 h-7 text-accent group-hover:text-white transition-colors" />}
-                      title="Para mim"
-                      desc="Uso individual — eu gerencio meus próprios agendamentos."
-                      delay={60}
-                    />
-                    <UsageCard
-                      icon={<UsersIcon className="w-7 h-7 text-accent group-hover:text-white transition-colors" />}
-                      title="Para equipes"
-                      desc="Vários profissionais — gerencio uma equipe com agendas separadas."
-                      delay={160}
-                    />
-                  </form>
-                  <div className="onb-in mt-6" style={{ "--d": "360ms" } as React.CSSProperties}>
-                    <button type="button" className="group hbtn hbtn--secondary hbtn--lg" onClick={() => setPhase("ask")}>
-                      <ChevronLeftIcon className="transition-transform group-hover:-translate-x-0.5" />
-                      Voltar
-                    </button>
-                  </div>
-                </section>
-              )}
+              {step === 1 && <Step1Usage {...props} onSkip={() => setSkipping(true)} />}
+              {step === 2 && <Step2Profile {...props} />}
+              {step === 3 && <Step3Agenda {...props} />}
+              {step === 4 && <Step4Schedule {...props} />}
+              {step === 5 && <Step5Location {...props} />}
+              {step === 6 && <Step6Notifications {...props} />}
+              {step === 7 && <Step7Google {...props} />}
+              {step === 8 && <FinishScreen days={6} notices={2} />}
             </div>
           </div>
         </div>

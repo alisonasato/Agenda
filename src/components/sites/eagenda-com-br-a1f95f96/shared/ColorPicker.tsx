@@ -5,7 +5,20 @@ import { createPortal } from "react-dom";
 import { useDismiss } from "./useDismiss";
 
 // Port of the original's hCellColorPicker: saturation/value area, hue rail and presets.
-export const COLOR_PRESETS = ["#009DA0", "#0A70D6", "#6366F1", "#8B5CF6", "#EC4899", "#F31260", "#F5A524", "#F97316", "#17C964", "#06B6D4", "#64748B", "#101828"];
+export const COLOR_PRESETS = [
+  "#009DA0",
+  "#0A70D6",
+  "#6366F1",
+  "#8B5CF6",
+  "#EC4899",
+  "#F31260",
+  "#F5A524",
+  "#F97316",
+  "#17C964",
+  "#06B6D4",
+  "#64748B",
+  "#101828",
+];
 
 type Hsv = { h: number; s: number; v: number };
 const clamp = (n: number, a: number, b: number) => Math.min(b, Math.max(a, n));
@@ -35,7 +48,8 @@ export function hexToHsv(input: string): Hsv | null {
 type ColorPickerProps = {
   name: string;
   label: string;
-  desc: string;
+  /** Hint under the cell; the onboarding wizard uses the picker without one. */
+  desc?: string;
   value: string;
   onChange: (hex: string) => void;
 };
@@ -153,7 +167,7 @@ export function ColorPicker({ name, label, desc, value, onChange }: ColorPickerP
           </div>,
           document.body,
         )}
-      <p className="hcolorpicker-desc">{desc}</p>
+      {desc ? <p className="hcolorpicker-desc">{desc}</p> : null}
     </div>
   );
 }
