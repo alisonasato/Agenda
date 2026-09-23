@@ -1,0 +1,19 @@
+flex flex-col flex-shrink-0 gap-1.5 gap-2 gap-3 gap-6 gap-x-8 gap-y-2.5 grid grid-cols-1 h-3.5 h-4 h-5
+h-[18px] h-full halert halert--warning halert-actions halert-content halert-description halert-indicator
+halert-title hbtn hbtn--primary hbtn--secondary hbtn--sm hbtn--tertiary hcheckbox hcheckbox-box
+hcheckbox-check hcheckbox-check-line hcheckbox-dash hcheckbox-input hcheckbox-label hempty hempty--inline
+hempty-desc hempty-icon hempty-title hidden hmodal hmodal-backdrop hmodal-backdrop--opaque hmodal-body
+hmodal-body-wrap hmodal-close hmodal-footer hmodal-header hmodal-panel hmodal-panel--2xl
+hmodal-panel--radius-lg hmodal-panel--scroll-inside hmodal-panel--shadow-lg hmodal-title hmodal-wrapper
+hmodal-wrapper--auto hmodal-wrapper--scroll-inside hsection hsection-actions hsection-body hsection-desc
+hsection-head hsection-title hsection-titles hstepper hstepper--md hstepper--vertical hstepper__check
+hstepper__content hstepper__description hstepper__icon hstepper__indicator hstepper__num hstepper__separator
+hstepper__step hstepper__step-button hstepper__title htable htable-cell htable-col htable-col--end
+htable-col--num htable-empty htable-fixed htable-footer htable-is-empty htable-pagination htable-row--empty
+htable-scroll htable-table hui-card hui-card--flush hui-reveal hwidget-actions hwidget-desc hwidget-head
+hwidget-title hwidget-titles inline-flex inter-regular items-center items-start justify-center
+leading-relaxed lg:grid-cols-1 lg:grid-cols-2 lg:px-10 max-w-[1550px] mb-0 mb-2 mb-3 mb-6 md:text-5xl
+mt-0.5 mt-3 mt-4 mt-6 mt-8 mx-auto nunito-black nunito-bold pl-3 px-6 py-8 rounded-2xl select-all
+sm:flex-row sm:grid-cols-2 sm:items-center sm:ml-auto small space-y-3 text-4xl text-center text-gray-400
+text-gray-500 text-gray-600 text-gray-900 text-muted text-sm text-xs tracking-[0.2em] tracking-wide
+uppercase w-3.5 w-4 w-5 w-[18px] w-full xl:grid-cols-2 justify-center
