@@ -1,7 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CaretDownIcon, CloseCircleIcon, SearchSolidIcon, SlidersIcon } from "../shared/icons";
+import { CaretDownIcon, CloseCircleIcon, PenIcon, ReceiptIcon, SearchSolidIcon, SlidersIcon, TrashIcon } from "../shared/icons";
+import { useData, update } from "@/lib/seiri/store";
+import { expand, fold, formatWhen, inPreset } from "@/lib/seiri/select";
+import { STATUS_LABELS, STATUS_TONES } from "@/lib/seiri/types";
 import { useDismiss } from "../shared/useDismiss";
 import { AppointmentsFilters } from "./AppointmentsFilters";
 import type { Preset } from "../shared/DateRangePopover";
@@ -69,16 +72,29 @@ type AppointmentsListProps = {
   initialPreset?: Preset;
 };
 
-// The live account has no appointments, so the table always renders its empty state.
+// Rows come from the browser's own data (src/lib/seiri): the live account is empty, so the original
+// never showed a filled table — these rows are this clone's own, built from the design system.
 export function AppointmentsList({ initialStatus = "", initialPreset = "Próximos 7 dias" }: AppointmentsListProps = {}) {
   const [today] = useState(() => new Date());
   const [query, setQuery] = useState("");
   const [preset, setPreset] = useState<Preset>(initialPreset);
   const [status, setStatus] = useState(initialStatus);
   const [columns, setColumns] = useState<string[]>([]);
+  const data = useData();
 
   const shows = (id: string) => columns.includes(id);
   const filtered = Boolean(query.trim()) || preset !== "Todos os períodos";
+  const term = fold(query.trim());
+  const rows = data.appointments
+    .filter((a) => (status ? a.status === status : true))
+    .filter((a) => inPreset(a.start, preset, today))
+    .filter((a) => {
+      if (!term) return true;
+      const { clientName, serviceName, agendaName } = expand(data, a);
+      return [a.code, clientName, serviceName, agendaName].some((v) => fold(v).includes(term));
+    })
+    .sort((a, b) => a.start.localeCompare(b.start));
+  const remove = (id: string) => update((d) => ({ ...d, appointments: d.appointments.filter((a) => a.id !== id) }));
   const reset = () => {
     setQuery("");
     setStatus("");
@@ -95,12 +111,7 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
             <div className="hrail-track">
               <div className="htaggroup--nowrap htaggroup">
                 {STATUS_TAGS.map((t) => (
-                  <button
-                    key={t.label}
-                    type="button"
-                    className={`htag${t.value === status ? " htag--active" : ""}`}
-                    onClick={() => setStatus(t.value)}
-                  >
+                  <button key={t.label} type="button" className={`htag${t.value === status ? " htag--active" : ""}`} onClick={() => setStatus(t.value)}>
                     {t.label}
                   </button>
                 ))}
@@ -118,7 +129,10 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
 
         <div id="tableView" className="relative">
           <div id="appointment-table">
-            <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as React.CSSProperties}>
+            <div
+              className={`htable${rows.length ? "" : " htable-is-empty"}`}
+              style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as React.CSSProperties}
+            >
               <div className="htable-scroll">
                 <table className="htable-table w-full htable-fixed">
                   <thead>
@@ -136,8 +150,56 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from({ length: SLOTS }, (_, i) => (
-                      <tr key={i} className="htable-row--empty" aria-hidden="true">
+                    {rows.map((a) => {
+                      const { clientName, agendaName, serviceName, tags } = expand(data, a);
+                      return (
+                        <tr key={a.id} className="htable-row">
+                          <td className="htable-cell htable-cell--center">{a.code}</td>
+                          <td className="htable-cell">
+                            <span className={`hchip hchip--soft hchip--sm ${STATUS_TONES[a.status]}`}>{STATUS_LABELS[a.status]}</span>
+                          </td>
+                          <td className="htable-cell">{clientName}</td>
+                          <td className="htable-cell">
+                            <span className="block">{agendaName}</span>
+                            <span className="block text-xs text-gray-500">{serviceName}</span>
+                          </td>
+                          <td className="htable-cell">{formatWhen(a.start, a.duration)}</td>
+                          {shows("check_tags") && (
+                            <td className="htable-cell col_tags">
+                              {tags.map((t) => (
+                                <span key={t} className="hchip hchip--soft hchip--sm hchip--default">
+                                  {t}
+                                </span>
+                              ))}
+                            </td>
+                          )}
+                          {shows("check_owner") && <td className="htable-cell col_owner">{a.owner}</td>}
+                          {shows("check_comments") && <td className="htable-cell col_comment">{a.comment}</td>}
+                          <td className="htable-cell htable-cell--center">
+                            <span className="inline-flex items-center gap-1">
+                              <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Editar agendamento">
+                                <PenIcon className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                className="hbtn hbtn--ghost hbtn--sm hbtn--icon"
+                                aria-label="Excluir agendamento"
+                                onClick={() => remove(a.id)}
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
+                            </span>
+                          </td>
+                          <td className="htable-cell htable-cell--center">
+                            <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Recibo">
+                              <ReceiptIcon className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
+                      <tr key={`empty-${i}`} className="htable-row--empty" aria-hidden="true">
                         <td className="htable-cell" />
                         <td className="htable-cell" />
                         <td className="htable-cell" />
@@ -153,17 +215,19 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
                   </tbody>
                 </table>
               </div>
-              <div className="htable-empty" role="status" aria-live="polite">
-                <div className="hempty hempty--inline hui-reveal">
-                  <SearchSolidIcon className="hempty-icon" />
-                  <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum agendamento encontrado" : "Nenhum agendamento por aqui"}</h3>
-                  <p className="hempty-desc inter-regular">
-                    {filtered
-                      ? "Nenhum agendamento corresponde aos filtros aplicados. Ajuste o período ou limpe os filtros."
-                      : "Os agendamentos das suas agendas aparecerão nesta lista."}
-                  </p>
+              {!rows.length && (
+                <div className="htable-empty" role="status" aria-live="polite">
+                  <div className="hempty hempty--inline hui-reveal">
+                    <SearchSolidIcon className="hempty-icon" />
+                    <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum agendamento encontrado" : "Nenhum agendamento por aqui"}</h3>
+                    <p className="hempty-desc inter-regular">
+                      {filtered
+                        ? "Nenhum agendamento corresponde aos filtros aplicados. Ajuste o período ou limpe os filtros."
+                        : "Os agendamentos das suas agendas aparecerão nesta lista."}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="htable-footer" />
             </div>
           </div>

@@ -22,6 +22,11 @@
 ## Hover states
 - `.htag` and `.hbtn--secondary` darken on hover; column rows highlight with `hover:bg-gray-50`.
 
+## Data (fase de lógica)
+- Desde 2026-09-23 a lista lê os agendamentos do navegador (`src/lib/seiri`, ver docs/DATA-LAYER.md).
+  Busca, tags de status, período e Colunas filtram de verdade; a lixeira apaga o agendamento.
+- A conta de referência é vazia, então as linhas são construção do clone com as peças do design system.
+
 ## Per-state content
 - The account has no appointments, so the table always shows the filtered empty state:
   "Nenhum agendamento encontrado / Nenhum agendamento corresponde aos filtros aplicados. Ajuste o
