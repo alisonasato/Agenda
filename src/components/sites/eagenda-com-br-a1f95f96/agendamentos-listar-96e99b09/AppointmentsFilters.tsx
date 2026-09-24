@@ -48,8 +48,7 @@ function ViewMenu() {
               <CalendarIcon className="hmenu-item-icon w-4 h-4" />
               <span className="hmenu-item-label">Ver Agenda</span>
             </a>
-            {/* The waiting list page is not cloned yet. */}
-            <a href="#" className="hmenu-item" role="menuitem" onClick={() => setOpen(false)}>
+            <a href={ROUTES.listaEspera} className="hmenu-item" role="menuitem" onClick={() => setOpen(false)}>
               <ClockSolidIcon className="hmenu-item-icon w-4 h-4" />
               <span className="hmenu-item-label">Lista de Espera</span>
             </a>
