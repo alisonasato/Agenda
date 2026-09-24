@@ -27,5 +27,6 @@
 - **<1024:** os dois cartões empilham e a lista volta para uma coluna.
 
 ## Verification
-Markup, textos, ícones e classes conferidos contra o site ao vivo. A medição lado a lado ficou
-pendente: a sessão do eAgenda expirou antes da comparação.
+Medido contra o site ao vivo em 1440×900: aviso de SLA, botão de contratação, cartão do código,
+stepper, cartões lado a lado, cabeçalho do histórico, tabela e estado vazio batem, e a altura total
+da página é a mesma (1078).
