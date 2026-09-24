@@ -1,5 +1,10 @@
 # Relatórios › Clientes — Behaviors
 
+## Data (fase de lógica)
+- A tabela agrupa os clientes com agendamentos no período (docs/DATA-LAYER.md) pela chave escolhida
+  em "Agrupar por", mostrando as situações encontradas e quantos agendamentos cada um tem.
+- Agendas e situação filtram. "Acompanhantes" fica em 0: o clone não guarda acompanhantes.
+
 ## Interaction model
 Server-rendered form. Nothing re-queries on change: selections are staged and only
 take effect when **Aplicar filtros** is submitted. The clone mirrors this with an

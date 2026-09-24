@@ -1,5 +1,10 @@
 # Relatórios › Consolidado — Behaviors
 
+## Data (fase de lógica)
+- Uma linha por dia e chave de agrupamento (serviço, agenda ou tag), com a quantidade e a soma dos
+  preços dos serviços (docs/DATA-LAYER.md). Período, status e os filtros de agenda, serviço e tag valem.
+- Serviço sem preço entra como zero no valor.
+
 ## Interaction model
 Same staged-filter model as [Relatórios › Clientes](../relatorios-clientes-f8ceb518/BEHAVIORS.md):
 the form is server-rendered and nothing re-queries until **Aplicar filtros** is pressed.
