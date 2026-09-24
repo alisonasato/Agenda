@@ -444,3 +444,5 @@ z-50
 z-[60]
 z-[70]
 z-[75]
+
+hcchart hcchart-canvas chart-empty

@@ -63,3 +63,19 @@ export function expand(data: Data, a: Appointment) {
 
 /** Accent-insensitive contains, like the sidebar search. */
 export const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+/** Day key ("2026-09-24") of an appointment start. */
+export const dayKey = (iso: string) => iso.slice(0, 10);
+
+/** The day key `offset` days from `today`. */
+export function keyFromToday(offset: number, today = new Date()) {
+  const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** Whether a day key falls in the next `days` days, today included. */
+export const withinDays = (iso: string, days: number, today = new Date()) => {
+  const key = dayKey(iso);
+  return key >= keyFromToday(0, today) && key < keyFromToday(days, today);
+};

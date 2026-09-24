@@ -1,5 +1,10 @@
 # Relatórios › Agendamentos — Behaviors
 
+## Data (fase de lógica)
+- "Aplicar filtros" gera a prévia: agendamentos do período, filtrados por situação e agenda e
+  ordenados por nome ou data, com uma coluna por item marcado em Colunas (docs/DATA-LAYER.md).
+- As colunas que o clone não guarda (endereço, nascimento, profissão, formulários…) saem como "—".
+
 ## Interaction model
 A single form. The original submits it over htmx
 (`hx-get=/relatorios/agendamentos/?generate=1`, swapping `#report-preview`), so the

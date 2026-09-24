@@ -1,5 +1,13 @@
 # Relatórios › Indicadores Gerenciais — Behaviors
 
+## Data (fase de lógica)
+- Os oito indicadores são calculados dos agendamentos do navegador dentro da janela aplicada
+  (docs/DATA-LAYER.md): total, clientes únicos, cancelamentos, faturamento (soma do preço do serviço),
+  ocupação (agendamentos ÷ agendas × dias × 10 horários), não comparecimento, retorno e ticket médio.
+- Agendas e Serviços nos filtros vêm dos cadastros; "Aplicar filtros" recalcula tudo.
+- Os dois gráficos passam a desenhar barras (por dia e por agenda) quando o período tem agendamentos;
+  sem nenhum, continuam no estado vazio do original.
+
 ## Interaction model
 Staged filters, like the other reports: nothing recalculates until **Aplicar filtros**.
 Any staged change (period, agendas, services, situation, custom dates) reveals the button.

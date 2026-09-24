@@ -9,7 +9,41 @@ import { ROUTES } from "../shared/Sidebar";
 import { ScrollRail } from "../shared/ScrollRail";
 import { useDismiss } from "../shared/useDismiss";
 
-const AGENDAS = ["Agenda Principal"];
+import { useData } from "@/lib/seiri/store";
+import { dayKey, expand, formatWhen } from "@/lib/seiri/select";
+import { STATUS_LABELS } from "@/lib/seiri/types";
+import type { Data, Appointment } from "@/lib/seiri/types";
+
+/** What each selectable column shows for a row; the fields the store does not keep read "—". */
+function cellOf(data: Data, a: Appointment, column: string) {
+  const { client, clientName, agendaName, serviceName, tags } = expand(data, a);
+  switch (column) {
+    case "Identificador do Agendamento":
+      return a.code;
+    case "Nome":
+      return clientName;
+    case "E-mail":
+      return client?.email ?? "—";
+    case "Telefone":
+      return client?.phone ?? "—";
+    case "CPF":
+      return client?.cpf ?? "—";
+    case "Gênero":
+      return client?.gender ?? "—";
+    case "Agendado em":
+      return formatWhen(a.start, a.duration);
+    case "Atualizado em":
+      return `${agendaName} · ${serviceName}`;
+    case "Comentários":
+      return a.comment || "—";
+    case "Tags":
+      return tags.join(", ") || "—";
+    case "Responsável":
+      return a.owner;
+    default:
+      return "—";
+  }
+}
 
 const STATUSES: SelectOption[] = [
   { value: "todos", label: "Todos" },
@@ -70,7 +104,9 @@ function defaultRange(today: Date) {
 }
 
 export function AppointmentsReport() {
+  const data = useData();
   const [today] = useState(() => new Date());
+  const [preview, setPreview] = useState<Appointment[] | null>(null);
   const [range] = useState(() => defaultRange(new Date()));
   const [agendas, setAgendas] = useState<string[]>([]);
   const [status, setStatus] = useState("exc_cancel");
@@ -112,7 +148,7 @@ export function AppointmentsReport() {
               )}
             </div>
 
-            <InlineFilter label="Agenda" icon={<CalendarIcon className="hinline-icon w-4 h-4" />} options={AGENDAS} values={agendas} onChange={setAgendas} />
+            <InlineFilter label="Agenda" icon={<CalendarIcon className="hinline-icon w-4 h-4" />} options={data.agendas.map((a) => a.name)} values={agendas} onChange={setAgendas} />
             <InlineSelect label="Status" icon={<CheckReadIcon className="hinline-icon w-4 h-4" />} options={STATUSES} value={status} onChange={setStatus} clearTo="exc_cancel" />
             <InlineSelect label="Ordenar por" icon={<SortIcon className="hinline-icon w-4 h-4" />} options={ORDERINGS} value={ordering} onChange={setOrdering} clearTo="nome" />
             <InlineFilter label="Colunas" icon={<SlidersIcon className="hinline-icon w-4 h-4" />} options={COLUMNS} values={columns} onChange={setColumns} />
@@ -127,7 +163,24 @@ export function AppointmentsReport() {
         </div>
 
         <div className="md:ml-auto flex items-center gap-2 flex-shrink-0">
-          <button type="button" id="report-apply-btn" className="hbtn hbtn--primary hbtn--sm">
+          <button
+            type="button"
+            id="report-apply-btn"
+            className="hbtn hbtn--primary hbtn--sm"
+            onClick={() =>
+              setPreview(
+                data.appointments
+                  .filter((a) => dayKey(a.start) >= dayKey(range.from.toISOString()) && dayKey(a.start) <= dayKey(range.to.toISOString()))
+                  .filter((a) => (status === "exc_cancel" ? a.status !== "CANCELED" : status === "all" ? true : a.status === status))
+                  .filter((a) => (agendas.length ? agendas.includes(data.agendas.find((g) => g.id === a.agendaId)?.name ?? "") : true))
+                  .sort((x, y) =>
+                    ordering === "nome"
+                      ? (expand(data, x).clientName ?? "").localeCompare(expand(data, y).clientName ?? "")
+                      : x.start.localeCompare(y.start),
+                  ),
+              )
+            }
+          >
             <FunnelIcon className="w-4 h-4" />
             Aplicar filtros
           </button>
@@ -143,11 +196,49 @@ export function AppointmentsReport() {
             <div className="hwidget-actions" />
           </div>
           <div className="mt-4">
-            <div className="hui-card hui-card--flush hempty hui-reveal">
-              <ReportIcon className="hempty-icon" />
-              <h3 className="hempty-title nunito-bold">Nenhum relatório foi gerado até o momento</h3>
-              <p className="hempty-desc inter-regular">Ajuste o período, a agenda, a situação e as colunas na barra acima e clique em Aplicar filtros.</p>
-            </div>
+            {preview === null ? (
+              <div className="hui-card hui-card--flush hempty hui-reveal">
+                <ReportIcon className="hempty-icon" />
+                <h3 className="hempty-title nunito-bold">Nenhum relatório foi gerado até o momento</h3>
+                <p className="hempty-desc inter-regular">Ajuste o período, a agenda, a situação e as colunas na barra acima e clique em Aplicar filtros.</p>
+              </div>
+            ) : preview.length === 0 ? (
+              <div className="hui-card hui-card--flush hempty hui-reveal">
+                <ReportIcon className="hempty-icon" />
+                <h3 className="hempty-title nunito-bold">Nenhum agendamento no período</h3>
+                <p className="hempty-desc inter-regular">Ajuste o período, a agenda ou a situação e gere o relatório de novo.</p>
+              </div>
+            ) : (
+              <div className="htable" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as React.CSSProperties}>
+                <div className="htable-scroll">
+                  <table className="htable-table w-full">
+                    <thead>
+                      <tr>
+                        <th className="htable-col">Situação</th>
+                        {columns.map((c) => (
+                          <th key={c} className="htable-col">
+                            {c}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {preview.map((a) => (
+                        <tr key={a.id} className="htable-row">
+                          <td className="htable-cell">{STATUS_LABELS[a.status]}</td>
+                          {columns.map((c) => (
+                            <td key={c} className="htable-cell">
+                              {cellOf(data, a, c)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="htable-footer" />
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -13,7 +13,9 @@ import {
   Tooltip,
 } from "chart.js";
 import { CaretDownIcon, CheckReadIcon } from "../shared/icons";
-import { periodLabels, type Period } from "./periods";
+import { periodBuckets, periodLabels, type Period } from "./periods";
+import { useData } from "@/lib/seiri/store";
+import { dayKey } from "@/lib/seiri/select";
 import { useDismiss } from "../shared/useDismiss";
 
 Chart.register(BarController, BarElement, LineController, LineElement, PointElement, CategoryScale, LinearScale, Tooltip);
@@ -77,6 +79,14 @@ export function TrendChart() {
   const [period, setPeriod] = useState<Period>("12m");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
+  const data = useData();
+
+  // Bars count every appointment of the bucket; the line counts the ones actually attended.
+  const buckets = periodBuckets(period, new Date());
+  const inBucket = (from: string, to: string) => data.appointments.filter((a) => dayKey(a.start) >= from && dayKey(a.start) < to);
+  const booked = buckets.map(([from, to]) => inBucket(from, to).filter((a) => a.status !== "CANCELED").length);
+  const attended = buckets.map(([from, to]) => inBucket(from, to).filter((a) => a.status === "ATTENDED").length);
+  const totals = { booked: booked.reduce((n, v) => n + v, 0), attended: attended.reduce((n, v) => n + v, 0) };
 
   useEffect(() => {
     const labels = periodLabels(period, new Date());
@@ -84,7 +94,8 @@ export function TrendChart() {
     const chart = chartRef.current;
     if (chart) {
       chart.data.labels = labels;
-      chart.data.datasets.forEach((d) => (d.data = [...zeros]));
+      chart.data.datasets[0].data = [...booked];
+      chart.data.datasets[1].data = [...attended];
       chart.update();
       return;
     }
@@ -96,8 +107,8 @@ export function TrendChart() {
       data: {
         labels,
         datasets: [
-          { type: "bar", label: "Agendamentos", data: [...zeros], backgroundColor: accent, borderRadius: 6, maxBarThickness: 28, order: 2 },
-          { type: "line", label: "Atendimentos", data: [...zeros], borderColor: success, backgroundColor: success, borderWidth: 2.5, pointRadius: 0, tension: 0.4, order: 1 },
+          { type: "bar", label: "Agendamentos", data: [...booked], backgroundColor: accent, borderRadius: 6, maxBarThickness: 28, order: 2 },
+          { type: "line", label: "Atendimentos", data: [...attended], borderColor: success, backgroundColor: success, borderWidth: 2.5, pointRadius: 0, tension: 0.4, order: 1 },
         ],
       },
       options: {
@@ -131,7 +142,8 @@ export function TrendChart() {
         },
       },
     });
-  }, [period]);
+    void zeros;
+  }, [period, booked, attended]);
 
   useEffect(
     () => () => {
@@ -158,12 +170,12 @@ export function TrendChart() {
             <span className="flex items-center gap-2">
               <span className="size-2.5 shrink-0 rounded-full" style={{ background: "var(--color-accent)" }} />
               <span className="text-muted">Agendamentos</span>
-              <span className="font-semibold tracking-tight tabular-nums">0</span>
+              <span className="font-semibold tracking-tight tabular-nums">{totals.booked}</span>
             </span>
             <span className="flex items-center gap-2">
               <span className="size-2.5 shrink-0 rounded-full" style={{ background: "var(--color-success)" }} />
               <span className="text-muted">Atendimentos</span>
-              <span className="font-semibold tracking-tight tabular-nums">0</span>
+              <span className="font-semibold tracking-tight tabular-nums">{totals.attended}</span>
             </span>
           </div>
           <div className="px-2 pb-4 pt-2">

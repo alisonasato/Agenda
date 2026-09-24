@@ -4,13 +4,11 @@ import { useState } from "react";
 import { CalendarDays, CalendarPlus, CalendarRange, Activity } from "lucide-react";
 import { CalendarIcon, CloseCircleIcon, SearchSolidIcon, SettingsIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
+import { useData } from "@/lib/seiri/store";
+import { dayKey, keyFromToday, withinDays } from "@/lib/seiri/select";
 
 type Agenda = { name: string; today: number; tomorrow: number; next7: number; occupancy: string; active: boolean };
 
-// Mock data (the live page shows the signed-in account's agendas).
-const AGENDAS: Agenda[] = [
-  { name: "Agenda Principal", today: 0, tomorrow: 0, next7: 0, occupancy: "Sem horários disponíveis", active: true },
-];
 const SLOTS = 5;
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
@@ -51,7 +49,22 @@ function Actions({ small }: { small?: boolean }) {
 
 export function AgendasSection() {
   const [query, setQuery] = useState("");
-  const rows = AGENDAS.filter((a) => norm(a.name).includes(norm(query.trim())));
+  const data = useData();
+  const now = new Date();
+  const booked = data.appointments.filter((a) => a.status !== "CANCELED");
+  const agendas: Agenda[] = data.agendas.map((a) => {
+    const mine = booked.filter((x) => x.agendaId === a.id);
+    const next7 = mine.filter((x) => withinDays(x.start, 7, now)).length;
+    return {
+      name: a.name,
+      today: mine.filter((x) => dayKey(x.start) === keyFromToday(0, now)).length,
+      tomorrow: mine.filter((x) => dayKey(x.start) === keyFromToday(1, now)).length,
+      next7,
+      occupancy: next7 ? `${next7} horário(s) ocupado(s) nos próximos 7 dias` : "Sem horários ocupados",
+      active: a.active,
+    };
+  });
+  const rows = agendas.filter((a) => norm(a.name).includes(norm(query.trim())));
 
   return (
     <div className="mt-6 md:mt-8 hui-reveal">

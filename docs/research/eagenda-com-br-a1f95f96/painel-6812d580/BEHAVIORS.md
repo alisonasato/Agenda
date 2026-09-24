@@ -1,5 +1,12 @@
 # /painel/?version=3 — Behaviors
 
+## Data (fase de lógica)
+- Os três KPIs contam os agendamentos de hoje e de amanhã e as agendas cadastradas
+  (docs/DATA-LAYER.md), e cada cartão leva para a lista ou para a configuração de agendas.
+- O gráfico "Agendamentos vs. Atendimentos" soma por balde do período escolhido: barras = agendamentos
+  não cancelados, linha = atendidos; a legenda mostra os totais.
+- A seção "Minhas Agendas" calcula hoje, amanhã e próximos 7 dias por agenda.
+
 ## Scroll sweep
 - Topbar is `sticky top-0` with `bg-[#F7F9FB]` (forced by inline style); no change on scroll.
 - No scroll-triggered animations, snap points or smooth-scroll libraries.
