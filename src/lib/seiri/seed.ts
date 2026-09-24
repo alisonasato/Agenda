@@ -12,19 +12,19 @@ const TAGS = [
 ];
 
 const SERVICES: Service[] = [
-  { id: "s1", name: "Consulta inicial", price: 180, duration: 60, agendaIds: ["a1", "a2"], tagIds: ["t1"], order: 1, color: "#6366F1" },
-  { id: "s2", name: "Retorno", price: 90, duration: 30, agendaIds: ["a1"], tagIds: ["t2"], order: 2, color: "#17C964" },
-  { id: "s3", name: "Avaliação", price: 120, duration: 45, agendaIds: ["a1", "a2"], tagIds: [], order: 3, color: "#F5A524" },
-  { id: "s4", name: "Sessão online", price: null, duration: 30, agendaIds: ["a2"], tagIds: ["t3"], order: 4, color: "#EC4899" },
+  { id: "s1", name: "Consulta inicial", price: 180, duration: 60, agendaIds: ["a1", "a2"], tagIds: ["t1"], order: 1, color: "#6366F1", maxPeople: 1, members: ["Maria Souza"] },
+  { id: "s2", name: "Retorno", price: 90, duration: 30, agendaIds: ["a1"], tagIds: ["t2"], order: 2, color: "#17C964", maxPeople: 1, members: ["Maria Souza", "João Pedro"] },
+  { id: "s3", name: "Avaliação", price: 120, duration: 45, agendaIds: ["a1", "a2"], tagIds: [], order: 3, color: "#F5A524", maxPeople: 2, members: ["João Pedro"] },
+  { id: "s4", name: "Sessão online", price: null, duration: 30, agendaIds: ["a2"], tagIds: ["t3"], order: 4, color: "#EC4899", maxPeople: null, members: [] },
 ];
 
 const CLIENTS: Client[] = [
-  { id: "c1", name: "Ana Beatriz Lima", email: "ana.lima@exemplo.com.br", phone: "+55 11 98888-1010", cpf: "123.456.789-01" },
-  { id: "c2", name: "Bruno Carvalho", email: "bruno.carvalho@exemplo.com.br", phone: "+55 11 98888-2020" },
-  { id: "c3", name: "Carla Monteiro", email: "carla.monteiro@exemplo.com.br", phone: "+55 21 97777-3030", cpf: "987.654.321-00" },
-  { id: "c4", name: "Diego Ferreira", email: "diego.ferreira@exemplo.com.br", phone: "+55 31 96666-4040" },
-  { id: "c5", name: "Elisa Rocha", email: "elisa.rocha@exemplo.com.br", phone: "+55 41 95555-5050" },
-  { id: "c6", name: "Fábio Nogueira", email: "fabio.nogueira@exemplo.com.br", phone: "+55 51 94444-6060" },
+  { id: "c1", name: "Ana Beatriz Lima", email: "ana.lima@exemplo.com.br", phone: "+55 11 98888-1010", cpf: "123.456.789-01" , gender: "Feminino" },
+  { id: "c2", name: "Bruno Carvalho", email: "bruno.carvalho@exemplo.com.br", phone: "+55 11 98888-2020" , gender: "Masculino" },
+  { id: "c3", name: "Carla Monteiro", email: "carla.monteiro@exemplo.com.br", phone: "+55 21 97777-3030", cpf: "987.654.321-00" , gender: "Feminino" },
+  { id: "c4", name: "Diego Ferreira", email: "diego.ferreira@exemplo.com.br", phone: "+55 31 96666-4040" , gender: "Masculino" },
+  { id: "c5", name: "Elisa Rocha", email: "elisa.rocha@exemplo.com.br", phone: "+55 41 95555-5050" , gender: "Feminino" },
+  { id: "c6", name: "Fábio Nogueira", email: "fabio.nogueira@exemplo.com.br", phone: "+55 51 94444-6060" , gender: "Masculino" },
 ];
 
 /** "2026-09-24T09:00" for a day offset from today and a time of day. */

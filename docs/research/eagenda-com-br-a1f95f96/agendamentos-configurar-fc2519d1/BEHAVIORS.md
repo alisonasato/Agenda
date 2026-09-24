@@ -1,5 +1,11 @@
 # /agendamentos/configurar/ — Behaviors
 
+## Data (fase de lógica)
+- Os cartões saem das agendas do navegador (docs/DATA-LAYER.md). Agendamentos futuros, horários
+  livres, última data, duração, máximo por horário e a lista de serviços são calculados dos dados;
+  aviso, dados solicitados e notificações continuam vindo do mock da captura.
+- Busca e o filtro de status (Todas/Ativas/Inativas) filtram os cartões e a tabela.
+
 ## Scroll sweep
 - Ordinary page scroll (doc height 905 at 1440×900, 1139 at 390); no scroll-driven effects.
 - The action bar is a rail with `.hrail-arrow` buttons when it overflows.

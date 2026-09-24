@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ActivityIcon, CaretDownIcon, CloseCircleIcon, SearchSolidIcon, UsersIcon, WidgetIcon } from "../shared/icons";
+import { ActivityIcon, CaretDownIcon, CloseCircleIcon, PenIcon, SearchSolidIcon, TrashIcon, UsersIcon, WidgetIcon } from "../shared/icons";
+import { useData, update } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
 import { useDismiss } from "../shared/useDismiss";
 
 const FILTERS = [
@@ -90,6 +92,24 @@ export function ClientsList() {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<Record<string, string>>({});
   const filtered = Boolean(query.trim()) || Object.values(filters).some(Boolean);
+  const data = useData();
+  const term = fold(query.trim());
+  const rows = data.clients
+    .filter((c) => (term ? [c.name, c.email, c.phone, c.cpf ?? ""].some((v) => fold(v).includes(term)) : true))
+    .filter((c) => {
+      const name = filters["filter-name"] ?? "";
+      const doc = filters["filter-document"] ?? "";
+      const email = filters["filter-email"] ?? "";
+      const phone = filters["filter-phone"] ?? "";
+      return (
+        (!name || fold(c.name).includes(fold(name))) &&
+        (!doc || fold(c.cpf ?? "").includes(fold(doc))) &&
+        (!email || fold(c.email).includes(fold(email))) &&
+        (!phone || fold(c.phone).includes(fold(phone)))
+      );
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const remove = (id: string) => update((d) => ({ ...d, clients: d.clients.filter((c) => c.id !== id) }));
 
   return (
     <>
@@ -142,7 +162,10 @@ export function ClientsList() {
 
       <div className="mt-4 hui-reveal">
         <div id="clients-table">
-          <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as React.CSSProperties}>
+          <div
+            className={`htable${rows.length ? "" : " htable-is-empty"}`}
+            style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as React.CSSProperties}
+          >
             <div className="htable-scroll">
               <table className="htable-table w-full htable-fixed">
                 <thead>
@@ -155,8 +178,26 @@ export function ClientsList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: SLOTS }, (_, i) => (
-                    <tr key={i} className="htable-row--empty" aria-hidden="true">
+                  {rows.map((client) => (
+                    <tr key={client.id} className="htable-row">
+                      <td className="htable-cell">{client.name}</td>
+                      <td className="htable-cell">{client.email || "—"}</td>
+                      <td className="htable-cell">{client.phone || "—"}</td>
+                      <td className="htable-cell">{client.gender ?? "—"}</td>
+                      <td className="htable-cell htable-cell--end">
+                        <span className="inline-flex items-center gap-1">
+                          <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Editar cliente">
+                            <PenIcon className="w-4 h-4" />
+                          </button>
+                          <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Excluir cliente" onClick={() => remove(client.id)}>
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, k) => (
+                    <tr key={`empty-${k}`} className="htable-row--empty" aria-hidden="true">
                       <td className="htable-cell" />
                       <td className="htable-cell" />
                       <td className="htable-cell" />
@@ -167,17 +208,19 @@ export function ClientsList() {
                 </tbody>
               </table>
             </div>
-            <div className="htable-empty" role="status" aria-live="polite">
-              <div className="hempty hempty--inline hui-reveal">
-                <UsersIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum cliente encontrado" : "Nenhum cliente cadastrado"}</h3>
-                <p className="hempty-desc inter-regular">
-                  {filtered
-                    ? "Nenhum cliente corresponde à busca ou aos filtros aplicados. Ajuste ou limpe os filtros."
-                    : "Os clientes cadastrados ou importados aparecerão nesta lista."}
-                </p>
+            {!rows.length && (
+              <div className="htable-empty" role="status" aria-live="polite">
+                <div className="hempty hempty--inline hui-reveal">
+                  <UsersIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum cliente encontrado" : "Nenhum cliente cadastrado"}</h3>
+                  <p className="hempty-desc inter-regular">
+                    {filtered
+                      ? "Nenhum cliente corresponde à busca ou aos filtros aplicados. Ajuste ou limpe os filtros."
+                      : "Os clientes cadastrados ou importados aparecerão nesta lista."}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
             <div className="htable-footer" />
           </div>
         </div>

@@ -4,11 +4,24 @@ export type Status = "PENDING" | "CONFIRMED" | "ATTENDED" | "NO_SHOW" | "CANCELE
 
 export type Agenda = { id: string; name: string; color: string; active: boolean };
 
-export type Service = { id: string; name: string; price: number | null; duration: number; agendaIds: string[]; tagIds: string[]; order: number; color: string };
+export type Service = {
+  id: string;
+  name: string;
+  price: number | null;
+  duration: number;
+  agendaIds: string[];
+  tagIds: string[];
+  order: number;
+  color: string;
+  /** "Máximo de pessoas no mesmo horário"; null means the agenda's own limit. */
+  maxPeople: number | null;
+  /** Names of the team members who attend it. */
+  members: string[];
+};
 
 export type Tag = { id: string; name: string };
 
-export type Client = { id: string; name: string; email: string; phone: string; cpf?: string };
+export type Client = { id: string; name: string; email: string; phone: string; cpf?: string; gender?: "Feminino" | "Masculino" };
 
 export type Appointment = {
   id: string;

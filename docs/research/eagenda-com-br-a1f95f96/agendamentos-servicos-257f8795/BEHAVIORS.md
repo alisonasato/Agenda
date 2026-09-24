@@ -1,5 +1,11 @@
 # /agendamentos/servicos/ — Behaviors
 
+## Data (fase de lógica)
+- A lista mostra os serviços do navegador (docs/DATA-LAYER.md): nome com a cor, valor, duração,
+  máximo de pessoas, agendas, tags, colaboradores e ordem.
+- Busca e o filtro Agenda filtram; o lápis reabre o modal com o serviço preenchido, a lixeira exclui
+  e o modal grava (criando ou editando).
+
 ## Scroll sweep
 - Cabe na viewport em 1440×900 (doc 900); só a tabela rola.
 

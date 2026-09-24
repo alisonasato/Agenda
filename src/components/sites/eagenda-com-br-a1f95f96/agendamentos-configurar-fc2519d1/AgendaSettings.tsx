@@ -17,7 +17,38 @@ import {
 } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
 import { AgendaNoteCard } from "./AgendaNoteCard";
-import { AGENDAS } from "./agendas";
+import { AGENDAS, type Agenda } from "./agendas";
+import { useData } from "@/lib/seiri/store";
+import { fold, formatDate, formatDuration } from "@/lib/seiri/select";
+import type { Data } from "@/lib/seiri/types";
+
+/**
+ * The card needs more than the store keeps about an agenda (notice, asks, notifications), so the
+ * mock supplies those while the store supplies the agenda itself, its services and its numbers.
+ */
+function agendaRows(data: Data): Agenda[] {
+  const template = AGENDAS[0];
+  const todayIso = new Date().toISOString().slice(0, 10);
+  return data.agendas.map((a) => {
+    const booked = data.appointments.filter((x) => x.agendaId === a.id && x.status !== "CANCELED");
+    const upcoming = booked.filter((x) => x.start.slice(0, 10) >= todayIso);
+    const last = booked.map((x) => x.start).sort().at(-1);
+    const services = data.services.filter((svc) => svc.agendaIds.includes(a.id));
+    return {
+      ...template,
+      id: a.id,
+      name: a.name,
+      color: a.color,
+      active: a.active,
+      upcoming: upcoming.length,
+      freeSlots: Math.max(0, 40 - booked.length),
+      lastDate: last ? formatDate(last) : "—",
+      duration: services.length ? formatDuration(services[0].duration) : template.duration,
+      maxPerSlot: services.reduce((max, svc) => Math.max(max, svc.maxPeople ?? 1), 1),
+      services: services.map((svc) => svc.name),
+    };
+  });
+}
 
 type View = "cards" | "table";
 const STATUS = [
@@ -99,7 +130,7 @@ function InlineFilter({ label, icon, options }: { label: string; icon: ReactNode
   );
 }
 
-function AgendasTable() {
+function AgendasTable({ rows }: { rows: Agenda[] }) {
   return (
     <div className="htable" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
       <div className="htable-scroll">
@@ -122,7 +153,7 @@ function AgendasTable() {
             </tr>
           </thead>
           <tbody>
-            {AGENDAS.map((a) => (
+            {rows.map((a) => (
               <tr key={a.id} className="group">
                 <td className="htable-cell whitespace-nowrap">
                   <div className="flex items-center gap-2.5">
@@ -208,11 +239,9 @@ export function AgendaSettings() {
   const [status, setStatus] = useState("");
   const [view, setView] = useState<View>("cards");
 
-  const agendas = AGENDAS.filter(
-    (a) =>
-      a.name.toLowerCase().includes(query.trim().toLowerCase()) &&
-      (status === "" || (status === "active") === a.active),
-  );
+  const data = useData();
+  const term = fold(query.trim());
+  const agendas = agendaRows(data).filter((a) => fold(a.name).includes(term) && (status === "" || (status === "active") === a.active));
 
   return (
     <>
@@ -306,7 +335,7 @@ export function AgendaSettings() {
             ))}
           </div>
         ) : (
-          <AgendasTable />
+          <AgendasTable rows={agendas} />
         )}
       </div>
     </>

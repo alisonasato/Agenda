@@ -1,5 +1,10 @@
 # /agendamentos/tags/ — Behaviors
 
+## Data (fase de lógica)
+- As tags vêm do navegador (docs/DATA-LAYER.md). "Aplicar em Agendas" e "Aplicar em Serviços" são
+  derivados dos serviços que carregam a tag; sem nenhum, a linha diz "Todas as agendas/Todos os serviços".
+- O modal cria ou edita a tag e re-aponta os serviços marcados; a lixeira apaga a tag e a remove deles.
+
 ## Scroll sweep
 - Cabe na viewport em 1440×900 (doc 900).
 
