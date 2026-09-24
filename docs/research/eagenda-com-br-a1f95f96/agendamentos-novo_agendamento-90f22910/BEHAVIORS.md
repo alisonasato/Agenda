@@ -1,5 +1,10 @@
 # /agendamentos/novo_agendamento/ — Behaviors
 
+## Data (fase de lógica)
+- Agenda, Serviço, Tags e Clientes vêm dos dados do navegador (docs/DATA-LAYER.md). O Serviço só
+  aparece quando a agenda escolhida tem serviços, como no original.
+- "Salvar Agendamento" cria um agendamento por cliente selecionado e abre a lista de Agendamentos.
+
 ## Scroll sweep
 - Ordinary page scroll (doc height 1100 at 1440×900); topbar sticky; no scroll-driven effects.
 - Sections fade in with the shared `.hui-*` entrance animation only.

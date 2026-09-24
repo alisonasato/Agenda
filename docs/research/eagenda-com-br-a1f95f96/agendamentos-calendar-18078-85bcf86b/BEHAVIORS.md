@@ -1,5 +1,9 @@
 # /agendamentos/calendar/ — Behaviors
 
+## Data (fase de lógica)
+- Desde 2026-09-23 o calendário mostra os agendamentos do navegador (docs/DATA-LAYER.md): blocos
+  posicionados pelo horário na semana/dia e chips por dia no mês, coloridos pelo serviço. Feriados continuam.
+
 ## Scroll sweep
 - The page itself never scrolls (`html, body { height: 100dvh; overflow: hidden }`); only the grid scrolls.
 - `.cal-tg-scroller` has `scroll-snap-type: x proximity`, day columns `scroll-snap-align: start` with

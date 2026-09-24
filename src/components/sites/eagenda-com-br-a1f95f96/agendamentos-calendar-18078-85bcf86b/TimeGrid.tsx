@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, type CSSProperties } from "react";
 import { WEEKDAYS_SHORT, sameDay, startOfDay } from "../shared/calendarDates";
+import { useData } from "@/lib/seiri/store";
+import { expand, formatTime, parse } from "@/lib/seiri/select";
+import { STATUS_LABELS } from "@/lib/seiri/types";
 
 // The agenda's working hours (08:00–17:00 on the live account), one row per hour.
 const FIRST_HOUR = 8;
@@ -15,6 +18,11 @@ type TimeGridProps = { days: Date[]; today: Date };
 export function TimeGrid({ days, today }: TimeGridProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const todayRef = useRef<HTMLDivElement>(null);
+  const data = useData();
+  const dayEvents = (day: Date) =>
+    data.appointments
+      .filter((a) => a.status !== "CANCELED" && sameDay(parse(a.start), day))
+      .sort((a, b) => a.start.localeCompare(b.start));
 
   // Narrow viewports scroll the current day into view (columns have a min width).
   useEffect(() => {
@@ -77,6 +85,25 @@ export function TimeGrid({ days, today }: TimeGridProps) {
                     <div key={hour} className="border-t cal-line" style={{ height: ROW_PX }} />
                   ))}
                 </div>
+                {dayEvents(day).map((a) => {
+                  const start = parse(a.start);
+                  const top = (start.getHours() - FIRST_HOUR + start.getMinutes() / 60) * ROW_PX;
+                  const { clientName, serviceName, service } = expand(data, a);
+                  const color = service?.color ?? "#0A70D6";
+                  return (
+                    <div
+                      key={a.id}
+                      role="button"
+                      tabIndex={0}
+                      title={`${formatTime(a.start)} · ${clientName} · ${serviceName} (${STATUS_LABELS[a.status]})`}
+                      className="cal-ev absolute left-1 right-1 rounded-md px-2 py-1 text-[11px] leading-tight overflow-hidden cursor-pointer"
+                      style={{ top, height: Math.max(24, (a.duration / 60) * ROW_PX - 4), backgroundColor: `${color}22`, borderLeft: `3px solid ${color}`, color: "#101828" }}
+                    >
+                      <span className="block truncate inter-semibold">{formatTime(a.start)} {clientName}</span>
+                      <span className="block truncate inter-regular text-slate-600">{serviceName}</span>
+                    </div>
+                  );
+                })}
               </div>
             );
           })}

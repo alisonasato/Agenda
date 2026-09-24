@@ -1,8 +1,13 @@
+"use client";
+
 import { WEEKDAYS_SHORT, eventsOn, monthDays, sameDay } from "../shared/calendarDates";
+import { useData } from "@/lib/seiri/store";
+import { expand, formatTime, parse } from "@/lib/seiri/select";
 
 type MonthGridProps = { month: Date; today: Date };
 
 export function MonthGrid({ month, today }: MonthGridProps) {
+  const data = useData();
   const days = monthDays(month);
   const weeks = Array.from({ length: days.length / 7 }, (_, i) => days.slice(i * 7, i * 7 + 7));
 
@@ -19,7 +24,15 @@ export function MonthGrid({ month, today }: MonthGridProps) {
         {weeks.map((week, wi) => (
           <div key={week[0].toISOString()} className="flex-1 min-h-0 grid grid-cols-7 [&>*:nth-child(7n)]:border-r-0">
             {week.map((day) => {
-              const events = eventsOn(day);
+              const booked = data.appointments
+                .filter((a) => a.status !== "CANCELED" && sameDay(parse(a.start), day))
+                .sort((a, b) => a.start.localeCompare(b.start))
+                .map((a) => {
+                  const { clientName, service } = expand(data, a);
+                  const color = service?.color ?? "#0A70D6";
+                  return { title: `${formatTime(a.start)} ${clientName}`, bg: `${color}22`, color: "#101828" };
+                });
+              const events = [...eventsOn(day), ...booked];
               const outside = day.getMonth() !== month.getMonth();
               const isToday = sameDay(day, today);
               return (

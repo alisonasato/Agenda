@@ -4,6 +4,10 @@
 - Cabe na viewport em 1440×900 (doc 900); só a tabela rola.
 - A barra de ações e a linha de situações são rails com setas quando estreitam.
 
+## Data (fase de lógica)
+- A lista mostra as inscrições do navegador (docs/DATA-LAYER.md); busca, situação, agenda e período
+  filtram, a lixeira remove e o modal grava uma nova inscrição (criando o cliente se o nome for novo).
+
 ## Click sweep
 - **Incluir na Lista de Espera** abre o modal 2xl (672px). Enquanto a agenda não é escolhida, o modal
   mostra só o combobox — e o "Salvar" fica desabilitado no clone.

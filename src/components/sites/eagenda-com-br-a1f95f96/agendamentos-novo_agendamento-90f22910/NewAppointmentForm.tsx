@@ -6,7 +6,10 @@ import { MultiSelect } from "../shared/MultiSelect";
 import { ROUTES } from "../shared/Sidebar";
 import { CheckboxMark, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
 import { SaveBar } from "../shared/SaveBar";
-import { ACTIONS, AGENDAS, CLIENTS, STATUSES, TAGS, dayOptions, timeOptions } from "./formOptions";
+import { ACTIONS, STATUSES, dayOptions, timeOptions } from "./formOptions";
+import { useData, update, nextId } from "@/lib/seiri/store";
+import { withBase } from "@/lib/basePath";
+import type { Status } from "@/lib/seiri/types";
 
 // Mock id for the logged-in user, who the live form now sets as the owner.
 const CURRENT_USER_ID = "1";
@@ -27,7 +30,9 @@ function Checkbox({ id, label, defaultChecked, disabled }: { id: string; label: 
 }
 
 export function NewAppointmentForm() {
+  const data = useData();
   const [agenda, setAgenda] = useState("");
+  const [service, setService] = useState("");
   const [action, setAction] = useState("new");
   const [status, setStatus] = useState("CONFIRMED");
   const [day, setDay] = useState("");
@@ -46,11 +51,40 @@ export function NewAppointmentForm() {
 
   const days = useMemo(() => dayOptions(new Date()), []);
   const times = useMemo(() => timeOptions(), []);
+  const agendaOptions = data.agendas.map((a) => ({ value: a.id, label: a.name }));
+  const clientOptions = data.clients.map((c) => ({ value: c.id, label: c.name }));
+  const tagOptions = data.tags.map((t) => ({ value: t.id, label: t.name }));
+  const serviceOptions = data.services.filter((s) => s.agendaIds.includes(agenda)).map((s) => ({ value: s.id, label: s.name }));
+  const picked = data.services.find((s) => s.id === service);
 
-  // No backend in the clone: saving only acknowledges on screen.
+  // No server here: saving writes the appointment into the browser's own data (src/lib/seiri).
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (!agenda || !day || !time || !clients.length) return;
+    update((d) => {
+      const rows = [...d.appointments];
+      clients.forEach((clientId) => {
+        const id = nextId("ap", rows);
+        rows.push({
+          id,
+          code: String(48000 + rows.length * 7),
+          clientId,
+          agendaId: agenda,
+          serviceId: service || d.services.find((s) => s.agendaIds.includes(agenda))?.id || "",
+          start: `${day}T${time}`,
+          duration: picked?.duration ?? 30,
+          status: (status === "AWAITING_PAYMENT" ? "PENDING" : status) as Status,
+          owner: "Maria Souza",
+          tagIds: tags,
+          comment: "",
+        });
+      });
+      return { ...d, appointments: rows };
+    });
     setSaved(true);
+    window.setTimeout(() => {
+      window.location.href = withBase("/agendamentos/listar");
+    }, 900);
   };
 
   return (
@@ -63,10 +97,26 @@ export function NewAppointmentForm() {
           <div className="hformsection-body">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <Combobox id="agenda" label="Agenda" required options={AGENDAS} value={agenda} onChange={setAgenda} placeholder="Escolha a agenda" />
+                <Combobox
+                  id="agenda"
+                  label="Agenda"
+                  required
+                  options={agendaOptions}
+                  value={agenda}
+                  onChange={(v) => {
+                    setAgenda(v);
+                    setService("");
+                  }}
+                  placeholder="Escolha a agenda"
+                />
               </div>
               <div className="md:col-span-2" id="service-password-container">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {/* The original only shows this once the chosen agenda has services. */}
+                  {serviceOptions.length > 0 && (
+                    <Combobox id="service" label="Serviço" options={serviceOptions} value={service} onChange={setService} placeholder="Escolha o serviço" />
+                  )}
+                </div>
               </div>
               <div>
                 <Combobox id="action_new_appointment" label="Ação" required options={ACTIONS} value={action} onChange={setAction} placeholder="Selecione" />
@@ -99,7 +149,7 @@ export function NewAppointmentForm() {
                 />
               </div>
               <div className="md:col-span-2">
-                <MultiSelect id="tags" label="Tags" options={TAGS} values={tags} onChange={setTags} placeholder="Buscar tags..." />
+                <MultiSelect id="tags" label="Tags" options={tagOptions} values={tags} onChange={setTags} placeholder="Buscar tags..." />
               </div>
             </div>
           </div>
@@ -116,7 +166,7 @@ export function NewAppointmentForm() {
                   id="main_persons"
                   label="Clientes"
                   required
-                  options={CLIENTS}
+                  options={clientOptions}
                   values={clients}
                   onChange={setClients}
                   placeholder="Digite para buscar clientes..."
@@ -132,7 +182,7 @@ export function NewAppointmentForm() {
                 <MultiSelect
                   id="person"
                   label="Acompanhantes"
-                  options={CLIENTS}
+                  options={clientOptions}
                   values={companions}
                   onChange={setCompanions}
                   placeholder="Digite para buscar acompanhantes..."
@@ -177,8 +227,8 @@ export function NewAppointmentForm() {
         saveIcon={<SaveIcon />}
         dirty={dirty}
         toastIcon={<PenIcon className="w-4 h-4" />}
-        toastTitle={saved ? "Protótipo sem gravação" : "Agendamento ainda não registrado"}
-        toastSub={saved ? "O clone não salva agendamentos." : "Conclua para criar o agendamento."}
+        toastTitle={saved ? "Agendamento criado" : "Agendamento ainda não registrado"}
+        toastSub={saved ? "Abrindo a lista de agendamentos…" : "Conclua para criar o agendamento."}
         forceToast={saved}
       />
     </form>
