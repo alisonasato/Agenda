@@ -1,5 +1,11 @@
 # /clientes/listar — Behaviors
 
+## Botões (fase de lógica)
+- **Adicionar Cliente** e o lápis abrem o mesmo modal (nome, e-mail, telefone, CPF, gênero), que grava no navegador.
+- **Importar** abre o seletor de arquivo e lê um CSV "nome;email;telefone;cpf", ignorando quem já existe pelo nome.
+- **Exportar** baixa `clientes-AAAA-MM-DD.csv` com o que a tabela está mostrando.
+- **Consolidar** segue sem ação: o original abre um fluxo que este clone não tem.
+
 ## Data (fase de lógica)
 - A lista mostra os clientes do navegador (docs/DATA-LAYER.md) com nome, e-mail, telefone e gênero.
 - A busca e os campos do popover Filtros (nome, CPF, e-mail, telefone) filtram; a lixeira exclui.

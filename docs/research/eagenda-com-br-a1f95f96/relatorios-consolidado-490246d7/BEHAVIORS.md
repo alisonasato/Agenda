@@ -1,5 +1,9 @@
 # Relatórios › Consolidado — Behaviors
 
+## Botões (fase de lógica)
+- **Exportar** abre o aviso de LGPD do original; com a caixa marcada, o botão baixa
+  `consolidado-AAAA-MM-DD.csv` com as linhas do relatório e fecha o diálogo.
+
 ## Data (fase de lógica)
 - Uma linha por dia e chave de agrupamento (serviço, agenda ou tag), com a quantidade e a soma dos
   preços dos serviços (docs/DATA-LAYER.md). Período, status e os filtros de agenda, serviço e tag valem.

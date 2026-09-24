@@ -65,9 +65,11 @@ type FiltersProps = {
   preset: Preset;
   onPreset: (p: Preset) => void;
   today: Date;
+  /** Hands the visible rows to a CSV file, like the original's Exportar. */
+  onExport: () => void;
 };
 
-export function AppointmentsFilters({ query, onQuery, preset, onPreset, today }: FiltersProps) {
+export function AppointmentsFilters({ query, onQuery, preset, onPreset, today, onExport }: FiltersProps) {
   const dateRef = useRef<HTMLDivElement>(null);
   const [dateOpen, setDateOpen] = useState(false);
   useDismiss(dateRef, dateOpen, () => setDateOpen(false));
@@ -130,7 +132,7 @@ export function AppointmentsFilters({ query, onQuery, preset, onPreset, today }:
 
               <span className="hactionbar-sep" aria-hidden="true" />
 
-              <button type="button" aria-label="Exportar" className="hbtn hbtn--ghost hbtn--sm">
+              <button type="button" aria-label="Exportar" className="hbtn hbtn--ghost hbtn--sm" onClick={onExport}>
                 <DownloadIcon className="w-4 h-4" />
                 <span className="hactionbar-label">Exportar</span>
               </button>

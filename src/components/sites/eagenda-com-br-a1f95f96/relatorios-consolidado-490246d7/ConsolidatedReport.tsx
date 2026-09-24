@@ -36,6 +36,7 @@ const GROUPS: SelectOption[] = [
 
 import { useData } from "@/lib/seiri/store";
 import { dayKey, formatDate, formatMoney } from "@/lib/seiri/select";
+import { download, stamp, toCsv } from "@/lib/seiri/csv";
 
 const SLOTS = 10;
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -122,7 +123,7 @@ function MoreFilters({
 }
 
 /** LGPD acknowledgement the export button opens before downloading the sheet. */
-function ExportDialog({ onClose }: { onClose: () => void }) {
+function ExportDialog({ onClose, onConfirm }: { onClose: () => void; onConfirm: () => void }) {
   const [ack, setAck] = useState(false);
   return (
     <div className="halertdialog">
@@ -173,7 +174,16 @@ function ExportDialog({ onClose }: { onClose: () => void }) {
               <button type="button" className="hbtn hbtn--tertiary" onClick={onClose}>
                 Cancelar
               </button>
-              <button type="button" id="report-export-confirm-btn" className="hbtn hbtn--primary" disabled={!ack}>
+              <button
+                type="button"
+                id="report-export-confirm-btn"
+                className="hbtn hbtn--primary"
+                disabled={!ack}
+                onClick={() => {
+                  onConfirm();
+                  onClose();
+                }}
+              >
                 <DownloadIcon className="w-4 h-4" />
                 Exportar
               </button>
@@ -365,7 +375,20 @@ export function ConsolidatedReport() {
         </div>
       </div>
 
-      {exporting && <ExportDialog onClose={() => setExporting(false)} />}
+      {exporting && (
+        <ExportDialog
+          onClose={() => setExporting(false)}
+          onConfirm={() =>
+            download(
+              `consolidado-${stamp()}.csv`,
+              toCsv(
+                ["Dia", "Serviço/Agenda/Tag", "Quantidade", "Valor"],
+                rows.map((row) => [formatDate(`${row.day}T00:00`), row.label, row.count, row.total.toFixed(2).replace(".", ",")]),
+              ),
+            )
+          }
+        />
+      )}
     </>
   );
 }

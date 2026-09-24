@@ -25,6 +25,11 @@ A conta usada como referência está **vazia em todas as telas**, então o origi
 tabela preenchida. As linhas são construção deste clone, montadas com as peças do design system
 (`htable-row`, `hchip--soft`, `hbtn--icon`) — é o único lugar em que o clone não copia o original.
 
+## Exportar e importar
+CSV é gerado e lido no navegador (`src/lib/seiri/csv.ts`): separador `;`, com BOM para o Excel em
+pt-BR abrir os acentos. Exportam: Agendamentos, Clientes e o Relatório Consolidado (depois do aviso
+de LGPD). Importa: Clientes, por um arquivo "nome;email;telefone;cpf".
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

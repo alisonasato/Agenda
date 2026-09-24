@@ -1,5 +1,9 @@
 # /agendamentos/listar/ — Behaviors
 
+## Botões (fase de lógica)
+- **Exportar** baixa `agendamentos-AAAA-MM-DD.csv` com as linhas visíveis.
+- O lápis abre um modal com dia, horário, status e comentários, e salvar altera o agendamento.
+
 ## Scroll sweep
 - Page fits the viewport (doc height 900 at 1440×900); only the table scrolls. No scroll-driven effects.
 - The action bar and the status row are rails: they scroll horizontally with `.hrail-arrow` buttons when narrow.

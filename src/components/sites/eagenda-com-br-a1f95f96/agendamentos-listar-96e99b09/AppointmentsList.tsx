@@ -3,8 +3,90 @@
 import { useRef, useState } from "react";
 import { CaretDownIcon, CloseCircleIcon, PenIcon, ReceiptIcon, SearchSolidIcon, SlidersIcon, TrashIcon } from "../shared/icons";
 import { useData, update } from "@/lib/seiri/store";
+import { download, stamp, toCsv } from "@/lib/seiri/csv";
+import { Modal } from "../shared/Modal";
+import { SaveIcon } from "../shared/icons";
+import type { Appointment } from "@/lib/seiri/types";
 import { expand, fold, formatWhen, inPreset } from "@/lib/seiri/select";
 import { STATUS_LABELS, STATUS_TONES } from "@/lib/seiri/types";
+
+const EDITABLE: Appointment["status"][] = ["PENDING", "CONFIRMED", "ATTENDED", "NO_SHOW", "CANCELED"];
+
+/** The clone's edit dialog: day, time, status and the comment of an appointment. */
+function EditModal({ row, onClose }: { row: Appointment; onClose: () => void }) {
+  const [day, setDay] = useState(row.start.slice(0, 10));
+  const [time, setTime] = useState(row.start.slice(11, 16));
+  const [status, setStatus] = useState<Appointment["status"]>(row.status);
+  const [comment, setComment] = useState(row.comment);
+
+  const save = () => {
+    update((d) => ({
+      ...d,
+      appointments: d.appointments.map((a) => (a.id === row.id ? { ...a, start: `${day}T${time}`, status, comment } : a)),
+    }));
+    onClose();
+  };
+
+  return (
+    <Modal
+      id="appointment-edit-modal"
+      title={`Agendamento ${row.code}`}
+      onClose={onClose}
+      footer={
+        <>
+          <button type="button" className="hbtn hbtn--tertiary" onClick={onClose}>
+            Cancelar
+          </button>
+          <button type="button" className="hbtn hbtn--primary" onClick={save}>
+            <SaveIcon />
+            Salvar
+          </button>
+        </>
+      }
+    >
+      <form id="appointment-edit-form" className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="hinput-field hinput-field--block">
+            <label className="hinput-label" htmlFor="id_edit_day">
+              Dia
+            </label>
+            <div className="hinput-wrap">
+              <input id="id_edit_day" className="hinput" type="date" value={day} onChange={(e) => setDay(e.target.value)} />
+            </div>
+          </div>
+          <div className="hinput-field hinput-field--block">
+            <label className="hinput-label" htmlFor="id_edit_time">
+              Horário
+            </label>
+            <div className="hinput-wrap">
+              <input id="id_edit_time" className="hinput" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            </div>
+          </div>
+        </div>
+        <div className="hinput-field hinput-field--block">
+          <label className="hinput-label" htmlFor="id_edit_status">
+            Status
+          </label>
+          <div className="hinput-wrap">
+            <select id="id_edit_status" className="hinput hselect-native" value={status} onChange={(e) => setStatus(e.target.value as Appointment["status"])}>
+              {EDITABLE.map((value) => (
+                <option key={value} value={value}>
+                  {STATUS_LABELS[value]}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="hinput-label" htmlFor="id_edit_comment">
+            Comentários
+          </label>
+          <textarea id="id_edit_comment" rows={3} className="htextarea mt-1.5" value={comment} onChange={(e) => setComment(e.target.value)} />
+        </div>
+      </form>
+    </Modal>
+  );
+}
 import { useDismiss } from "../shared/useDismiss";
 import { AppointmentsFilters } from "./AppointmentsFilters";
 import type { Preset } from "../shared/DateRangePopover";
@@ -95,6 +177,18 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
     })
     .sort((a, b) => a.start.localeCompare(b.start));
   const remove = (id: string) => update((d) => ({ ...d, appointments: d.appointments.filter((a) => a.id !== id) }));
+  const [editing, setEditing] = useState<Appointment | null>(null);
+  const exportCsv = () =>
+    download(
+      `agendamentos-${stamp()}.csv`,
+      toCsv(
+        ["Identificador", "Status", "Cliente", "Agenda", "Serviço", "Quando", "Responsável", "Comentários"],
+        rows.map((a) => {
+          const { clientName, agendaName, serviceName } = expand(data, a);
+          return [a.code, STATUS_LABELS[a.status], clientName, agendaName, serviceName, formatWhen(a.start, a.duration), a.owner, a.comment];
+        }),
+      ),
+    );
   const reset = () => {
     setQuery("");
     setStatus("");
@@ -103,7 +197,7 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
 
   return (
     <>
-      <AppointmentsFilters query={query} onQuery={setQuery} preset={preset} onPreset={setPreset} today={today} />
+      <AppointmentsFilters query={query} onQuery={setQuery} preset={preset} onPreset={setPreset} today={today} onExport={exportCsv} />
 
       <div className="mt-6 md:mt-8 hui-reveal">
         <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -177,7 +271,12 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
                           {shows("check_comments") && <td className="htable-cell col_comment">{a.comment}</td>}
                           <td className="htable-cell htable-cell--center">
                             <span className="inline-flex items-center gap-1">
-                              <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Editar agendamento">
+                              <button
+                                type="button"
+                                className="hbtn hbtn--ghost hbtn--sm hbtn--icon"
+                                aria-label="Editar agendamento"
+                                onClick={() => setEditing(a)}
+                              >
                                 <PenIcon className="w-4 h-4" />
                               </button>
                               <button
@@ -233,6 +332,7 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
           </div>
         </div>
       </div>
+      {editing && <EditModal row={editing} onClose={() => setEditing(null)} />}
     </>
   );
 }
