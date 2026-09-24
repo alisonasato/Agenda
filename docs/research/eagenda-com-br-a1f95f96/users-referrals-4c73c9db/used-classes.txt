@@ -1,0 +1,11 @@
+flex flex-col gap-2 gap-3 h-4 h-[18px] hbtn hbtn--tertiary hcopyfield hcopyfield--mono hcopyfield-btn
+hcopyfield-btn-state hcopyfield-btn-state--done hcopyfield-field hcopyfield-value hempty hempty--inline
+hempty-desc hempty-icon hempty-title hkpi hkpi-body hkpi-body--trend hkpi-caption hkpi-group hkpi-label
+hkpi-prefix hkpi-spark hkpi-spark-empty hkpi-value hkpi-value-row hrail hrail-arrow hrail-arrow--next
+hrail-arrow--prev hrail-track hsection hsection-actions hsection-body hsection-desc hsection-head hsection-title
+hsection-titles htable htable-cell htable-col htable-col--center htable-col--end htable-col--num htable-empty
+htable-footer htable-is-empty htable-row--empty htable-scroll htable-table htag htag--active htaggroup
+htaggroup--nowrap hui-card hui-card--flush hui-reveal hui-search hui-search-clear hui-search-icon
+hui-search-input has-query hwidget-actions hwidget-desc hwidget-head hwidget-title hwidget-titles inter-regular
+lg:px-10 max-w-[1550px] md:flex-row md:items-center md:min-w-[12rem] md:ml-auto md:w-72 md:w-auto min-w-0 mt-3
+mt-4 mt-8 mx-auto nunito-bold px-4 py-8 sm:px-6 w-4 w-[18px] w-full htable-fixed
