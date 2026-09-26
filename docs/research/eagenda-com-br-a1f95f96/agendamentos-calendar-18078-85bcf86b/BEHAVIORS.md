@@ -54,10 +54,17 @@ por ação, e não mudam nada até confirmar:
 Na linha, **Editar Tags** (lg) e **Editar comentário** (lg, "Comentários", placeholder "Digite um
 comentário sobre o agendamento") gravam no agendamento; **Editar Agendamento** leva ao formulário.
 
+**Recibo** abre um modal com o agendamento: Identificador · Cliente · E-mail · Agenda · Serviço ·
+Data/Hora · Duração · Valor · Situação · Pagamento, e "Baixar" salva isso num .txt. A caixa
+**"Pagamento realizado externamente"** de "Aceitar" grava `paidExternally` no agendamento, e é ela
+que a linha "Pagamento" do recibo mostra.
+
 ## Diferenças em relação ao original
-- **Recibo** continua sem ação: o original gera um PDF no servidor.
-- A caixa "Pagamento realizado externamente" aparece só em "Aceitar", como no original, mas aqui não
-  tem onde ser guardada — o modelo não tem pagamento.
+- O recibo é **construção deste clone**: o original gera um PDF no servidor e não dá para ver o
+  layout dele sem emitir um. Aqui ele é montado com as peças do design system (a mesma `dl` da
+  revisão do Consolidar) e sai em .txt. Mesma ressalva das linhas das tabelas em docs/DATA-LAYER.md.
+- O que o original faz com a caixa de pagamento também não dá para ver de fora; aqui ela só marca o
+  agendamento e aparece no recibo.
 - O original esconde os rótulos desses cinco botões abaixo de `md`; o utilitário que ele usa para
   isso não existe no CSS que o clone extrai, então aqui eles aparecem sempre.
 

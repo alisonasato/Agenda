@@ -39,6 +39,11 @@ Horários"); `data.blocks` guarda os períodos bloqueados ("Bloquear Horários")
 transforma os dois em slots de 30 minutos, que é o que o calendário desenha — o original serve a
 mesma coisa pronta em `/agendamentos/calendar/get/`.
 
+## Pagamento e recibo
+`paidExternally` no agendamento vem da caixa "Pagamento realizado externamente" do diálogo de
+aceitar, e é o que o recibo mostra. O recibo em si é construção deste clone (o original emite PDF no
+servidor) e sai em .txt pelo mesmo `download()` dos CSVs.
+
 ## Ajustes de um horário
 `data.slotInfo` guarda o que os modais mudam em **um** slot — início, fim, máximo de pessoas e o link
 de videoconferência — indexado por "<agenda>|<início>". O gerador de slots aplica isso por cima dos

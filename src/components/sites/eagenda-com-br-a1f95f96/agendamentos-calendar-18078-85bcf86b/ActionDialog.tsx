@@ -65,7 +65,18 @@ const DIALOGS: Record<
 /** The status an action leaves the appointment in, or undefined when it changes nothing. */
 export const statusOf = (action: CalendarAction) => DIALOGS[action].status;
 
-export function ActionDialog({ action, name, onClose, onConfirm }: { action: CalendarAction; name: string; onClose: () => void; onConfirm: () => void }) {
+export function ActionDialog({
+  action,
+  name,
+  onClose,
+  onConfirm,
+}: {
+  action: CalendarAction;
+  name: string;
+  onClose: () => void;
+  /** `paid` is the "Pagamento realizado externamente" box, only offered on "Aceitar". */
+  onConfirm: (paid: boolean) => void;
+}) {
   const dialog = DIALOGS[action];
   const [paid, setPaid] = useState(false);
 
@@ -81,7 +92,7 @@ export function ActionDialog({ action, name, onClose, onConfirm }: { action: Cal
           <button type="button" className="hbtn hbtn--tertiary" onClick={onClose}>
             Cancelar
           </button>
-          <button type="button" className={`hbtn hbtn--${dialog.tone}`} onClick={onConfirm}>
+          <button type="button" className={`hbtn hbtn--${dialog.tone}`} onClick={() => onConfirm(paid)}>
             {dialog.confirm}
           </button>
         </>

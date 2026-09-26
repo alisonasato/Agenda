@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Modal } from "../shared/Modal";
 import { ActionDialog, statusOf, type CalendarAction } from "./ActionDialog";
-import { CommentModal, SlotBlockModal, SlotEditModal, SlotVideoModal, TagsModal } from "./SlotModals";
+import { CommentModal, ReceiptModal, SlotBlockModal, SlotEditModal, SlotVideoModal, TagsModal } from "./SlotModals";
 import {
   CalendarEmptyIcon,
   CalendarIcon,
@@ -51,9 +51,12 @@ export function SlotDetailsModal({ slot, onClose }: { slot: Slot; onClose: () =>
   const [open, setOpen] = useState<"block" | "edit" | "video" | null>(null);
   const [comment, setComment] = useState<string | null>(null);
   const [tags, setTags] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<{ action: CalendarAction; id?: string; name: string } | null>(null);
 
-  const setStatus = (id: string, status: Status) => update((d) => ({ ...d, appointments: d.appointments.map((a) => (a.id === id ? { ...a, status } : a)) }));
+  // "Aceitar" also records its "Pagamento realizado externamente" box, which the receipt reads.
+  const apply = (id: string, status: Status, paid: boolean) =>
+    update((d) => ({ ...d, appointments: d.appointments.map((a) => (a.id === id ? { ...a, status, paidExternally: paid || a.paidExternally } : a)) }));
 
   const chip = (label: string, icon: React.ReactNode, primary = false, onClick?: () => void) => (
     <button type="button" className={`hbtn ${primary ? "hbtn--primary" : "hbtn--secondary"} hbtn--sm`} title={label} onClick={onClick}>
@@ -120,14 +123,14 @@ export function SlotDetailsModal({ slot, onClose }: { slot: Slot; onClose: () =>
                     return (
                       <tr key={row.id} className="htable-row">
                         <td className="htable-cell">
-                        {slot.info.videoUrl ? (
-                          <a href={slot.info.videoUrl} target="_blank" rel="noreferrer" className="text-primary hover:text-primary/80 text-[11px]">
-                            {slot.info.videoUrl}
-                          </a>
-                        ) : (
-                          serviceName
-                        )}
-                      </td>
+                          {slot.info.videoUrl ? (
+                            <a href={slot.info.videoUrl} target="_blank" rel="noreferrer" className="text-primary hover:text-primary/80 text-[11px]">
+                              {slot.info.videoUrl}
+                            </a>
+                          ) : (
+                            serviceName
+                          )}
+                        </td>
                         <td className="htable-cell">
                           <span className="inline-flex items-center gap-1">
                             {tags.join(", ") || "—"}
@@ -167,7 +170,7 @@ export function SlotDetailsModal({ slot, onClose }: { slot: Slot; onClose: () =>
                           </a>
                         </td>
                         <td className="htable-cell htable-cell--center">
-                          <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Recibo">
+                          <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Recibo" onClick={() => setReceipt(row.id)}>
                             <ReceiptIcon className="w-4 h-4" />
                           </button>
                         </td>
@@ -200,14 +203,15 @@ export function SlotDetailsModal({ slot, onClose }: { slot: Slot; onClose: () =>
       {open === "video" && <SlotVideoModal slot={slot} onClose={() => setOpen(null)} />}
       {comment && <CommentModal appointmentId={comment} onClose={() => setComment(null)} />}
       {tags && <TagsModal appointmentId={tags} onClose={() => setTags(null)} />}
+      {receipt && <ReceiptModal appointmentId={receipt} onClose={() => setReceipt(null)} />}
       {confirming && (
         <ActionDialog
           action={confirming.action}
           name={confirming.name}
           onClose={() => setConfirming(null)}
-          onConfirm={() => {
+          onConfirm={(paid) => {
             const status = statusOf(confirming.action);
-            if (status && confirming.id) setStatus(confirming.id, status);
+            if (status && confirming.id) apply(confirming.id, status, paid);
             setConfirming(null);
           }}
         />

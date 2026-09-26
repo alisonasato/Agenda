@@ -5,10 +5,12 @@ import { Modal } from "../shared/Modal";
 import { ChipMultiSelect } from "../shared/ChipMultiSelect";
 import { Combobox } from "../shared/Combobox";
 import { TimePicker } from "../shared/TimePicker";
-import { CalendarIcon, ClockIcon, LockIcon } from "../shared/icons";
+import { CalendarIcon, ClockIcon, DownloadIcon, LockIcon } from "../shared/icons";
 import { nextId, update, useData } from "@/lib/seiri/store";
-import { formatDate, formatTime } from "@/lib/seiri/select";
+import { expand, formatDate, formatDuration, formatMoney, formatTime } from "@/lib/seiri/select";
 import { slotKey, type Slot } from "@/lib/seiri/slots";
+import { download } from "@/lib/seiri/csv";
+import { STATUS_LABELS } from "@/lib/seiri/types";
 
 /** The platforms the original's videoconference field offers. */
 const PROVIDERS = [
@@ -302,6 +304,64 @@ export function TagsModal({ appointmentId, onClose }: { appointmentId: string; o
         values={tagIds}
         onChange={setTagIds}
       />
+    </Modal>
+  );
+}
+
+/**
+ * "Recibo" of one appointment. The original prints this on its server, so the clone builds it from
+ * the design system's pieces and hands it over as a text file.
+ */
+export function ReceiptModal({ appointmentId, onClose }: { appointmentId: string; onClose: () => void }) {
+  const data = useData();
+  const appointment = data.appointments.find((a) => a.id === appointmentId);
+  if (!appointment) return null;
+
+  const { clientName, serviceName, agendaName, service, client } = expand(data, appointment);
+  const lines: [string, string][] = [
+    ["Identificador", appointment.code],
+    ["Cliente", clientName],
+    ["E-mail", client?.email || "—"],
+    ["Agenda", agendaName],
+    ["Serviço", serviceName],
+    ["Data/Hora", `${formatDate(appointment.start)} ${formatTime(appointment.start)}`],
+    ["Duração", formatDuration(appointment.duration)],
+    ["Valor", formatMoney(service?.price ?? null)],
+    ["Situação", STATUS_LABELS[appointment.status]],
+    ["Pagamento", appointment.paidExternally ? "Realizado externamente" : "—"],
+  ];
+
+  return (
+    <Modal
+      id="appt-receipt-modal"
+      title="Recibo"
+      onClose={onClose}
+      footer={
+        <>
+          <button type="button" className="hbtn hbtn--tertiary" onClick={onClose}>
+            Fechar
+          </button>
+          <button
+            type="button"
+            className="hbtn hbtn--primary"
+            onClick={() =>
+              download(`recibo-${appointment.code}.txt`, `Recibo\n\n${lines.map(([k, v]) => `${k}: ${v}`).join("\n")}\n`, "text/plain;charset=utf-8")
+            }
+          >
+            <DownloadIcon className="w-4 h-4" />
+            Baixar
+          </button>
+        </>
+      }
+    >
+      <dl className="divide-y divide-slate-100">
+        {lines.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-4 py-2.5">
+            <dt className="text-sm text-gray-500 inter-regular">{label}</dt>
+            <dd className="text-sm text-gray-900 inter-semibold text-right">{value}</dd>
+          </div>
+        ))}
+      </dl>
     </Modal>
   );
 }

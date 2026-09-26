@@ -96,6 +96,8 @@ export type Appointment = {
   owner: string;
   tagIds: string[];
   comment: string;
+  /** Ticked on "Aceitar Agendamento"; the receipt reads it. */
+  paidExternally?: boolean;
 };
 
 export type WaitingEntry = {
