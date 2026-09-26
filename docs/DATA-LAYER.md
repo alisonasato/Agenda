@@ -32,6 +32,11 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
 
+## Desativar em vez de apagar
+A lixeira da lista de clientes marca `inactive` no cadastro em vez de removê-lo: o cliente sai das
+listas e o histórico de agendamentos continua apontando para ele, que é o que o original faz
+("Desativar cliente?").
+
 ## Consolidar clientes
 O modal "Consolidar" agrupa os clientes que repetem os campos escolhidos (e-mail, telefone ou CPF),
 mostra quantos grupos e quantos registros seriam fundidos e, ao confirmar, mantém o primeiro cadastro

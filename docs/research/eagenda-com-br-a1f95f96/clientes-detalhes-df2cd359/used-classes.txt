@@ -1,0 +1,6 @@
+break-words gap-x-8 grid grid-cols-1 hbtn hbtn--primary hbtn--secondary hchip hchip--accent hchip--danger hchip--default hchip--soft hchip--sm
+hchip--success hchip--warning hempty hempty--inline hempty-desc hempty-icon hempty-title hsection hsection-actions hsection-body hsection-head
+hsection-title hsection-titles htable htable-cell htable-col htable-empty htable-fixed htable-footer htable-is-empty htable-row htable-row--empty
+htable-scroll htable-table hui-card hui-card--flush hui-reveal hwidget-title inter-regular items-center justify-start lg:grid-cols-3 lg:px-10
+md:grid-cols-2 mt-4 mt-6 mx-auto nunito-bold px-6 py-8 text-gray-500 text-gray-900 text-sm text-xs w-full
+gap-y-5

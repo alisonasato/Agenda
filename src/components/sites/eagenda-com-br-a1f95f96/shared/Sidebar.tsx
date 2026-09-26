@@ -28,6 +28,7 @@ type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 const PATHS = {
   painel: "/",
   clientes: "/clientes/listar",
+  clienteDetalhes: "/clientes/detalhes",
   acessoClientes: "/users/clientes_autorizados/listas_acesso",
   relatorioClientes: "/relatorios/clientes",
   relatorioConsolidado: "/relatorios/consolidado",

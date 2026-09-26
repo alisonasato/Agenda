@@ -2,3 +2,4 @@ mx-auto max-w-[1550px] px-4 sm:px-6 lg:px-10 py-8 mt-4 hui-reveal md:flex-row md
 #clients-table #formFilter #client-search
 hmodal-panel--3xl halert--success val-accent accent-danger
 hcheckbox-stack hcheckbox-stack--tight
+btn-icon btn-icon-sm btn-icon-flat btn-icon-danger halertdialog-backdrop halertdialog-backdrop--opaque halertdialog-container halertdialog-dialog halertdialog-dialog--sm halertdialog-close halertdialog-header halertdialog-icon halertdialog-icon--danger halertdialog-heading halertdialog-body halertdialog-footer

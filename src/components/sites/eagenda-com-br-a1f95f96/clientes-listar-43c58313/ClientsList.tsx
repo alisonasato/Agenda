@@ -11,12 +11,15 @@ import {
   SearchSolidIcon,
   TrashIcon,
   UploadIcon,
+  EyeIcon,
   UserAddIcon,
   UsersIcon,
 } from "../shared/icons";
 import { useData, update } from "@/lib/seiri/store";
 import { fold } from "@/lib/seiri/select";
 import { download, stamp, toCsv } from "@/lib/seiri/csv";
+import { AlertDialog } from "../shared/AlertDialog";
+import { ROUTES } from "../shared/Sidebar";
 import { ClientForm } from "./ClientForm";
 import { ConsolidateModal } from "./ConsolidateModal";
 import { ImportModal } from "./ImportModal";
@@ -113,6 +116,7 @@ export function ClientsList() {
   const data = useData();
   const term = fold(query.trim());
   const rows = data.clients
+    .filter((c) => !c.inactive)
     .filter((c) => (term ? [c.name, c.email, c.phone, c.cpf ?? ""].some((v) => fold(v).includes(term)) : true))
     .filter((c) => {
       const name = filters["filter-name"] ?? "";
@@ -127,7 +131,8 @@ export function ClientsList() {
       );
     })
     .sort((a, b) => a.name.localeCompare(b.name));
-  const remove = (id: string) => update((d) => ({ ...d, clients: d.clients.filter((c) => c.id !== id) }));
+  const deactivate = (id: string) => update((d) => ({ ...d, clients: d.clients.map((c) => (c.id === id ? { ...c, inactive: true } : c)) }));
+  const [removing, setRemoving] = useState<Client | null>(null);
   const [form, setForm] = useState<{ open: boolean; editing: Client | null }>({ open: false, editing: null });
   const [open, setOpen] = useState<"import" | "consolidate" | null>(null);
 
@@ -214,20 +219,35 @@ export function ClientsList() {
                       <td className="htable-cell">{client.email || "—"}</td>
                       <td className="htable-cell">{client.phone || "—"}</td>
                       <td className="htable-cell">{client.gender ?? "—"}</td>
-                      <td className="htable-cell htable-cell--end">
-                        <span className="inline-flex items-center gap-1">
+                      <td className="htable-cell htable-cell--end whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <a
+                            href={`${ROUTES.clienteDetalhes}/?id=${client.id}`}
+                            className="btn-icon btn-icon-sm btn-icon-flat"
+                            title="Visualizar"
+                            aria-label="Visualizar cliente"
+                          >
+                            <EyeIcon className="w-4 h-4" />
+                          </a>
                           <button
                             type="button"
-                            className="hbtn hbtn--ghost hbtn--sm hbtn--icon"
+                            className="btn-icon btn-icon-sm btn-icon-flat"
+                            title="Editar"
                             aria-label="Editar cliente"
                             onClick={() => setForm({ open: true, editing: client })}
                           >
                             <PenIcon className="w-4 h-4" />
                           </button>
-                          <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Excluir cliente" onClick={() => remove(client.id)}>
+                          <button
+                            type="button"
+                            className="btn-icon btn-icon-sm btn-icon-danger"
+                            title="Remover"
+                            aria-label="Remover cliente"
+                            onClick={() => setRemoving(client)}
+                          >
                             <TrashIcon className="w-4 h-4" />
                           </button>
-                        </span>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -263,6 +283,40 @@ export function ClientsList() {
       {form.open && <ClientForm editing={form.editing} onClose={() => setForm({ open: false, editing: null })} />}
       {open === "import" && <ImportModal onClose={() => setOpen(null)} />}
       {open === "consolidate" && <ConsolidateModal onClose={() => setOpen(null)} />}
+      {removing && (
+        <AlertDialog
+          id="client-delete-dialog"
+          heading="Desativar cliente?"
+          icon={<TrashIcon className="w-5 h-5" />}
+          onClose={() => setRemoving(null)}
+          footer={
+            <>
+              <button type="button" className="hbtn hbtn--tertiary" onClick={() => setRemoving(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                id="client-delete-confirm-btn"
+                className="hbtn hbtn--danger"
+                onClick={() => {
+                  deactivate(removing.id);
+                  setRemoving(null);
+                }}
+              >
+                <TrashIcon className="w-4 h-4" />
+                Desativar
+              </button>
+            </>
+          }
+        >
+          <p>
+            <strong id="client-delete-name" className="font-semibold">
+              {removing.name}
+            </strong>{" "}
+            deixa de aparecer nas listas; os agendamentos permanecem no histórico.
+          </p>
+        </AlertDialog>
+      )}
     </>
   );
 }

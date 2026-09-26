@@ -38,6 +38,8 @@ export type Client = {
   /** One of MARITAL_STATUS below. */
   maritalStatus?: string;
   address?: Address;
+  /** The original "desativa" a client: it leaves the lists, its appointments stay. */
+  inactive?: boolean;
 };
 
 /** "Estado Civil" options, with the values the original stores. */

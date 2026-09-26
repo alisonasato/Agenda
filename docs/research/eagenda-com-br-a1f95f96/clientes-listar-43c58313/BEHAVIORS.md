@@ -23,10 +23,20 @@ navegador (docs/DATA-LAYER.md).
   selecionados, grupos encontrados e registros a fundir, este em vermelho) e "Confirmar Fusão"
   funde de verdade — mantém o primeiro cadastro de cada grupo, preenche os campos vazios dele com
   os dos outros e reaponta agendamentos e lista de espera para quem ficou.
-- **Exportar** baixa `clientes-AAAA-MM-DD.csv` com o que a tabela está mostrando.
+- **Exportar** baixa `clientes-AAAA-MM-DD.csv` com o que a tabela está mostrando (só os ativos).
 - **Filtros** filtra por nome, CPF, e-mail e telefone. "Empresa" e "Documento da Empresa" existem no
   original (ele manda `company_filter` e `company_document_filter`), mas o cadastro de cliente não
   tem empresa em nenhuma das telas, então aqui eles não casam com nada — como no original vazio.
+
+## Ações da linha
+Cada linha traz os três botões do original, `btn-icon btn-icon-sm` de 36×36 com 4px entre eles:
+- **Visualizar** (`btn-icon-flat`, olho) leva à página de detalhes do cliente
+  (docs/research/.../clientes-detalhes-df2cd359).
+- **Editar** (`btn-icon-flat`, lápis) abre o modal de cadastro preenchido.
+- **Remover** (`btn-icon-danger`, lixeira vermelha) abre o alerta "Desativar cliente?", que repete o
+  texto do original: o nome em negrito, "deixa de aparecer nas listas; os agendamentos permanecem no
+  histórico". Confirmar marca o cliente como inativo — ele some da lista, mas o cadastro e os
+  agendamentos continuam lá, como no original, que desativa em vez de apagar.
 
 ## Diferenças em relação ao original
 - O original aceita .csv, .xlsx e .xls e oferece "Baixar modelo (.xlsx)"; o clone roda só no
