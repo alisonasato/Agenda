@@ -29,6 +29,7 @@ const PATHS = {
   painel: "/",
   clientes: "/clientes/listar",
   clienteDetalhes: "/clientes/detalhes",
+  clienteEditar: "/clientes/editar",
   acessoClientes: "/users/clientes_autorizados/listas_acesso",
   relatorioClientes: "/relatorios/clientes",
   relatorioConsolidado: "/relatorios/consolidado",

@@ -32,6 +32,11 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
 
+## Cadastro completo do cliente
+O modal da lista guarda o essencial; a tela `/clientes/editar/` guarda o resto do que o original
+pede — tipo e número de identidade, naturalidade, distrito e os dados da empresa. É de lá que saem
+a "Nome da Empresa"/"CNPJ" da tela de detalhes e os filtros de empresa da lista.
+
 ## Desativar em vez de apagar
 A lixeira da lista de clientes marca `inactive` no cadastro em vez de removê-lo: o cliente sai das
 listas e o histórico de agendamentos continua apontando para ele, que é o que o original faz

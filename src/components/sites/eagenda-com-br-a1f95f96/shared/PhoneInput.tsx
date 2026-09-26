@@ -161,8 +161,12 @@ export function PhoneInput({ name, id, label, value, onChange }: PhoneInputProps
   }, []);
   // Reformat what is typed whenever the country's mask changes (utils arriving, another country).
   useEffect(() => setLocal((l) => applyMask(l, rules.masks)), [rules]);
+  const reported = useRef(value ?? "");
   useEffect(() => {
-    onChange?.(local ? `+${country.dial} ${local}` : "");
+    const next = local ? `+${country.dial} ${local}` : "";
+    if (next === reported.current) return;
+    reported.current = next;
+    onChange?.(next);
     // Only the number itself matters here; a new onChange each render would just repeat it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local, country.dial]);

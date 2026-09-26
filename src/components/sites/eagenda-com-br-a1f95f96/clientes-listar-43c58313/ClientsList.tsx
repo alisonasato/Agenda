@@ -123,11 +123,15 @@ export function ClientsList() {
       const doc = filters["filter-document"] ?? "";
       const email = filters["filter-email"] ?? "";
       const phone = filters["filter-phone"] ?? "";
+      const company = filters["filter-company"] ?? "";
+      const companyDoc = filters["filter-company-document"] ?? "";
       return (
         (!name || fold(c.name).includes(fold(name))) &&
         (!doc || fold(c.cpf ?? "").includes(fold(doc))) &&
         (!email || fold(c.email).includes(fold(email))) &&
-        (!phone || fold(c.phone).includes(fold(phone)))
+        (!phone || fold(c.phone).includes(fold(phone))) &&
+        (!company || fold(c.companyName ?? "").includes(fold(company))) &&
+        (!companyDoc || fold(c.companyCnpj ?? "").includes(fold(companyDoc)))
       );
     })
     .sort((a, b) => a.name.localeCompare(b.name));

@@ -31,7 +31,7 @@ const parseBR = (text?: string) => {
 const formatBR = (date: Date | null) =>
   date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}` : "";
 
-const EMPTY_ADDRESS: Address = { cep: "", street: "", number: "", complement: "", neighborhood: "", country: BRAZIL, state: "", city: "" };
+const EMPTY_ADDRESS: Address = { cep: "", street: "", number: "", complement: "", neighborhood: "", district: "", country: BRAZIL, state: "", city: "" };
 
 function Field({
   id,

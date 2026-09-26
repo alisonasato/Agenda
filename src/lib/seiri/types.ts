@@ -21,8 +21,22 @@ export type Service = {
 
 export type Tag = { id: string; name: string };
 
-/** The address block the client form keeps under "Endereço (Opcional)". */
-export type Address = { cep: string; street: string; number: string; complement: string; neighborhood: string; country: string; state: string; city: string };
+/** The four pills the edit page offers; the quick form only sets the first two. */
+export type Gender = "Masculino" | "Feminino" | "Outro" | "Prefiro não informar";
+
+/** The address block the client forms keep under "Endereço". */
+export type Address = {
+  cep: string;
+  street: string;
+  number: string;
+  complement: string;
+  neighborhood: string;
+  /** "Distrito", only on the edit page. */
+  district: string;
+  country: string;
+  state: string;
+  city: string;
+};
 
 export type Client = {
   id: string;
@@ -30,7 +44,7 @@ export type Client = {
   email: string;
   phone: string;
   cpf?: string;
-  gender?: "Feminino" | "Masculino";
+  gender?: Gender;
   /** "dd/mm/aaaa", the way the form shows it. */
   birthday?: string;
   nationality?: string;
@@ -38,9 +52,25 @@ export type Client = {
   /** One of MARITAL_STATUS below. */
   maritalStatus?: string;
   address?: Address;
+  /** "Tipo de identidade" (RG, CNH, …) and its number, from the edit page. */
+  identificationType?: string;
+  identificationNumber?: string;
+  /** "Naturalidade". */
+  placeOfBirth?: string;
+  companyName?: string;
+  companyCnpj?: string;
   /** The original "desativa" a client: it leaves the lists, its appointments stay. */
   inactive?: boolean;
 };
+
+/** "Tipo de identidade" options, with the values the original stores. */
+export const IDENTIFICATION_TYPES = [
+  { value: "1", label: "RG" },
+  { value: "2", label: "CNH" },
+  { value: "3", label: "Passaporte" },
+  { value: "4", label: "Carteira de Trabalho" },
+  { value: "5", label: "Carteira de Identidade Profissional (OAB, CRC, CRM, CRA, CREA, etc)" },
+];
 
 /** "Estado Civil" options, with the values the original stores. */
 export const MARITAL_STATUS = [

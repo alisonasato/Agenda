@@ -24,9 +24,8 @@ navegador (docs/DATA-LAYER.md).
   funde de verdade — mantém o primeiro cadastro de cada grupo, preenche os campos vazios dele com
   os dos outros e reaponta agendamentos e lista de espera para quem ficou.
 - **Exportar** baixa `clientes-AAAA-MM-DD.csv` com o que a tabela está mostrando (só os ativos).
-- **Filtros** filtra por nome, CPF, e-mail e telefone. "Empresa" e "Documento da Empresa" existem no
-  original (ele manda `company_filter` e `company_document_filter`), mas o cadastro de cliente não
-  tem empresa em nenhuma das telas, então aqui eles não casam com nada — como no original vazio.
+- **Filtros** filtra pelos seis campos: nome, CPF, e-mail, telefone, Empresa e Documento da Empresa.
+  Os dois últimos usam a denominação social e o CNPJ que a tela de editar cadastro preenche.
 
 ## Ações da linha
 Cada linha traz os três botões do original, `btn-icon btn-icon-sm` de 36×36 com 4px entre eles:

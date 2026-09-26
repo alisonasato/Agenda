@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CalendarEmptyIcon, ChevronLeftIcon, PenIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
-import { ClientForm } from "../clientes-listar-43c58313/ClientForm";
 import { useData } from "@/lib/seiri/store";
 import { expand, formatDate, formatDuration, formatTime } from "@/lib/seiri/select";
-import { STATUS_LABELS, STATUS_TONES, type Client } from "@/lib/seiri/types";
+import { IDENTIFICATION_TYPES, STATUS_LABELS, STATUS_TONES, type Client } from "@/lib/seiri/types";
 
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
@@ -40,7 +38,6 @@ export function ClientDetails() {
   const data = useData();
   const id = useSearchParams().get("id");
   const client = data.clients.find((c) => c.id === id);
-  const [editing, setEditing] = useState(false);
 
   const rows = data.appointments
     .filter((a) => a.clientId === client?.id)
@@ -54,10 +51,10 @@ export function ClientDetails() {
           <ChevronLeftIcon className="w-4 h-4" />
           Voltar
         </a>
-        <button type="button" className="hbtn hbtn--primary" disabled={!client} onClick={() => setEditing(true)}>
+        <a href={`${ROUTES.clienteEditar}/?id=${client?.id ?? ""}`} className="hbtn hbtn--primary" aria-disabled={!client}>
           <PenIcon className="w-4 h-4" />
           Editar Cadastro
-        </button>
+        </a>
       </div>
 
       <div className="mt-6">
@@ -76,12 +73,16 @@ export function ClientDetails() {
               <Item label="Data de Nascimento">{longDate(client?.birthday)}</Item>
               <Item label="CPF">{client?.cpf || "—"}</Item>
               <Item label="Endereço">{client ? addressLine(client) : "—"}</Item>
-              <Item label="Local de Nascimento">—</Item>
+              <Item label="Local de Nascimento">{client?.placeOfBirth || "—"}</Item>
               <Item label="Gênero">{client?.gender?.toLowerCase() ?? "—"}</Item>
-              <Item label="Documento de Identidade">—</Item>
+              <Item label="Documento de Identidade">
+                {client?.identificationNumber
+                  ? `${IDENTIFICATION_TYPES.find((t) => t.value === client.identificationType)?.label ?? ""} ${client.identificationNumber}`.trim()
+                  : "—"}
+              </Item>
               <Item label="Nacionalidade">{client?.nationality || "—"}</Item>
-              <Item label="Nome da Empresa">—</Item>
-              <Item label="CNPJ da Empresa">—</Item>
+              <Item label="Nome da Empresa">{client?.companyName || "—"}</Item>
+              <Item label="CNPJ da Empresa">{client?.companyCnpj || "—"}</Item>
             </div>
           </div>
         </div>
@@ -148,8 +149,6 @@ export function ClientDetails() {
           </div>
         </div>
       </div>
-
-      {editing && client && <ClientForm editing={client} onClose={() => setEditing(false)} />}
     </div>
   );
 }
