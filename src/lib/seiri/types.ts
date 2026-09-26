@@ -110,6 +110,25 @@ export type WaitingEntry = {
   createdAt: string;
 };
 
+/** One working interval of a weekday, as "Configurar Horários" edits it. */
+export type Interval = { start: string; end: string; max: number | null };
+
+/** Working intervals per agenda, indexed by weekday (0 = Sunday). An empty day is "Fechado". */
+export type Hours = Record<string, Interval[][]>;
+
+/** A range the agenda does not take bookings in ("Bloquear Horários"). */
+export type Block = {
+  id: string;
+  agendaIds: string[];
+  /** "2026-09-26"; `to` repeats `from` for a single day. */
+  from: string;
+  to: string;
+  /** "09:00", or "" for the whole day. */
+  startTime: string;
+  endTime: string;
+  reason: string;
+};
+
 export type Data = {
   agendas: Agenda[];
   services: Service[];
@@ -117,6 +136,8 @@ export type Data = {
   clients: Client[];
   appointments: Appointment[];
   waiting: WaitingEntry[];
+  hours: Hours;
+  blocks: Block[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

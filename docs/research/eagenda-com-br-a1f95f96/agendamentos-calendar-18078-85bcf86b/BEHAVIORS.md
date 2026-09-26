@@ -1,8 +1,38 @@
 # /agendamentos/calendar/ — Behaviors
 
 ## Data (fase de lógica)
-- Desde 2026-09-23 o calendário mostra os agendamentos do navegador (docs/DATA-LAYER.md): blocos
-  posicionados pelo horário na semana/dia e chips por dia no mês, coloridos pelo serviço. Feriados continuam.
+- O calendário desenha **os horários da agenda**, como o original: a resposta de
+  `/agendamentos/calendar/get/` é uma lista de slots de 30 minutos (`slotDuration: "0:30:00"`), não
+  de agendamentos. Slot livre mostra o intervalo ("09:30–10:00"); slot ocupado se divide entre quem
+  reservou; um agendamento de 1 hora ocupa os dois slots por onde passa.
+- A cor é a "Ocupação do Horário", a opção com que o original abre: livre `#48CFAE`, lotado
+  `#D42325`, parcialmente ocupado `#F5A524` (o original só mostra os dois primeiros porque a conta
+  de referência tem `max_people: 1`). O fundo é a cor clareada 72% e o texto a cor escurecida 45%,
+  como o original calcula.
+- Os slots vêm de `data.hours` (Configurar Horários) e os bloqueios de `data.blocks`
+  (Bloquear Horários) — docs/DATA-LAYER.md.
+
+## Botões (fase de lógica)
+- **Clique num horário** abre "Detalhes do Horário" (modal 5xl): agenda e data/hora no topo, os cinco
+  botões do original (Bloquear Horário · Editar Horário · Videoconferência · **Incluir Agendamento**,
+  que vira **Encaixar Agendamento** quando o horário já tem gente · Sincronizar Google Agenda) e a
+  tabela Local · Tags · Nome · Email · Fone · Obs. · Status · Ações · Recibo. Vazio: "Nenhum
+  agendamento neste horário".
+- As **ações da linha mudam com o status**, como no original: Pendente → Confirmar · Recusar ·
+  Editar; Confirmado → Registrar Chegada · Não Compareceu · Cancelar Agendamento · Editar. Clicar
+  grava o novo status e repinta o chip e o calendário.
+- **Bloquear Horários** abre o modal md (448×475) com Agendas, Data Inicial/Final, Horário de
+  Início/Fim, Motivo, e o botão vermelho "Bloquear". O bloqueio cinza-escurece os horários livres do
+  período e mantém quem já estava agendado.
+- **Configurar Horários** abre o modal 3xl (768×644) com a agenda e uma linha por dia da semana
+  (início – fim – máx, lixeira, botão de adicionar intervalo). Dia sem intervalo mostra "Fechado".
+  Salvar muda a grade na hora.
+
+## Diferenças em relação ao original
+- Bloquear Horário, Editar Horário, Videoconferência, Sincronizar Google Agenda e Recibo são botões
+  sem ação: o original abre outras telas que este clone não tem.
+- O original esconde os rótulos desses cinco botões abaixo de `md`; o utilitário que ele usa para
+  isso não existe no CSS que o clone extrai, então aqui eles aparecem sempre.
 
 ## Scroll sweep
 - The page itself never scrolls (`html, body { height: 100dvh; overflow: hidden }`); only the grid scrolls.
@@ -24,8 +54,8 @@
   plus a "Concluir" footer button. The trigger shows the selected view type.
 - **Mini calendar day:** selects that date; the selected week row keeps `bg-accent/10`; today keeps an accent ring
   (`shadow-[inset_0_0_0_1.5px_rgba(10,112,214,0.55)]`).
-- **Empty slots:** only today and future days get `cursor-pointer` + `aria-label="Clique para incluir horário"`
-  (past days are inert). Clicking opens a create-appointment modal — out of scope for the clone.
+- **Slots:** every slot is clickable and opens "Detalhes do Horário" (see "Botões"). The aria-label
+  repeats the original's: `09:30 Horário Livre`, or the names booked into it.
 - **Mobile menu button** (fixed, <lg): opens the off-canvas sidebar with its overlay.
 
 ## Hover sweep

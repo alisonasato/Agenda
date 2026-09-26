@@ -23,7 +23,13 @@ export function CalendarIsland() {
 
   const header = (
     <div className="cal-topbar-head">
-      <button type="button" id="cal-cta-incluir" className="hbtn hbtn--primary hbtn--sm cal-topbar-cta" title="Incluir Agendamento" aria-label="Incluir Agendamento">
+      <button
+        type="button"
+        id="cal-cta-incluir"
+        className="hbtn hbtn--primary hbtn--sm cal-topbar-cta"
+        title="Incluir Agendamento"
+        aria-label="Incluir Agendamento"
+      >
         <AddAppointmentIcon className="w-4 h-4" />
         <span className="cal-topbar-cta-label">Incluir Agendamento</span>
       </button>
@@ -60,11 +66,7 @@ export function CalendarIsland() {
                 <MiniCalendar selected={date} today={today} onSelect={setDate} />
                 <div className="flex-1 min-w-0 min-h-0 relative">
                   <div className="h-full transition-opacity">
-                    {view === "month" ? (
-                      <MonthGrid month={date} today={today} />
-                    ) : (
-                      <TimeGrid days={view === "day" ? [date] : weekDays(date)} today={today} />
-                    )}
+                    {view === "month" ? <MonthGrid month={date} today={today} /> : <TimeGrid days={view === "day" ? [date] : weekDays(date)} today={today} />}
                   </div>
                 </div>
               </div>

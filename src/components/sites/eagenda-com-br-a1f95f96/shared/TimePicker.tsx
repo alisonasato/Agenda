@@ -8,16 +8,29 @@ import { useDismiss } from "./useDismiss";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-type TimePickerProps = { id: string; name: string; step?: number };
+type TimePickerProps = {
+  id: string;
+  name: string;
+  step?: number;
+  /** "09:00" — set when a form keeps the value itself. */
+  value?: string;
+  onChange?: (value: string) => void;
+  ariaLabel?: string;
+};
 
 /**
  * Port of the original's hTimePicker (.htime): a native time input plus a clock button that
  * opens Hora / Min columns (minutes every `step`, 5 by default). The popover is teleported
  * and placed like the other field pickers.
  */
-export function TimePicker({ id, name, step = 5 }: TimePickerProps) {
+export function TimePicker({ id, name, step = 5, value: controlled, onChange, ariaLabel }: TimePickerProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [own, setOwn] = useState(controlled ?? "");
+  const value = controlled ?? own;
+  const setValue = (next: string) => {
+    setOwn(next);
+    onChange?.(next);
+  };
   const rootRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -43,8 +56,25 @@ export function TimePicker({ id, name, step = 5 }: TimePickerProps) {
   return (
     <div ref={rootRef} id={id} className="htime" onKeyDown={(e) => e.key === "Escape" && setOpen(false)}>
       <div ref={anchorRef} className="htime-field">
-        <input ref={inputRef} type="time" className="htime-input" name={name} value={value} onChange={(e) => setValue(e.target.value)} />
-        <button type="button" className="htime-clock" tabIndex={-1} aria-haspopup="dialog" aria-label="Abrir seletor de hora" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <input
+          ref={inputRef}
+          type="time"
+          className="htime-input"
+          name={name}
+          id={id}
+          aria-label={ariaLabel}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <button
+          type="button"
+          className="htime-clock"
+          tabIndex={-1}
+          aria-haspopup="dialog"
+          aria-label="Abrir seletor de hora"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
           <ClockSolidIcon className="w-4 h-4" />
         </button>
       </div>

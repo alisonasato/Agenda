@@ -10,6 +10,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `types.ts` | `Agenda`, `Service`, `Tag`, `Client` (com `Address` e `MARITAL_STATUS`), `Appointment`, `WaitingEntry`, `Data` e os rótulos/cores de status |
 | `seed.ts` | Os dados iniciais: 2 agendas, 4 serviços, 3 tags, 6 clientes, 14 agendamentos e 4 inscrições na lista de espera. As datas são geradas **relativas a hoje** (de -6 a +12 dias), para os filtros de período terem o que mostrar |
 | `store.ts` | `useData()`, `update()`, `reset()` e `nextId()` |
+| `slots.ts` | Os slots de 30 minutos do calendário: `slotsOf()`, `slotColor()`, `hourRange()` |
 | `select.ts` | Formatação (`formatWhen`, `formatMoney`, `formatDuration`), o filtro de período `inPreset()` e o `expand()` que troca ids por nomes |
 
 ## Como funciona
@@ -31,6 +32,12 @@ pt-BR abrir os acentos. Exportam: Agendamentos, Clientes e o Relatório Consolid
 de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que o original pede
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
+
+## Horários e bloqueios
+`data.hours` guarda os intervalos de trabalho de cada agenda por dia da semana ("Configurar
+Horários"); `data.blocks` guarda os períodos bloqueados ("Bloquear Horários"). `src/lib/seiri/slots.ts`
+transforma os dois em slots de 30 minutos, que é o que o calendário desenha — o original serve a
+mesma coisa pronta em `/agendamentos/calendar/get/`.
 
 ## Cadastro completo do cliente
 O modal da lista guarda o essencial; a tela `/clientes/editar/` guarda o resto do que o original

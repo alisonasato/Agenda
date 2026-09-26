@@ -1,4 +1,4 @@
-import type { Appointment, Client, Data, Service, Status, WaitingEntry } from "./types";
+import type { Appointment, Client, Data, Hours, Interval, Service, Status, WaitingEntry } from "./types";
 
 const AGENDAS = [
   { id: "a1", name: "Agenda Principal", color: "#0A70D6", active: true },
@@ -12,20 +12,68 @@ const TAGS = [
 ];
 
 const SERVICES: Service[] = [
-  { id: "s1", name: "Consulta inicial", price: 180, duration: 60, agendaIds: ["a1", "a2"], tagIds: ["t1"], order: 1, color: "#6366F1", maxPeople: 1, members: ["Maria Souza"] },
-  { id: "s2", name: "Retorno", price: 90, duration: 30, agendaIds: ["a1"], tagIds: ["t2"], order: 2, color: "#17C964", maxPeople: 1, members: ["Maria Souza", "João Pedro"] },
-  { id: "s3", name: "Avaliação", price: 120, duration: 45, agendaIds: ["a1", "a2"], tagIds: [], order: 3, color: "#F5A524", maxPeople: 2, members: ["João Pedro"] },
+  {
+    id: "s1",
+    name: "Consulta inicial",
+    price: 180,
+    duration: 60,
+    agendaIds: ["a1", "a2"],
+    tagIds: ["t1"],
+    order: 1,
+    color: "#6366F1",
+    maxPeople: 1,
+    members: ["Maria Souza"],
+  },
+  {
+    id: "s2",
+    name: "Retorno",
+    price: 90,
+    duration: 30,
+    agendaIds: ["a1"],
+    tagIds: ["t2"],
+    order: 2,
+    color: "#17C964",
+    maxPeople: 1,
+    members: ["Maria Souza", "João Pedro"],
+  },
+  {
+    id: "s3",
+    name: "Avaliação",
+    price: 120,
+    duration: 45,
+    agendaIds: ["a1", "a2"],
+    tagIds: [],
+    order: 3,
+    color: "#F5A524",
+    maxPeople: 2,
+    members: ["João Pedro"],
+  },
   { id: "s4", name: "Sessão online", price: null, duration: 30, agendaIds: ["a2"], tagIds: ["t3"], order: 4, color: "#EC4899", maxPeople: null, members: [] },
 ];
 
 const CLIENTS: Client[] = [
-  { id: "c1", name: "Ana Beatriz Lima", email: "ana.lima@exemplo.com.br", phone: "+55 11 98888-1010", cpf: "123.456.789-01" , gender: "Feminino" },
-  { id: "c2", name: "Bruno Carvalho", email: "bruno.carvalho@exemplo.com.br", phone: "+55 11 98888-2020" , gender: "Masculino" },
-  { id: "c3", name: "Carla Monteiro", email: "carla.monteiro@exemplo.com.br", phone: "+55 21 97777-3030", cpf: "987.654.321-00" , gender: "Feminino" },
-  { id: "c4", name: "Diego Ferreira", email: "diego.ferreira@exemplo.com.br", phone: "+55 31 96666-4040" , gender: "Masculino" },
-  { id: "c5", name: "Elisa Rocha", email: "elisa.rocha@exemplo.com.br", phone: "+55 41 95555-5050" , gender: "Feminino" },
-  { id: "c6", name: "Fábio Nogueira", email: "fabio.nogueira@exemplo.com.br", phone: "+55 51 94444-6060" , gender: "Masculino" },
+  { id: "c1", name: "Ana Beatriz Lima", email: "ana.lima@exemplo.com.br", phone: "+55 11 98888-1010", cpf: "123.456.789-01", gender: "Feminino" },
+  { id: "c2", name: "Bruno Carvalho", email: "bruno.carvalho@exemplo.com.br", phone: "+55 11 98888-2020", gender: "Masculino" },
+  { id: "c3", name: "Carla Monteiro", email: "carla.monteiro@exemplo.com.br", phone: "+55 21 97777-3030", cpf: "987.654.321-00", gender: "Feminino" },
+  { id: "c4", name: "Diego Ferreira", email: "diego.ferreira@exemplo.com.br", phone: "+55 31 96666-4040", gender: "Masculino" },
+  { id: "c5", name: "Elisa Rocha", email: "elisa.rocha@exemplo.com.br", phone: "+55 41 95555-5050", gender: "Feminino" },
+  { id: "c6", name: "Fábio Nogueira", email: "fabio.nogueira@exemplo.com.br", phone: "+55 51 94444-6060", gender: "Masculino" },
 ];
+
+// The live agenda takes bookings 07:00–18:00 from Monday to Saturday and closes on Sunday.
+const WEEK: Interval[] = [{ start: "07:00", end: "18:00", max: null }];
+const HOURS: Hours = {
+  a1: [[], WEEK, WEEK, WEEK, WEEK, WEEK, WEEK],
+  a2: [
+    [],
+    [{ start: "09:00", end: "17:00", max: null }],
+    [{ start: "09:00", end: "17:00", max: null }],
+    [{ start: "09:00", end: "17:00", max: null }],
+    [{ start: "09:00", end: "17:00", max: null }],
+    [{ start: "09:00", end: "17:00", max: null }],
+    [],
+  ],
+};
 
 /** "2026-09-24T09:00" for a day offset from today and a time of day. */
 function at(dayOffset: number, hour: number, minute = 0) {
@@ -82,8 +130,8 @@ function waiting(): WaitingEntry[] {
 
 /** The data a fresh browser starts with: two agendas, four services and a fortnight of appointments. */
 export function seed(): Data {
-  return { agendas: AGENDAS, services: SERVICES, tags: TAGS, clients: CLIENTS, appointments: appointments(), waiting: waiting() };
+  return { agendas: AGENDAS, services: SERVICES, tags: TAGS, clients: CLIENTS, appointments: appointments(), waiting: waiting(), hours: HOURS, blocks: [] };
 }
 
 /** What the prerendered HTML shows, before the browser loads its own data. */
-export const EMPTY: Data = { agendas: [], services: [], tags: [], clients: [], appointments: [], waiting: [] };
+export const EMPTY: Data = { agendas: [], services: [], tags: [], clients: [], appointments: [], waiting: [], hours: {}, blocks: [] };

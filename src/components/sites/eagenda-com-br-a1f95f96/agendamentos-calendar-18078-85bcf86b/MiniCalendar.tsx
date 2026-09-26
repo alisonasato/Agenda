@@ -53,11 +53,7 @@ export function MiniCalendar({ selected, today, onSelect }: MiniCalendarProps) {
                       type="button"
                       onClick={() => onSelect(day)}
                       className={`w-8 h-8 mx-auto flex items-center justify-center rounded-full text-[12px] transition-colors ${
-                        isToday
-                          ? "text-accent font-semibold shadow-[inset_0_0_0_1.5px_rgba(10,112,214,0.55)]"
-                          : outside
-                            ? "text-slate-400"
-                            : "text-slate-700"
+                        isToday ? "text-accent font-semibold shadow-[inset_0_0_0_1.5px_rgba(10,112,214,0.55)]" : outside ? "text-slate-400" : "text-slate-700"
                       }`}
                     >
                       {day.getDate()}
@@ -74,12 +70,9 @@ export function MiniCalendar({ selected, today, onSelect }: MiniCalendarProps) {
         <div className="flex flex-col items-center text-center px-4 pt-10">
           <CalendarEmptyIcon width={26} height={26} className="text-slate-300 mb-2" />
           <p className="text-[13px] inter-semibold text-slate-600">Tudo em dia</p>
-          <p className="text-[12px] inter-regular text-slate-500 mt-0.5 leading-snug">
-            Sem pendências nem agendamentos nos próximos 30 dias.
-          </p>
+          <p className="text-[12px] inter-regular text-slate-500 mt-0.5 leading-snug">Sem pendências nem agendamentos nos próximos 30 dias.</p>
         </div>
       </div>
     </aside>
   );
 }
-

@@ -27,7 +27,7 @@ function read(): Data {
   } catch {
     parsed = null;
   }
-  const data = parsed ?? seed();
+  const data = parsed ? { ...seed(), ...parsed } : seed();
   write(data);
   return data;
 }

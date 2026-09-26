@@ -1,17 +1,10 @@
 "use client";
 
 import { useRef, useState, type CSSProperties } from "react";
-import {
-  ActivityIcon,
-  AddAppointmentIcon,
-  CaretDownIcon,
-  CheckReadIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  LockIcon,
-  SettingsIcon,
-} from "../shared/icons";
+import { ActivityIcon, AddAppointmentIcon, CaretDownIcon, CheckReadIcon, ChevronLeftIcon, ChevronRightIcon, LockIcon, SettingsIcon } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
+import { BlockHoursModal } from "./BlockHoursModal";
+import { TimetableModal } from "./TimetableModal";
 import { useIsMobile } from "../shared/useIsMobile";
 import type { CalendarView } from "../shared/calendarDates";
 
@@ -122,14 +115,20 @@ function ViewTabs({ view, onView, fill }: { view: CalendarView; onView: (v: Cale
   );
 }
 
-function ActionButtons() {
+function ActionButtons({ onOpen }: { onOpen: (which: "block" | "timetable") => void }) {
   return (
     <>
-      <button type="button" className="hbtn hbtn--ghost hbtn--sm" title="Bloquear Horários" aria-label="Bloquear Horários">
+      <button type="button" className="hbtn hbtn--ghost hbtn--sm" title="Bloquear Horários" aria-label="Bloquear Horários" onClick={() => onOpen("block")}>
         <LockIcon width={16} height={16} />
         <span className="hactionbar-label">Bloquear Horários</span>
       </button>
-      <button type="button" className="hbtn hbtn--ghost hbtn--sm" title="Configurar Horários" aria-label="Configurar Horários">
+      <button
+        type="button"
+        className="hbtn hbtn--ghost hbtn--sm"
+        title="Configurar Horários"
+        aria-label="Configurar Horários"
+        onClick={() => onOpen("timetable")}
+      >
         <SettingsIcon width={16} height={16} />
         <span className="hactionbar-label">Configurar Horários</span>
       </button>
@@ -149,58 +148,67 @@ type CalendarControlsProps = {
 
 export function CalendarControls({ view, onView, display, onDisplay, shortTitle, onPrev, onNext }: CalendarControlsProps) {
   const isMobile = useIsMobile();
+  const [open, setOpen] = useState<"block" | "timetable" | null>(null);
   return (
-    <div className="cal-controls w-full px-3 md:px-6 lg:px-10 pt-0 pb-3 flex-shrink-0">
-      {isMobile ? (
-      /* Below md: date row + full-width tabs + scrollable action bar. */
-      <div className="flex flex-col gap-2 pt-1.5">
-        <div className="flex items-center gap-0.5 w-full">
-          <button type="button" className="hbtn hbtn--ghost hbtn--icon hbtn--sm" aria-label="Anterior" onClick={onPrev}>
-            <ChevronLeftIcon width={16} height={16} />
-          </button>
-          <button type="button" className="hbtn hbtn--ghost hbtn--icon hbtn--sm" aria-label="Próximo" onClick={onNext}>
-            <ChevronRightIcon width={16} height={16} />
-          </button>
-          <span className="flex-1 min-w-0 truncate text-sm nunito-bold text-slate-900 px-1">{shortTitle}</span>
-          <button type="button" className="hbtn hbtn--primary hbtn--icon hbtn--sm flex-shrink-0" title="Incluir Agendamento" aria-label="Incluir Agendamento">
-            <AddAppointmentIcon width={16} height={16} />
-          </button>
-        </div>
-        <ViewTabs view={view} onView={onView} fill />
-        <div className="hactionbar w-full" role="group">
-          <div className="hrail-track hactionbar-track">
-            <DisplayMenu value={display} onChange={onDisplay} />
-            <span className="hactionbar-sep" />
-            <ActionButtons />
-          </div>
-          <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-            <ChevronRightIcon width={16} height={16} className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      ) : (
-      /* md and up: display menu · tabs · actions. */
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
-        <div className="flex items-center gap-2 min-w-0 col-start-1">
-          <div className="hactionbar" role="group">
-            <div className="hrail-track hactionbar-track">
-              <DisplayMenu value={display} onChange={onDisplay} />
+    <>
+      <div className="cal-controls w-full px-3 md:px-6 lg:px-10 pt-0 pb-3 flex-shrink-0">
+        {isMobile ? (
+          /* Below md: date row + full-width tabs + scrollable action bar. */
+          <div className="flex flex-col gap-2 pt-1.5">
+            <div className="flex items-center gap-0.5 w-full">
+              <button type="button" className="hbtn hbtn--ghost hbtn--icon hbtn--sm" aria-label="Anterior" onClick={onPrev}>
+                <ChevronLeftIcon width={16} height={16} />
+              </button>
+              <button type="button" className="hbtn hbtn--ghost hbtn--icon hbtn--sm" aria-label="Próximo" onClick={onNext}>
+                <ChevronRightIcon width={16} height={16} />
+              </button>
+              <span className="flex-1 min-w-0 truncate text-sm nunito-bold text-slate-900 px-1">{shortTitle}</span>
+              <button
+                type="button"
+                className="hbtn hbtn--primary hbtn--icon hbtn--sm flex-shrink-0"
+                title="Incluir Agendamento"
+                aria-label="Incluir Agendamento"
+              >
+                <AddAppointmentIcon width={16} height={16} />
+              </button>
+            </div>
+            <ViewTabs view={view} onView={onView} fill />
+            <div className="hactionbar w-full" role="group">
+              <div className="hrail-track hactionbar-track">
+                <DisplayMenu value={display} onChange={onDisplay} />
+                <span className="hactionbar-sep" />
+                <ActionButtons onOpen={setOpen} />
+              </div>
+              <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
+                <ChevronRightIcon width={16} height={16} className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        </div>
-        <div className="flex justify-center col-start-2">
-          <ViewTabs view={view} onView={onView} />
-        </div>
-        <div className="flex min-w-0 justify-end col-start-3">
-          <div className="hactionbar" role="group">
-            <div className="hrail-track hactionbar-track">
-              <ActionButtons />
+        ) : (
+          /* md and up: display menu · tabs · actions. */
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+            <div className="flex items-center gap-2 min-w-0 col-start-1">
+              <div className="hactionbar" role="group">
+                <div className="hrail-track hactionbar-track">
+                  <DisplayMenu value={display} onChange={onDisplay} />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center col-start-2">
+              <ViewTabs view={view} onView={onView} />
+            </div>
+            <div className="flex min-w-0 justify-end col-start-3">
+              <div className="hactionbar" role="group">
+                <div className="hrail-track hactionbar-track">
+                  <ActionButtons onOpen={setOpen} />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-      )}
-    </div>
+      {open === "block" && <BlockHoursModal onClose={() => setOpen(null)} />}
+      {open === "timetable" && <TimetableModal onClose={() => setOpen(null)} />}
+    </>
   );
 }
