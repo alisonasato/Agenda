@@ -118,6 +118,7 @@ const STATUS_TAGS = [
 ];
 
 const BADGE_CLASS = "appt-status-badge hchip hchip--sm ";
+const detailHref = (id: string) => `${ROUTES.agendamentoDetalhes}/?id=${id}`;
 
 /** What a row offers next, by the status it is in — the original hides them all once cancelled. */
 const ROW_ACTIONS: Record<string, { label: string; action: CalendarAction; tone: string; icon: React.ReactNode }[]> = {
@@ -291,12 +292,17 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
                       return (
                         <tr key={a.id} className="htable-row">
                           <td className="htable-cell htable-cell--center whitespace-nowrap">
-                            <span className="text-gray-900 text-sm inter-semibold inline-flex items-center gap-1">{a.code}</span>
+                            <a
+                              href={detailHref(a.id)}
+                              className="text-gray-900 hover:text-primary text-sm inter-semibold inline-flex items-center gap-1 transition-colors"
+                            >
+                              {a.code}
+                            </a>
                           </td>
                           <td className="htable-cell whitespace-nowrap">
-                            <span className={BADGE_CLASS + STATUS_TONES[a.status]}>
+                            <a href={detailHref(a.id)} title={STATUS_LABELS[a.status]} className={BADGE_CLASS + STATUS_TONES[a.status]}>
                               <span className="appt-status-label">{STATUS_LABELS[a.status]}</span>
-                            </span>
+                            </a>
                           </td>
                           <td className="htable-cell">
                             <div className="flex flex-col gap-1 min-w-0">
@@ -345,7 +351,12 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
                             </div>
                           </td>
                           <td className="htable-cell whitespace-nowrap">
-                            <span className="text-sm text-gray-700 font-semibold inter-semibold">{formatWhen(a.start, a.duration)}</span>
+                            <div className="flex flex-col gap-0.5">
+                              <a href={detailHref(a.id)} className="text-sm text-gray-700 hover:text-primary font-semibold inter-semibold transition-colors">
+                                {formatWhen(a.start, a.duration)}
+                              </a>
+                              {a.createdAt && <span className="text-xs text-gray-400 inter-regular">criado {a.createdAt}</span>}
+                            </div>
                           </td>
                           {shows("check_tags") && (
                             <td className="htable-cell col_tags">

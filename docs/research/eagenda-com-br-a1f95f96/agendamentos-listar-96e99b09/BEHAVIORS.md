@@ -17,12 +17,8 @@ Refeita em 26/09/2026 contra o original com dados na tela. As dez colunas são a
   mostra botão nenhum, só o texto "Cancelado"**. Cada ação passa pela confirmação
   (a mesma do calendário) antes de mudar qualquer coisa.
 - **Recibo** é um `hbtn--secondary` escrito "Ver", que abre o mesmo recibo do calendário.
-
-## Diferenças em relação ao original
-- No original, Identificador, Status e Quando são links para `/agendamentos/detalhes/<uuid>`, uma
-  tela que este clone não tem; aqui são texto.
-- O original mostra "criado dd/mm/aaaa hh:mm" embaixo do horário; o modelo do clone não guarda quando
-  o agendamento foi criado.
+- **Identificador, Status e Quando** levam à tela de detalhes do agendamento
+  (agendamentos-detalhes-b0a38a5f), e embaixo do horário aparece o "criado dd/mm/aaaa hh:mm".
 
 ## Scroll sweep
 - Page fits the viewport (doc height 900 at 1440×900); only the table scrolls. No scroll-driven effects.

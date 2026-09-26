@@ -103,6 +103,14 @@ const PLAN: [number, number, string, string, string, Status, string[], string][]
 
 const OWNERS = ["Maria Souza", "João Pedro"];
 
+/** "21/09/2026 09:12" — three days before the appointment, for the "Criado em" line. */
+function createdBefore(start: string) {
+  const d = new Date(`${start}:00`);
+  d.setDate(d.getDate() - 3);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function appointments(): Appointment[] {
   return PLAN.map(([day, hour, clientId, serviceId, agendaId, status, tagIds, comment], i) => ({
     id: `ap${i + 1}`,
@@ -114,6 +122,8 @@ function appointments(): Appointment[] {
     duration: SERVICES.find((s) => s.id === serviceId)?.duration ?? 30,
     status,
     owner: OWNERS[i % OWNERS.length],
+    // The detail page shows when the appointment was booked: a few days before it happens.
+    createdAt: createdBefore(at(day, hour)),
     tagIds,
     comment,
   }));

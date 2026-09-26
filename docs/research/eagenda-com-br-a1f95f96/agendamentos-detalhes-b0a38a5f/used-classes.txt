@@ -1,0 +1,10 @@
+appt-card appt-card-foot appt-fact-label appt-fact-sub appt-fact-value appt-grid appt-head appt-head-actions appt-head-dot appt-head-meta
+appt-head-rule appt-head-status appt-head-strong appt-link appt-person-name appt-status-badge appt-status-label appt-topbar-id appt-topbar-key
+col-span-2 flex flex-col flex-wrap gap-2 gap-3 gap-x-4 gap-x-6 gap-y-3 gap-y-4 grid grid-cols-1 grid-cols-2 havatar havatar--fallback havatar--lg
+havatar-fallback hactionbar hactionbar-sep hactionbar-track hbtn hbtn--danger hbtn--danger-soft hbtn--ghost hbtn--primary hbtn--secondary hbtn--sm
+hbtn--success hchip hchip--accent hchip--default hchip--danger hchip--primary hchip--sm hchip--soft hchip--success hchip--warning hempty
+hempty--inline hempty-desc hempty-title hrail-track hsection hsection-actions hsection-body hsection-head hsection-title hsection-titles htable
+htable-cell htable-col htable-empty htable-fixed htable-footer htable-is-empty htable-row htable-row--empty htable-scroll htable-table htabs
+htabs-indicator htabs-tab hui-card hui-card--flush hui-reveal hwidget-actions hwidget-head hwidget-title hwidget-titles inter-regular inter-semibold
+is-active items-center min-w-0 mt-10 mt-3 mt-4 mx-auto nunito-bold px-6 py-8 sm:flex-row sm:grid-cols-2 sm:inline-flex sm:items-center sm:ml-auto
+text-gray-400 text-gray-500 text-lg text-slate-900 text-xs tracking-tight truncate w-full

@@ -98,6 +98,11 @@ export type Appointment = {
   comment: string;
   /** Ticked on "Aceitar Agendamento"; the receipt reads it. */
   paidExternally?: boolean;
+  /** "25/09/2026 22:18", shown under Detalhes and beside the time in the list. */
+  createdAt?: string;
+  updatedAt?: string;
+  /** The "Alterações" tab of the detail page. */
+  changes?: { at: string; user: string; text: string }[];
 };
 
 export type WaitingEntry = {

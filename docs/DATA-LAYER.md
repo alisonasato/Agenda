@@ -39,6 +39,11 @@ Horários"); `data.blocks` guarda os períodos bloqueados ("Bloquear Horários")
 transforma os dois em slots de 30 minutos, que é o que o calendário desenha — o original serve a
 mesma coisa pronta em `/agendamentos/calendar/get/`.
 
+## Criação e alterações
+Cada agendamento guarda `createdAt` (semeado três dias antes dele), `updatedAt` e `changes`, a lista
+que a aba "Alterações" da tela de detalhes mostra: uma linha por mudança de status, com data/hora,
+responsável e o novo status.
+
 ## Pagamento e recibo
 `paidExternally` no agendamento vem da caixa "Pagamento realizado externamente" do diálogo de
 aceitar, e é o que o recibo mostra. O recibo em si é construção deste clone (o original emite PDF no
