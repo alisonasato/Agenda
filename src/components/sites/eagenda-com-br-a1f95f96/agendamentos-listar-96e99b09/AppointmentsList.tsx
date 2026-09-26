@@ -1,13 +1,30 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CaretDownIcon, CloseCircleIcon, PenIcon, ReceiptIcon, SearchSolidIcon, SlidersIcon, TrashIcon } from "../shared/icons";
+import {
+  CaretDownIcon,
+  CheckReadIcon,
+  CloseCircleIcon,
+  DangerCircleIcon,
+  IdCardIcon,
+  LetterIcon,
+  PenIcon,
+  SearchSolidIcon,
+  SlidersIcon,
+  TagIcon,
+  TrashIcon,
+  WhatsappIcon,
+} from "../shared/icons";
 import { useData, update } from "@/lib/seiri/store";
 import { download, stamp, toCsv } from "@/lib/seiri/csv";
 import { Modal } from "../shared/Modal";
 import { SaveIcon } from "../shared/icons";
-import type { Appointment } from "@/lib/seiri/types";
+import type { Appointment, Status } from "@/lib/seiri/types";
 import { expand, fold, formatWhen, inPreset } from "@/lib/seiri/select";
+import { ROUTES } from "../shared/Sidebar";
+import { ActionDialog, statusOf, type CalendarAction } from "../agendamentos-calendar-18078-85bcf86b/ActionDialog";
+import { CommentModal, ReceiptModal, TagsModal } from "../agendamentos-calendar-18078-85bcf86b/SlotModals";
+import { OwnerModal } from "./OwnerModal";
 import { STATUS_LABELS, STATUS_TONES } from "@/lib/seiri/types";
 
 const EDITABLE: Appointment["status"][] = ["PENDING", "CONFIRMED", "ATTENDED", "NO_SHOW", "CANCELED"];
@@ -100,6 +117,24 @@ const STATUS_TAGS = [
   { value: "CANCELED", label: "Cancelados" },
 ];
 
+const BADGE_CLASS = "appt-status-badge hchip hchip--sm ";
+
+/** What a row offers next, by the status it is in — the original hides them all once cancelled. */
+const ROW_ACTIONS: Record<string, { label: string; action: CalendarAction; tone: string; icon: React.ReactNode }[]> = {
+  PENDING: [
+    { label: "Confirmar", action: "accept", tone: "success", icon: <CheckReadIcon className="w-4 h-4" /> },
+    { label: "Recusar", action: "reject", tone: "danger", icon: <CloseCircleIcon className="w-4 h-4" /> },
+  ],
+  CONFIRMED: [
+    { label: "Registrar Chegada", action: "attend", tone: "success", icon: <CheckReadIcon className="w-4 h-4" /> },
+    { label: "Não Compareceu", action: "no_show", tone: "danger", icon: <DangerCircleIcon className="w-4 h-4" /> },
+    { label: "Cancelar Agendamento", action: "cancel", tone: "flat", icon: <TrashIcon className="w-4 h-4" /> },
+  ],
+  ATTENDED: [],
+  NO_SHOW: [],
+  CANCELED: [],
+};
+
 const OPTIONAL_COLUMNS = [
   { id: "check_tags", label: "Tags", column: "col_tags" },
   { id: "check_owner", label: "Responsável", column: "col_owner" },
@@ -176,8 +211,15 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
       return [a.code, clientName, serviceName, agendaName].some((v) => fold(v).includes(term));
     })
     .sort((a, b) => a.start.localeCompare(b.start));
-  const remove = (id: string) => update((d) => ({ ...d, appointments: d.appointments.filter((a) => a.id !== id) }));
   const [editing, setEditing] = useState<Appointment | null>(null);
+  const [tags, setTags] = useState<string | null>(null);
+  const [owner, setOwner] = useState<string | null>(null);
+  const [comment, setComment] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<{ action: CalendarAction; id: string; name: string } | null>(null);
+  // The confirmations write the status, and "Aceitar" also records its payment box.
+  const apply = (id: string, status: Status, paid: boolean) =>
+    update((d) => ({ ...d, appointments: d.appointments.map((x) => (x.id === id ? { ...x, status, paidExternally: paid || x.paidExternally } : x)) }));
   const exportCsv = () =>
     download(
       `agendamentos-${stamp()}.csv`,
@@ -245,53 +287,144 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
                   </thead>
                   <tbody>
                     {rows.map((a) => {
-                      const { clientName, agendaName, serviceName, tags } = expand(data, a);
+                      const { client, clientName, agendaName, serviceName, tags } = expand(data, a);
                       return (
                         <tr key={a.id} className="htable-row">
-                          <td className="htable-cell htable-cell--center">{a.code}</td>
-                          <td className="htable-cell">
-                            <span className={`hchip hchip--soft hchip--sm ${STATUS_TONES[a.status]}`}>{STATUS_LABELS[a.status]}</span>
+                          <td className="htable-cell htable-cell--center whitespace-nowrap">
+                            <span className="text-gray-900 text-sm inter-semibold inline-flex items-center gap-1">{a.code}</span>
                           </td>
-                          <td className="htable-cell">{clientName}</td>
-                          <td className="htable-cell">
-                            <span className="block">{agendaName}</span>
-                            <span className="block text-xs text-gray-500">{serviceName}</span>
-                          </td>
-                          <td className="htable-cell">{formatWhen(a.start, a.duration)}</td>
-                          {shows("check_tags") && (
-                            <td className="htable-cell col_tags">
-                              {tags.map((t) => (
-                                <span key={t} className="hchip hchip--soft hchip--sm hchip--default">
-                                  {t}
-                                </span>
-                              ))}
-                            </td>
-                          )}
-                          {shows("check_owner") && <td className="htable-cell col_owner">{a.owner}</td>}
-                          {shows("check_comments") && <td className="htable-cell col_comment">{a.comment}</td>}
-                          <td className="htable-cell htable-cell--center">
-                            <span className="inline-flex items-center gap-1">
-                              <button
-                                type="button"
-                                className="hbtn hbtn--ghost hbtn--sm hbtn--icon"
-                                aria-label="Editar agendamento"
-                                onClick={() => setEditing(a)}
-                              >
-                                <PenIcon className="w-4 h-4" />
-                              </button>
-                              <button
-                                type="button"
-                                className="hbtn hbtn--ghost hbtn--sm hbtn--icon"
-                                aria-label="Excluir agendamento"
-                                onClick={() => remove(a.id)}
-                              >
-                                <TrashIcon className="w-4 h-4" />
-                              </button>
+                          <td className="htable-cell whitespace-nowrap">
+                            <span className={BADGE_CLASS + STATUS_TONES[a.status]}>
+                              <span className="appt-status-label">{STATUS_LABELS[a.status]}</span>
                             </span>
                           </td>
+                          <td className="htable-cell">
+                            <div className="flex flex-col gap-1 min-w-0">
+                              <a
+                                href={ROUTES.clienteDetalhes + "/?id=" + a.clientId}
+                                className="text-sm text-gray-900 hover:text-primary font-semibold inter-semibold truncate appt-client-name transition-colors"
+                              >
+                                {clientName}
+                              </a>
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-500">
+                                {shows("check_phone") && client?.phone && (
+                                  <a
+                                    href={"https://wa.me/" + client.phone.replace(/\D/g, "") + "/"}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="col_phone inline-flex items-center gap-1 hover:text-primary transition-colors"
+                                    title={client.phone}
+                                  >
+                                    <WhatsappIcon className="w-3 h-3" />
+                                    <span>{client.phone}</span>
+                                  </a>
+                                )}
+                                {shows("check_email") && client?.email && (
+                                  <a
+                                    href={"mailto:" + client.email}
+                                    className="col_email inline-flex items-center gap-1 hover:text-primary transition-colors min-w-0"
+                                    title={client.email}
+                                  >
+                                    <LetterIcon className="w-3 h-3" />
+                                    <span className="truncate appt-client-email">{client.email}</span>
+                                  </a>
+                                )}
+                                {shows("check_cpf") && client?.cpf && (
+                                  <span className="col_cpf inline-flex items-center gap-1 font-mono" title={client.cpf}>
+                                    <IdCardIcon className="w-3 h-3" />
+                                    {client.cpf}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="htable-cell">
+                            <div className="flex flex-col gap-1.5 min-w-0">
+                              <span className="text-sm text-gray-900 font-semibold inter-semibold">{agendaName}</span>
+                              <span className="text-xs text-gray-500 inter-regular">{serviceName}</span>
+                            </div>
+                          </td>
+                          <td className="htable-cell whitespace-nowrap">
+                            <span className="text-sm text-gray-700 font-semibold inter-semibold">{formatWhen(a.start, a.duration)}</span>
+                          </td>
+                          {shows("check_tags") && (
+                            <td className="htable-cell col_tags">
+                              <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap gap-1.5">
+                                  {tags.map((t) => (
+                                    <span key={t} className="hchip hchip--soft hchip--sm hchip--default">
+                                      {t}
+                                    </span>
+                                  ))}
+                                </div>
+                                <button
+                                  type="button"
+                                  className="btn-icon btn-icon-sm btn-icon-flat flex-shrink-0"
+                                  title="Editar tags"
+                                  onClick={() => setTags(a.id)}
+                                >
+                                  <TagIcon className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          )}
+                          {shows("check_owner") && (
+                            <td className="htable-cell col_owner">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-700 inter-semibold">{a.owner}</span>
+                                <button
+                                  type="button"
+                                  className="btn-icon btn-icon-sm btn-icon-flat flex-shrink-0"
+                                  title="Editar responsável"
+                                  onClick={() => setOwner(a.id)}
+                                >
+                                  <PenIcon className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          )}
+                          {shows("check_comments") && (
+                            <td className="htable-cell col_comment">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-700 inter-regular truncate max-w-xs" title={a.comment}>
+                                  {a.comment}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="btn-icon btn-icon-sm btn-icon-flat flex-shrink-0"
+                                  title="Editar comentário"
+                                  onClick={() => setComment(a.id)}
+                                >
+                                  <PenIcon className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          )}
+                          <td className="htable-cell htable-cell--center whitespace-nowrap">
+                            {a.status === "CANCELED" ? (
+                              <span className="text-xs text-gray-400 inter-regular">Cancelado</span>
+                            ) : (
+                              <div className="flex items-center justify-center gap-1">
+                                <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Editar Agendamento" onClick={() => setEditing(a)}>
+                                  <PenIcon className="w-4 h-4" />
+                                </button>
+                                {ROW_ACTIONS[a.status].map((action) => (
+                                  <button
+                                    key={action.label}
+                                    type="button"
+                                    className={"btn-icon btn-icon-sm btn-icon-" + action.tone}
+                                    title={action.label}
+                                    onClick={() => setConfirming({ action: action.action, id: a.id, name: clientName })}
+                                  >
+                                    {action.icon}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </td>
                           <td className="htable-cell htable-cell--center">
-                            <button type="button" className="hbtn hbtn--ghost hbtn--sm hbtn--icon" aria-label="Recibo">
-                              <ReceiptIcon className="w-4 h-4" />
+                            <button type="button" className="hbtn hbtn--secondary hbtn--sm" title="Recibo de Agendamento" onClick={() => setReceipt(a.id)}>
+                              Ver
                             </button>
                           </td>
                         </tr>
@@ -333,6 +466,22 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
         </div>
       </div>
       {editing && <EditModal row={editing} onClose={() => setEditing(null)} />}
+      {tags && <TagsModal appointmentId={tags} onClose={() => setTags(null)} />}
+      {owner && <OwnerModal appointmentId={owner} onClose={() => setOwner(null)} />}
+      {comment && <CommentModal appointmentId={comment} onClose={() => setComment(null)} />}
+      {receipt && <ReceiptModal appointmentId={receipt} onClose={() => setReceipt(null)} />}
+      {confirming && (
+        <ActionDialog
+          action={confirming.action}
+          name={confirming.name}
+          onClose={() => setConfirming(null)}
+          onConfirm={(paid) => {
+            const status = statusOf(confirming.action);
+            if (status) apply(confirming.id, status, paid);
+            setConfirming(null);
+          }}
+        />
+      )}
     </>
   );
 }

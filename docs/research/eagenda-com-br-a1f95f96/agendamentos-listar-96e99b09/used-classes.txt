@@ -3,3 +3,4 @@ mx-auto max-w-[1550px] px-4 sm:px-6 lg:px-10 py-8 hui-reveal md:flex-row md:item
  hmenu-item-icon is-open
 htable-row htable-cell--center hbtn--icon hchip hchip--soft hchip--sm hchip--accent hchip--success
 hchip--warning hchip--danger hchip--default text-xs text-gray-500 inline-flex items-center gap-1 block
+btn-icon btn-icon-sm btn-icon-flat btn-icon-success btn-icon-danger appt-status-badge appt-status-label appt-client-name appt-client-email col_cpf col_email col_phone hover:text-primary transition-colors gap-x-3 gap-y-0.5 flex-shrink-0 font-mono max-w-xs text-gray-700 inter-semibold

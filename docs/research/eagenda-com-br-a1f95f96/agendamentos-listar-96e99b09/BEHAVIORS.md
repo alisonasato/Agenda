@@ -4,6 +4,26 @@
 - **Exportar** baixa `agendamentos-AAAA-MM-DD.csv` com as linhas visíveis.
 - O lápis abre um modal com dia, horário, status e comentários, e salvar altera o agendamento.
 
+## Linha da tabela (fase de lógica)
+Refeita em 26/09/2026 contra o original com dados na tela. As dez colunas são as mesmas, e o botão
+"Colunas" liga e desliga Tags, Responsável, CPF, Email, Telefone, Comentários e Respostas Formulário.
+
+- **Cliente** mostra o nome (link para os detalhes do cliente) e, embaixo, a linha de contato que as
+  colunas opcionais controlam: telefone com link de WhatsApp, e-mail com `mailto:` e o CPF.
+- **Tags**, **Responsável** e **Comentários** trazem cada um o seu `btn-icon` de editar, que abre o
+  modal correspondente e grava no agendamento.
+- **Ações** seguem o status, como no original: Pendente → Editar · Confirmar · Recusar;
+  Confirmado → Editar · Registrar Chegada · Não Compareceu · Cancelar Agendamento; **cancelado não
+  mostra botão nenhum, só o texto "Cancelado"**. Cada ação passa pela confirmação
+  (a mesma do calendário) antes de mudar qualquer coisa.
+- **Recibo** é um `hbtn--secondary` escrito "Ver", que abre o mesmo recibo do calendário.
+
+## Diferenças em relação ao original
+- No original, Identificador, Status e Quando são links para `/agendamentos/detalhes/<uuid>`, uma
+  tela que este clone não tem; aqui são texto.
+- O original mostra "criado dd/mm/aaaa hh:mm" embaixo do horário; o modelo do clone não guarda quando
+  o agendamento foi criado.
+
 ## Scroll sweep
 - Page fits the viewport (doc height 900 at 1440×900); only the table scrolls. No scroll-driven effects.
 - The action bar and the status row are rails: they scroll horizontally with `.hrail-arrow` buttons when narrow.
