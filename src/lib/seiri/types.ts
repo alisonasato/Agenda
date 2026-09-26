@@ -21,7 +21,33 @@ export type Service = {
 
 export type Tag = { id: string; name: string };
 
-export type Client = { id: string; name: string; email: string; phone: string; cpf?: string; gender?: "Feminino" | "Masculino" };
+/** The address block the client form keeps under "Endereço (Opcional)". */
+export type Address = { cep: string; street: string; number: string; complement: string; neighborhood: string; country: string; state: string; city: string };
+
+export type Client = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  cpf?: string;
+  gender?: "Feminino" | "Masculino";
+  /** "dd/mm/aaaa", the way the form shows it. */
+  birthday?: string;
+  nationality?: string;
+  profession?: string;
+  /** One of MARITAL_STATUS below. */
+  maritalStatus?: string;
+  address?: Address;
+};
+
+/** "Estado Civil" options, with the values the original stores. */
+export const MARITAL_STATUS = [
+  { value: "Single", label: "Solteiro(a)" },
+  { value: "Married", label: "Casado(a)" },
+  { value: "Divorced", label: "Divorciado(a)" },
+  { value: "Widower", label: "Viúvo(a)" },
+  { value: "StableUnion", label: "União Estável" },
+];
 
 export type Appointment = {
   id: string;

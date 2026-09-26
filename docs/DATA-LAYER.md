@@ -7,7 +7,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 
 | Arquivo | O que tem |
 |---|---|
-| `types.ts` | `Agenda`, `Service`, `Tag`, `Client`, `Appointment`, `WaitingEntry`, `Data` e os rótulos/cores de status |
+| `types.ts` | `Agenda`, `Service`, `Tag`, `Client` (com `Address` e `MARITAL_STATUS`), `Appointment`, `WaitingEntry`, `Data` e os rótulos/cores de status |
 | `seed.ts` | Os dados iniciais: 2 agendas, 4 serviços, 3 tags, 6 clientes, 14 agendamentos e 4 inscrições na lista de espera. As datas são geradas **relativas a hoje** (de -6 a +12 dias), para os filtros de período terem o que mostrar |
 | `store.ts` | `useData()`, `update()`, `reset()` e `nextId()` |
 | `select.ts` | Formatação (`formatWhen`, `formatMoney`, `formatDuration`), o filtro de período `inPreset()` e o `expand()` que troca ids por nomes |
@@ -28,7 +28,15 @@ tabela preenchida. As linhas são construção deste clone, montadas com as peç
 ## Exportar e importar
 CSV é gerado e lido no navegador (`src/lib/seiri/csv.ts`): separador `;`, com BOM para o Excel em
 pt-BR abrir os acentos. Exportam: Agendamentos, Clientes e o Relatório Consolidado (depois do aviso
-de LGPD). Importa: Clientes, por um arquivo "nome;email;telefone;cpf".
+de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que o original pede
+(`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
+`profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
+
+## Consolidar clientes
+O modal "Consolidar" agrupa os clientes que repetem os campos escolhidos (e-mail, telefone ou CPF),
+mostra quantos grupos e quantos registros seriam fundidos e, ao confirmar, mantém o primeiro cadastro
+de cada grupo, preenche os campos vazios dele com os dos outros e reaponta `appointments` e
+`waiting` para quem ficou.
 
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):

@@ -1,17 +1,30 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CloseCircleIcon, GalleryIcon } from "./icons";
+import { CloseCircleIcon, GalleryIcon, SheetIcon } from "./icons";
 
-const MAX_BYTES = 1048576;
+const MB = 1048576;
 
-type FilePickerProps = { name: string; label: string; desc?: string };
+type FilePickerProps = {
+  name: string;
+  label: string;
+  desc?: string;
+  /** The picker takes images by default; the client import asks for a spreadsheet instead. */
+  kind?: "image" | "sheet";
+  accept?: string;
+  /** Cap in MB, the number the "muito grande" message repeats. */
+  maxMb?: number;
+  /** The chosen file, for the forms that read it themselves. */
+  onFile?: (file: File | null) => void;
+};
 
 /**
- * .hfilepicker image cell (port of the original's inline Alpine component): click or drop to
- * pick, 1 MB cap, thumbnail preview, and a discard button for a pending pick. Nothing is uploaded.
+ * .hfilepicker cell (port of the original's inline Alpine component): click or drop to pick,
+ * a size cap, a preview, and a discard button for a pending pick. Nothing is uploaded.
  */
-export function FilePicker({ name, label, desc }: FilePickerProps) {
+export function FilePicker({ name, label, desc, kind = "image", accept, maxMb = 1, onFile }: FilePickerProps) {
+  const MAX_BYTES = maxMb * MB;
+  const isImage = kind === "image";
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState("");
   const [fileName, setFileName] = useState("");
@@ -23,13 +36,14 @@ export function FilePicker({ name, label, desc }: FilePickerProps) {
   const handle = (f: File | undefined) => {
     if (!f) return;
     if (f.size > MAX_BYTES) {
-      setError("O arquivo é muito grande. Máximo de 1 MB.");
+      setError(`O arquivo é muito grande. Máximo de ${maxMb} MB.`);
       if (inputRef.current) inputRef.current.value = "";
       return;
     }
     setError("");
     setFileName(f.name);
     setPreview(URL.createObjectURL(f));
+    onFile?.(f);
   };
 
   const revert = () => {
@@ -37,6 +51,7 @@ export function FilePicker({ name, label, desc }: FilePickerProps) {
     setPreview("");
     setFileName("");
     setError("");
+    onFile?.(null);
     // Tell listeners (the save bar) the field changed back.
     inputRef.current?.dispatchEvent(new Event("change", { bubbles: true }));
   };
@@ -45,7 +60,15 @@ export function FilePicker({ name, label, desc }: FilePickerProps) {
 
   return (
     <div className="hfilepicker">
-      <input ref={inputRef} type="file" className="hfilepicker-input" name={name} id={`id_${name}`} accept="image/*" onChange={(e) => handle(e.target.files?.[0])} />
+      <input
+        ref={inputRef}
+        type="file"
+        className="hfilepicker-input"
+        name={name}
+        id={`id_${name}`}
+        accept={accept ?? "image/*"}
+        onChange={(e) => handle(e.target.files?.[0])}
+      />
       <div
         className={`hfilepicker-cell${dragging ? " is-dragging" : ""}`}
         role="button"
@@ -65,10 +88,16 @@ export function FilePicker({ name, label, desc }: FilePickerProps) {
         }}
       >
         <span className="hfilepicker-label">{label}</span>
-        <span className={`hfilepicker-value${preview ? "" : " hfilepicker-value--empty"}`}>{preview ? fileName || "Imagem atual" : "Selecionar imagem"}</span>
+        <span className={`hfilepicker-value${preview ? "" : " hfilepicker-value--empty"}`}>
+          {preview ? fileName || (isImage ? "Imagem atual" : "Arquivo atual") : isImage ? "Selecionar imagem" : "Selecionar arquivo"}
+        </span>
         <span className="hfilepicker-thumb">
-          {/* eslint-disable-next-line @next/next/no-img-element -- local blob preview */}
-          {preview ? <img src={preview} alt="" /> : <span className="hfilepicker-thumb-icon"><GalleryIcon className="w-3.5 h-3.5" /></span>}
+          {preview && isImage ? (
+            // eslint-disable-next-line @next/next/no-img-element -- local blob preview
+            <img src={preview} alt="" />
+          ) : (
+            <span className="hfilepicker-thumb-icon">{isImage ? <GalleryIcon className="w-3.5 h-3.5" /> : <SheetIcon className="w-3.5 h-3.5" />}</span>
+          )}
         </span>
         {preview && (
           <button type="button" className="hfilepicker-discard" aria-label="Descartar seleção" onClick={(e) => (e.stopPropagation(), revert())}>

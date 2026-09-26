@@ -9,7 +9,12 @@ import { useAnchoredPopover } from "./useAnchoredPopover";
 import { useDismiss } from "./useDismiss";
 
 // Port of the original's hPhoneInput (intl-tel-input 18.1.6 data + libphonenumber utils).
-const MSG = { invalid: "Número de telefone inválido", tooShort: "Número incompleto", tooLong: "Número muito comprido", invalidCountry: "Código de país inválido" };
+const MSG = {
+  invalid: "Número de telefone inválido",
+  tooShort: "Número incompleto",
+  tooLong: "Número muito comprido",
+  invalidCountry: "Código de país inválido",
+};
 
 let utilsPromise: Promise<void> | null = null;
 /** libphonenumber (~260 KB) loads after the field, like the original's utilsUrl. */
@@ -111,12 +116,32 @@ const caretAfter = (value: string, n: number) => {
   return value.length;
 };
 
-type PhoneInputProps = { name: string; id: string; label: string };
+/** Reads "+55 11 98888-1010" back into the country and the masked local part. */
+function splitNumber(value?: string) {
+  const fallback = { country: { iso2: "br", dial: "55" }, local: "" };
+  const text = (value ?? "").trim();
+  if (!text.startsWith("+")) return { ...fallback, local: text };
+  const digits = digitsOf(text);
+  const match = allCountries.filter((c) => digits.startsWith(c.dialCode)).sort((a, b) => b.dialCode.length - a.dialCode.length)[0];
+  if (!match) return fallback;
+  return { country: { iso2: match.iso2, dial: match.dialCode }, local: text.slice(text.indexOf(match.dialCode) + match.dialCode.length).trim() };
+}
+
+type PhoneInputProps = {
+  name: string;
+  id: string;
+  label: string;
+  /** "+55 11 98888-1010" — the masked number a controlled form starts with. */
+  value?: string;
+  /** Same shape as `value`, empty while nothing is typed. */
+  onChange?: (value: string) => void;
+};
 
 /** .hphone: country button (flag + DDI) + masked local number, validated on blur. Starts empty on Brazil. */
-export function PhoneInput({ name, id, label }: PhoneInputProps) {
-  const [country, setCountry] = useState({ iso2: "br", dial: "55" });
-  const [local, setLocal] = useState("");
+export function PhoneInput({ name, id, label, value, onChange }: PhoneInputProps) {
+  const start = splitNumber(value);
+  const [country, setCountry] = useState(start.country);
+  const [local, setLocal] = useState(start.local);
   const [rules, setRules] = useState(() => countryRules("br", "55"));
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
@@ -136,6 +161,11 @@ export function PhoneInput({ name, id, label }: PhoneInputProps) {
   }, []);
   // Reformat what is typed whenever the country's mask changes (utils arriving, another country).
   useEffect(() => setLocal((l) => applyMask(l, rules.masks)), [rules]);
+  useEffect(() => {
+    onChange?.(local ? `+${country.dial} ${local}` : "");
+    // Only the number itself matters here; a new onChange each render would just repeat it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [local, country.dial]);
 
   const validate = (value: string, c = country) => {
     const u = window.intlTelInputUtils;
