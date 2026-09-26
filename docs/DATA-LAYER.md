@@ -39,6 +39,11 @@ Horários"); `data.blocks` guarda os períodos bloqueados ("Bloquear Horários")
 transforma os dois em slots de 30 minutos, que é o que o calendário desenha — o original serve a
 mesma coisa pronta em `/agendamentos/calendar/get/`.
 
+## Ajustes de um horário
+`data.slotInfo` guarda o que os modais mudam em **um** slot — início, fim, máximo de pessoas e o link
+de videoconferência — indexado por "<agenda>|<início>". O gerador de slots aplica isso por cima dos
+horários da agenda.
+
 ## Cadastro completo do cliente
 O modal da lista guarda o essencial; a tela `/clientes/editar/` guarda o resto do que o original
 pede — tipo e número de identidade, naturalidade, distrito e os dados da empresa. É de lá que saem

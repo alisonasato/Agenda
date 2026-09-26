@@ -28,9 +28,36 @@
   (início – fim – máx, lixeira, botão de adicionar intervalo). Dia sem intervalo mostra "Fechado".
   Salvar muda a grade na hora.
 
+## Botões do horário (fase de lógica)
+Cada botão do "Detalhes do Horário" abre o modal que o original abre, com o mesmo título e tamanho:
+- **Bloquear Horário** (md): "Novos agendamentos não poderão ser feitos neste horário." + "Motivo do
+  bloqueio". Grava um bloqueio só daquela meia hora.
+- **Editar Horário** (lg): cabeçalho com agenda e data, "Horário de Início*", "Horário de Fim*" e
+  "Número máximo de agendamentos no horário". Grava em `slotInfo`, então vale só para aquele horário.
+- **Videoconferência** (lg): "Plataforma de Videoconferência" (Google Meet · Microsoft Teams · Zoom ·
+  Outro) e "Link da Videoconferência". Com link salvo, a coluna "Local" da tabela passa a mostrá-lo,
+  como no original.
+- **Incluir/Encaixar Agendamento** leva ao formulário de novo agendamento com o dia e a hora do slot.
+- **Sincronizar Google Agenda** abre a confirmação do original e não muda nada, como lá.
+
+As ações de status passam pela confirmação do original (`calendarActionModal`), um `halertdialog`
+por ação, e não mudam nada até confirmar:
+
+| Ação | Título | Botão | Tom |
+|---|---|---|---|
+| Confirmar | Aceitar Agendamento | Aceitar | success, com a caixa "Pagamento realizado externamente" |
+| Recusar | Rejeitar Agendamento | Rejeitar | danger |
+| Registrar Chegada | Registrar Chegada | Confirmar Chegada | success |
+| Não Compareceu | Registrar Não Comparecimento | Confirmar | danger |
+| Cancelar Agendamento | Cancelar Agendamento | Cancelar Agendamento | danger |
+
+Na linha, **Editar Tags** (lg) e **Editar comentário** (lg, "Comentários", placeholder "Digite um
+comentário sobre o agendamento") gravam no agendamento; **Editar Agendamento** leva ao formulário.
+
 ## Diferenças em relação ao original
-- Bloquear Horário, Editar Horário, Videoconferência, Sincronizar Google Agenda e Recibo são botões
-  sem ação: o original abre outras telas que este clone não tem.
+- **Recibo** continua sem ação: o original gera um PDF no servidor.
+- A caixa "Pagamento realizado externamente" aparece só em "Aceitar", como no original, mas aqui não
+  tem onde ser guardada — o modelo não tem pagamento.
 - O original esconde os rótulos desses cinco botões abaixo de `md`; o utilitário que ele usa para
   isso não existe no CSS que o clone extrai, então aqui eles aparecem sempre.
 

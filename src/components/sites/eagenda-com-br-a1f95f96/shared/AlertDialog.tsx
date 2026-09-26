@@ -9,7 +9,7 @@ type AlertDialogProps = {
   heading: string;
   /** The mark in the header circle. */
   icon: ReactNode;
-  tone?: "danger" | "accent";
+  tone?: "danger" | "accent" | "success";
   onClose: () => void;
   footer: ReactNode;
   children: ReactNode;

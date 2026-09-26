@@ -130,8 +130,18 @@ function waiting(): WaitingEntry[] {
 
 /** The data a fresh browser starts with: two agendas, four services and a fortnight of appointments. */
 export function seed(): Data {
-  return { agendas: AGENDAS, services: SERVICES, tags: TAGS, clients: CLIENTS, appointments: appointments(), waiting: waiting(), hours: HOURS, blocks: [] };
+  return {
+    agendas: AGENDAS,
+    services: SERVICES,
+    tags: TAGS,
+    clients: CLIENTS,
+    appointments: appointments(),
+    waiting: waiting(),
+    hours: HOURS,
+    blocks: [],
+    slotInfo: {},
+  };
 }
 
 /** What the prerendered HTML shows, before the browser loads its own data. */
-export const EMPTY: Data = { agendas: [], services: [], tags: [], clients: [], appointments: [], waiting: [], hours: {}, blocks: [] };
+export const EMPTY: Data = { agendas: [], services: [], tags: [], clients: [], appointments: [], waiting: [], hours: {}, blocks: [], slotInfo: {} };

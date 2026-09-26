@@ -1,11 +1,14 @@
 import { dayKey } from "./select";
-import type { Appointment, Data, Interval } from "./types";
+import type { Appointment, Data, Interval, SlotInfo } from "./types";
 
 /** The original serves the calendar as half-hour slots (`slotDuration: "0:30:00"`). */
 export const SLOT_MINUTES = 30;
 
 /** "Ocupação do Horário", the colouring the calendar opens with. */
 export const SLOT_COLORS = { free: "#48CFAE", partial: "#F5A524", full: "#D42325" };
+
+/** The key "Editar Horário" and "Videoconferência" store a slot's own settings under. */
+export const slotKey = (agendaId: string, start: string) => `${agendaId}|${start}`;
 
 export type Slot = {
   /** "2026-09-24T09:30". */
@@ -17,6 +20,8 @@ export type Slot = {
   appointments: Appointment[];
   blocked: boolean;
   blockReason: string;
+  /** What the slot modals changed on this slot. */
+  info: SlotInfo;
 };
 
 const toMinutes = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
@@ -44,11 +49,14 @@ export function slotsOf(data: Data, agendaId: string, day: Date): Slot[] {
     for (let at = toMinutes(interval.start); at + SLOT_MINUTES <= toMinutes(interval.end); at += SLOT_MINUTES) {
       const to = at + SLOT_MINUTES;
       const block = blockOf(data, agendaId, key, at, to);
+      const start = `${key}T${toTime(at)}`;
+      const info = data.slotInfo[slotKey(agendaId, start)] ?? {};
       slots.push({
-        start: `${key}T${toTime(at)}`,
-        end: `${key}T${toTime(to)}`,
+        start: info.start ? `${key}T${info.start}` : start,
+        end: info.end ? `${key}T${info.end}` : `${key}T${toTime(to)}`,
         agendaId,
-        max: interval.max ?? 1,
+        max: info.max ?? interval.max ?? 1,
+        info,
         // An appointment fills every slot its duration runs through.
         appointments: booked.filter((a) => {
           const from = toMinutes(a.start.slice(11, 16));

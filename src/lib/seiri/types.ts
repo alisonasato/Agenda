@@ -129,6 +129,9 @@ export type Block = {
   reason: string;
 };
 
+/** What the slot modals change on one half-hour slot, keyed "<agendaId>|<start>". */
+export type SlotInfo = { start?: string; end?: string; max?: number | null; videoProvider?: string; videoUrl?: string };
+
 export type Data = {
   agendas: Agenda[];
   services: Service[];
@@ -138,6 +141,7 @@ export type Data = {
   waiting: WaitingEntry[];
   hours: Hours;
   blocks: Block[];
+  slotInfo: Record<string, SlotInfo>;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {
