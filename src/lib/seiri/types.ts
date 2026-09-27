@@ -103,6 +103,34 @@ export type Appointment = {
   updatedAt?: string;
   /** The "Alterações" tab of the detail page. */
   changes?: { at: string; user: string; text: string }[];
+  /** Set when the appointment came from a recurrence. */
+  recurrenceId?: string;
+};
+
+/** A rule that repeats an appointment, from "Agendamentos Recorrentes". */
+export type Recurrence = {
+  id: string;
+  /** The short code the table's "Identificador" column shows. */
+  code: string;
+  /** "dd/mm/aaaa hh:mm". */
+  createdAt: string;
+  label: string;
+  agendaId: string;
+  serviceId: string;
+  /** The first occurrence, same format as `Appointment.start`. */
+  start: string;
+  status: Status;
+  clientIds: string[];
+  owner: string;
+  tagIds: string[];
+  /** Weekdays it repeats on (0 = Sunday). */
+  weekdays: number[];
+  /** "A cada N semanas". */
+  interval: number;
+  /** "dd/mm/aaaa", empty when only the count limits it. */
+  endDate: string;
+  maxCount: number;
+  notify: boolean;
 };
 
 export type WaitingEntry = {
@@ -280,6 +308,7 @@ export type Data = {
   slotInfo: Record<string, SlotInfo>;
   agendaRules: Record<string, AgendaRules>;
   agendaOptions: Record<string, AgendaOptions>;
+  recurrences: Recurrence[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

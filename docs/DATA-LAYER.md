@@ -39,6 +39,11 @@ Horários"); `data.blocks` guarda os períodos bloqueados ("Bloquear Horários")
 transforma os dois em slots de 30 minutos, que é o que o calendário desenha — o original serve a
 mesma coisa pronta em `/agendamentos/calendar/get/`.
 
+## Recorrências
+`data.recurrences` guarda as regras de "Agendamentos Recorrentes". Salvar uma regra cria os
+agendamentos dela na hora, marcados com `recurrenceId`, e apagar a regra remove os que ainda não
+aconteceram.
+
 ## Criação e alterações
 Cada agendamento guarda `createdAt` (semeado três dias antes dele), `updatedAt` e `changes`, a lista
 que a aba "Alterações" da tela de detalhes mostra: uma linha por mudança de status, com data/hora,
