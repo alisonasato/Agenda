@@ -60,6 +60,8 @@ node scripts/extract-css-eagenda.mjs $SRC/dashboard.css $TMP/union.txt $PAINEL/e
   echo
   # The appointment detail page ships its own <style> block, like the calendar does.
   cat $APTDETALHES/inline-styles.css
+  echo
+  cat $PAINEL/checklist-styles.css
 } > src/app/eagenda.css
 
 # Calendar route only: the React calendar island bundles + the page's inline styles.

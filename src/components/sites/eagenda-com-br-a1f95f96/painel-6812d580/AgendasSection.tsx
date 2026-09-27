@@ -14,9 +14,7 @@ const SLOTS = 5;
 const norm = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
 function StatusChip({ active }: { active: boolean }) {
-  return (
-    <span className={`hchip ${active ? "hchip--success" : "hchip--danger"} hchip--primary hchip--sm`}>{active ? "Ativo" : "Inativo"}</span>
-  );
+  return <span className={`hchip ${active ? "hchip--success" : "hchip--danger"} hchip--primary hchip--sm`}>{active ? "Ativo" : "Inativo"}</span>;
 }
 
 function EmptyCells() {
@@ -40,7 +38,7 @@ function Actions({ small }: { small?: boolean }) {
       <a href={ROUTES.calendario} title="Ver Agenda" className={`btn-icon btn-icon-solid${size}`}>
         <CalendarIcon className="w-4 h-4" />
       </a>
-      <a href="#" title="Configurar Agenda" className={`btn-icon btn-icon-flat${size} group/btn`}>
+      <a href={ROUTES.configurarAgendas} title="Configurar Agenda" className={`btn-icon btn-icon-flat${size} group/btn`}>
         <SettingsIcon className="w-4 h-4 group-hover/btn:rotate-90 transition-transform duration-300" />
       </a>
     </>

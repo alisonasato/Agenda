@@ -1,17 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  BarController,
-  BarElement,
-  CategoryScale,
-  Chart,
-  LinearScale,
-  LineController,
-  LineElement,
-  PointElement,
-  Tooltip,
-} from "chart.js";
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, LineController, LineElement, PointElement, Tooltip } from "chart.js";
 import { CaretDownIcon, CheckReadIcon } from "../shared/icons";
 import { periodBuckets, periodLabels, type Period } from "./periods";
 import { useData } from "@/lib/seiri/store";
@@ -108,7 +98,17 @@ export function TrendChart() {
         labels,
         datasets: [
           { type: "bar", label: "Agendamentos", data: [...booked], backgroundColor: accent, borderRadius: 6, maxBarThickness: 28, order: 2 },
-          { type: "line", label: "Atendimentos", data: [...attended], borderColor: success, backgroundColor: success, borderWidth: 2.5, pointRadius: 0, tension: 0.4, order: 1 },
+          {
+            type: "line",
+            label: "Atendimentos",
+            data: [...attended],
+            borderColor: success,
+            backgroundColor: success,
+            borderWidth: 2.5,
+            pointRadius: 0,
+            tension: 0.4,
+            order: 1,
+          },
         ],
       },
       options: {

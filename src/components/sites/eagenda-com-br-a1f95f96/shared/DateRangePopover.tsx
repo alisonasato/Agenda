@@ -6,7 +6,9 @@ import { ChevronLeftIcon, ChevronRightIcon } from "../shared/icons";
 import { MONTHS, WEEKDAYS_SHORT, addMonths, pickerCells, sameDay } from "./calendarDates";
 
 export const PRESETS = ["Hoje", "Próximos 7 dias", "Próximos 30 dias", "Este mês", "Todos os períodos"] as const;
-export type Preset = (typeof PRESETS)[number];
+// "Amanhã" never shows in the menu: it only arrives from the dashboard's "Agendamentos amanhã" card,
+// the same way the original links that card to a single day instead of one of its presets.
+export type Preset = (typeof PRESETS)[number] | "Amanhã";
 
 // Always 42 cells (6 rows, blanks around the month), like the original's daysOf().
 function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {

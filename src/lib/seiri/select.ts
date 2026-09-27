@@ -37,6 +37,7 @@ export function inPreset(iso: string, preset: string, today = new Date()) {
   const day = startOfDay(parse(iso)).getTime();
   const from = startOfDay(today).getTime();
   if (preset === "Hoje") return day === from;
+  if (preset === "Amanhã") return day === from + 86400000;
   if (preset === "Este mês") {
     const d = parse(iso);
     return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();

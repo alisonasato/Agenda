@@ -4,7 +4,6 @@ import { DashboardShell } from "@/components/sites/eagenda-com-br-a1f95f96/share
 import { KpiCards } from "@/components/sites/eagenda-com-br-a1f95f96/painel-6812d580/KpiCards";
 import { OnboardingChecklist } from "@/components/sites/eagenda-com-br-a1f95f96/painel-6812d580/OnboardingChecklist";
 import { TrendChart } from "@/components/sites/eagenda-com-br-a1f95f96/painel-6812d580/TrendChart";
-import { UsageCards } from "@/components/sites/eagenda-com-br-a1f95f96/painel-6812d580/UsageCards";
 
 // Clone of https://eagenda.com.br/painel/?version=3 — account data replaced with mock values.
 export const metadata: Metadata = {
@@ -15,11 +14,10 @@ export default function Home() {
   return (
     <DashboardShell title="Minha Empresa" email="contato@exemplo.com.br" active="Painel">
       <div className="mx-auto w-full max-w-[1550px] px-6 py-8 lg:px-10 min-w-0">
-      <OnboardingChecklist />
-      <KpiCards />
-      <TrendChart />
-      <UsageCards />
-      <AgendasSection />
+        <OnboardingChecklist />
+        <KpiCards />
+        <TrendChart />
+        <AgendasSection />
       </div>
     </DashboardShell>
   );

@@ -7,6 +7,32 @@
   não cancelados, linha = atendidos; a legenda mostra os totais.
 - A seção "Minhas Agendas" calcula hoje, amanhã e próximos 7 dias por agenda.
 
+## Painel (revisto em 26/09/2026)
+O original foi redesenhado depois da primeira captura, e o clone foi refeito contra a versão atual.
+
+- **Checklist**: cartões lado a lado (`honbchecklist-steps` / `honbchecklist-step`) com o progresso
+  num `hmeter` ("1 de 4") e o botão de dispensar. Cada passo leva à tela correspondente; o passo
+  "Fazer um agendamento teste" aparece como concluído (`is-done`) porque há agendamentos no
+  navegador, e o primeiro passo pendente recebe `is-emphasis`.
+- **Agendamentos + Utilização** dividem uma linha `lg:grid-cols-3`: à esquerda o widget
+  "Agendamentos" com "Ver todos" e os dois cartões (hoje e amanhã), que levam à lista já filtrada
+  pelo período; à direita "Utilização" com o botão do plano e o cartão "Agendamentos/Mês" com o
+  medidor. Os quatro cartões de utilização que o clone tinha viraram um só, como no original de hoje.
+- **Minhas Agendas de Atendimento** mantém as colunas Agenda · Hoje · Amanhã · Próx 7 dias ·
+  Taxa Ocupação · Status · Ações; "Configurar Agenda" agora abre a configuração de agendas.
+
+## Verificação
+Medido contra o ao vivo com a mesma largura (1227px): checklist 849 de largura, passos
+`81 / 81 / 81 / 56` de altura, cabeçalho 44, progresso 20, lista de passos 149 e o mesmo padding;
+cartões KPI e o cartão de medidor em 267×148.
+
+## Diferenças em relação ao original
+- O original sabe quais passos do checklist foram cumpridos; o clone só consegue deduzir o do
+  agendamento teste, então marca o primeiro pendente como "próximo passo".
+- A folha de estilos da conta foi redesenhada depois da captura original. O bundle continua saindo do
+  `dashboard.css` medido pelas outras telas, e só as regras do checklist e do medidor vêm da folha
+  atual (`checklist-styles.css`).
+
 ## Scroll sweep
 - Topbar is `sticky top-0` with `bg-[#F7F9FB]` (forced by inline style); no change on scroll.
 - No scroll-triggered animations, snap points or smooth-scroll libraries.
