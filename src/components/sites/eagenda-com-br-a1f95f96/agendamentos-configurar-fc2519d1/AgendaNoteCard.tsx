@@ -1,25 +1,23 @@
 import type { CSSProperties } from "react";
-import {
-  ActivityIcon,
-  CalendarIcon,
-  ChatIcon,
-  CheckReadIcon,
-  CloseCircleIcon,
-  LinkIcon,
-  SettingsIcon,
-  UsersIcon,
-  WidgetIcon,
-} from "../shared/icons";
+import { ActivityIcon, CalendarIcon, ChatIcon, CheckReadIcon, CloseCircleIcon, LinkIcon, SettingsIcon, UsersIcon, WidgetIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
 import { WEEKDAY_TABS, type Agenda } from "./agendas";
+import { scheduleRows } from "./schedule";
 
 // The "notebook" card: weekday tabs on the spine, then head, vitals, schedule, rules and footer.
-export function AgendaNoteCard({ agenda }: { agenda: Agenda }) {
+export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda; onToggle?: () => void; onRemove?: () => void }) {
+  const rows = scheduleRows(agenda.week);
   return (
     <div className="hnote h-full config_card hui-card hui-card--flush" style={{ "--hnote-color": agenda.color } as CSSProperties}>
       <div className="hnote-tabs">
         {WEEKDAY_TABS.map((d, i) => (
-          <a key={i} className="hnote-tab" href="#" title={`${d.title} · Editar horários de atendimento`} aria-label={`${d.title} · Editar horários de atendimento`}>
+          <a
+            key={i}
+            className={`hnote-tab${agenda.week?.[d.weekday]?.length ? " is-on" : ""}`}
+            href={ROUTES.configurarAgendas}
+            title={`${d.title} · Editar horários de atendimento`}
+            aria-label={`${d.title} · Editar horários de atendimento`}
+          >
             <span>{d.initial}</span>
           </a>
         ))}
@@ -51,8 +49,17 @@ export function AgendaNoteCard({ agenda }: { agenda: Agenda }) {
             </div>
           </div>
           <div className="hnote-chips">
-            {agenda.problems && (
-              <span role="button" tabIndex={0} title="Ver problemas" className="cursor-pointer hover:brightness-95 transition hchip hchip--warning hchip--primary hchip--sm">
+            {rows.length ? (
+              <span className="hchip hchip--success hchip--primary hchip--sm">
+                <CheckReadIcon className="w-3 h-3" /> Funcionando
+              </span>
+            ) : (
+              <span
+                role="button"
+                tabIndex={0}
+                title="Ver problemas"
+                className="cursor-pointer hover:brightness-95 transition hchip hchip--warning hchip--primary hchip--sm"
+              >
                 <CloseCircleIcon className="w-3 h-3" /> Problemas
               </span>
             )}
@@ -87,12 +94,27 @@ export function AgendaNoteCard({ agenda }: { agenda: Agenda }) {
           <section>
             <div className="hnote-blockhead">
               <span className="hnote-eyebrow inter-semibold">Horários de atendimento</span>
-              <a className="hnote-blockhead-link inter-semibold" href="#">
+              <a className="hnote-blockhead-link inter-semibold" href={ROUTES.configurarAgendas}>
                 Ver/Editar todos os horários
               </a>
             </div>
             <div className="hnote-sched">
-              <div className="hnote-row hnote-row--none">Nenhum horário configurado</div>
+              {rows.length ? (
+                rows.map((row) => (
+                  <div key={row.days} className="hnote-row">
+                    <span className="hnote-row-day inter-semibold">{row.days}</span>
+                    <span className="hnote-row-slots inter-regular">
+                      {row.hours.split(", ").map((slot) => (
+                        <span key={slot} className="hnote-slot tabular-nums">
+                          {slot}
+                        </span>
+                      ))}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="hnote-row hnote-row--none">Nenhum horário configurado</div>
+              )}
             </div>
           </section>
 
@@ -128,7 +150,7 @@ export function AgendaNoteCard({ agenda }: { agenda: Agenda }) {
         </div>
 
         <footer className="hnote-foot">
-          <a href="#" className="hbtn hbtn--primary hbtn--sm">
+          <a href={ROUTES.configurarAgendas} className="hbtn hbtn--primary hbtn--sm">
             <SettingsIcon className="w-4 h-4" />
             Configurar
           </a>
@@ -141,10 +163,10 @@ export function AgendaNoteCard({ agenda }: { agenda: Agenda }) {
             <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Atualizar">
               <ActivityIcon className="w-4 h-4" />
             </button>
-            <button type="button" className="btn-icon btn-icon-sm btn-icon-warning" title="Desativar">
+            <button type="button" className="btn-icon btn-icon-sm btn-icon-warning" title={agenda.active ? "Desativar" : "Ativar"} onClick={onToggle}>
               <CloseCircleIcon className="w-4 h-4" />
             </button>
-            <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir">
+            <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir" onClick={onRemove}>
               <CloseCircleIcon className="w-4 h-4" />
             </button>
           </span>

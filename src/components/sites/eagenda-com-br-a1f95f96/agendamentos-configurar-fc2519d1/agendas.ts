@@ -16,6 +16,8 @@ export type Agenda = {
   notifications: { label: string; on: boolean }[];
   services: string[];
   requested: string[];
+  /** Working intervals per weekday (0 = Sunday), from the browser's data. */
+  week?: { start: string; end: string }[][];
 };
 
 // Mock data mirroring the live account's single, still-unconfigured agenda.
@@ -46,11 +48,11 @@ export const AGENDAS: Agenda[] = [
 ];
 
 export const WEEKDAY_TABS = [
-  { initial: "S", title: "Segunda-feira" },
-  { initial: "T", title: "Terça-feira" },
-  { initial: "Q", title: "Quarta-feira" },
-  { initial: "Q", title: "Quinta-feira" },
-  { initial: "S", title: "Sexta-feira" },
-  { initial: "S", title: "Sábado" },
-  { initial: "D", title: "Domingo" },
+  { initial: "S", title: "Segunda-feira", weekday: 1 },
+  { initial: "T", title: "Terça-feira", weekday: 2 },
+  { initial: "Q", title: "Quarta-feira", weekday: 3 },
+  { initial: "Q", title: "Quinta-feira", weekday: 4 },
+  { initial: "S", title: "Sexta-feira", weekday: 5 },
+  { initial: "S", title: "Sábado", weekday: 6 },
+  { initial: "D", title: "Domingo", weekday: 0 },
 ];

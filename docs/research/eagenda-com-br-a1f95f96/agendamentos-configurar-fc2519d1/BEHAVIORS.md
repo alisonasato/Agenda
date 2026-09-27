@@ -6,6 +6,28 @@
   aviso, dados solicitados e notificações continuam vindo do mock da captura.
 - Busca e o filtro de status (Todas/Ativas/Inativas) filtram os cartões e a tabela.
 
+## Revisto em 26/09/2026
+O original tirou os filtros Unidade / Serviço / Usuário / Filtros desta barra: sobraram
+**Nova Agenda**, **Organizar** e o menu **Configurações**. O clone acompanhou.
+
+- **Organizar** abre "Organizar agendas" (lg): a lista numerada com setas para cima e para baixo,
+  "Arraste pela alça ou use as setas…", e "Salvar ordem" grava a ordem, que é a ordem em que os
+  cards e as outras telas listam as agendas.
+- **Configurações** abre o menu do original: Serviços · Tags · Endereços · Acessos · Feriados ·
+  Limites, cada um para a sua tela.
+- **Horários de atendimento** no card agora vêm de `data.hours`: as abas da lombada acendem
+  (`is-on`) nos dias com expediente e as linhas saem como no original ("Seg–Sab · 07:00–18:00"),
+  agrupando dias que têm o mesmo horário. Com horários configurados o chip passa de "Problemas" para
+  **"Funcionando"**.
+- No rodapé do card, **Desativar** alterna a agenda (ela passa a aparecer só em "Inativas") e
+  **Excluir** remove. **Configurar**, **Ver Agenda** e "Ver/Editar todos os horários" levam às telas
+  correspondentes.
+
+## Verificação
+No build estático: o menu Configurações lista os seis destinos; Organizar troca a ordem e o store e
+os cards seguem ("Unidade Centro" passou para o primeiro); Desativar deixa a agenda só na aba
+"Inativas"; as abas da lombada acendem de segunda a sábado e ficam apagadas no domingo.
+
 ## Scroll sweep
 - Ordinary page scroll (doc height 905 at 1440×900, 1139 at 390); no scroll-driven effects.
 - The action bar is a rail with `.hrail-arrow` buttons when it overflows.

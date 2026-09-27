@@ -1,24 +1,23 @@
 "use client";
 
-import { useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import {
   ActivityIcon,
   CalendarAddIcon,
   CalendarIcon,
   CaretDownIcon,
-  CheckReadIcon,
   ChevronRightIcon,
   CloseCircleIcon,
-  MapPointIcon,
   SearchSolidIcon,
   SettingsIcon,
-  UsersIcon,
-  WidgetIcon,
+  SortIcon,
 } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
+import { ROUTES } from "../shared/Sidebar";
+import { AgendaOrderModal } from "./AgendaOrderModal";
 import { AgendaNoteCard } from "./AgendaNoteCard";
 import { AGENDAS, type Agenda } from "./agendas";
-import { useData } from "@/lib/seiri/store";
+import { update, useData } from "@/lib/seiri/store";
 import { fold, formatDate, formatDuration } from "@/lib/seiri/select";
 import type { Data } from "@/lib/seiri/types";
 
@@ -32,7 +31,10 @@ function agendaRows(data: Data): Agenda[] {
   return data.agendas.map((a) => {
     const booked = data.appointments.filter((x) => x.agendaId === a.id && x.status !== "CANCELED");
     const upcoming = booked.filter((x) => x.start.slice(0, 10) >= todayIso);
-    const last = booked.map((x) => x.start).sort().at(-1);
+    const last = booked
+      .map((x) => x.start)
+      .sort()
+      .at(-1);
     const services = data.services.filter((svc) => svc.agendaIds.includes(a.id));
     return {
       ...template,
@@ -46,8 +48,46 @@ function agendaRows(data: Data): Agenda[] {
       duration: services.length ? formatDuration(services[0].duration) : template.duration,
       maxPerSlot: services.reduce((max, svc) => Math.max(max, svc.maxPeople ?? 1), 1),
       services: services.map((svc) => svc.name),
+      week: data.hours[a.id],
     };
   });
+}
+
+/** The original's "Configurações" menu: the registers that belong to an agenda. */
+const SETTINGS_LINKS = [
+  { label: "Serviços", href: ROUTES.servicos },
+  { label: "Tags", href: ROUTES.tags },
+  { label: "Endereços", href: ROUTES.adminUnidades },
+  { label: "Acessos", href: ROUTES.acessoClientes },
+  { label: "Feriados", href: ROUTES.feriados },
+  { label: "Limites", href: ROUTES.limitesAgendamentos },
+];
+
+function SettingsMenu() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useDismiss(ref, open, () => setOpen(false));
+
+  return (
+    <div ref={ref} className="hinline">
+      <button type="button" className="hinline-trigger hinline-trigger--bare" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <SettingsIcon className="hinline-icon w-4 h-4" />
+        <span className="hinline-label">Configurações</span>
+        <span className="hinline-chevron" aria-hidden="true">
+          <CaretDownIcon className="w-3.5 h-3.5" />
+        </span>
+      </button>
+      {open && (
+        <div className="hselect-popover hmenu-popover" role="menu">
+          {SETTINGS_LINKS.map((item) => (
+            <a key={item.label} href={item.href} className="hselect-option" role="menuitem">
+              {item.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 type View = "cards" | "table";
@@ -56,79 +96,6 @@ const STATUS = [
   { value: "active", label: "Ativas" },
   { value: "inactive", label: "Inativas" },
 ];
-
-/** Trigger + searchable popover shared by the Unidade / Serviço / Usuário filters. */
-function InlineFilter({ label, icon, options }: { label: string; icon: ReactNode; options: string[] }) {
-  const [open, setOpen] = useState(false);
-  const [values, setValues] = useState<string[]>([]);
-  const [query, setQuery] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
-  useDismiss(ref, open, () => setOpen(false));
-  const hits = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
-
-  return (
-    <div ref={ref} className="hinline">
-      <button type="button" className="hinline-trigger hinline-trigger--bare" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        {icon}
-        <span className="hinline-label">{label}</span>
-        {values.length > 0 && <span className="hinline-count">{values.length}</span>}
-        <span className="hinline-chevron" aria-hidden="true">
-          <CaretDownIcon className="w-3.5 h-3.5" />
-        </span>
-      </button>
-      {open && (
-        <div className="hselect-popover hinline-popover" style={{ width: 240 }}>
-          <div className="hinline-search-wrap">
-            <SearchSolidIcon className="hinline-search-icon w-4 h-4" />
-            <input type="text" placeholder="Buscar..." className="hinline-search" value={query} onChange={(e) => setQuery(e.target.value)} />
-          </div>
-          <ul className="hautocomplete-options" role="listbox">
-            {hits.length === 0 ? (
-              <li className="hautocomplete-state">
-                <div className="hautocomplete-state-inner">
-                  <SearchSolidIcon className="w-4 h-4" />
-                  <span>Nenhum resultado encontrado</span>
-                </div>
-              </li>
-            ) : (
-              hits.map((o) => {
-                const selected = values.includes(o);
-                return (
-                  <li key={o}>
-                    <button
-                      type="button"
-                      className="hselect-option hautocomplete-option"
-                      role="option"
-                      aria-selected={selected}
-                      onClick={() => setValues(selected ? values.filter((v) => v !== o) : [...values, o])}
-                    >
-                      <span className="hautocomplete-option-check">{selected && <CheckReadIcon className="w-3 h-3" />}</span>
-                      <span className="hautocomplete-option-content">
-                        <span className="hselect-option-label">{o}</span>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })
-            )}
-          </ul>
-          <div className="hinline-footer">
-            {values.length > 0 ? (
-              <button type="button" className="hinline-footer-clear" onClick={() => setValues([])}>
-                Limpar
-              </button>
-            ) : (
-              <span aria-hidden="true" />
-            )}
-            <button type="button" className="hinline-footer-done" onClick={() => setOpen(false)}>
-              Concluir
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function AgendasTable({ rows }: { rows: Agenda[] }) {
   return (
@@ -238,6 +205,9 @@ export function AgendaSettings() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
   const [view, setView] = useState<View>("cards");
+  const [ordering, setOrdering] = useState(false);
+  const toggleAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.map((x) => (x.id === id ? { ...x, active: !x.active } : x)) }));
+  const removeAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.filter((x) => x.id !== id) }));
 
   const data = useData();
   const term = fold(query.trim());
@@ -271,17 +241,12 @@ export function AgendaSettings() {
             </a>
             <div className="hactionbar" role="group">
               <div className="hrail-track hactionbar-track">
-                <InlineFilter label="Unidade" icon={<MapPointIcon className="hinline-icon w-4 h-4" />} options={[]} />
-                <InlineFilter label="Serviço" icon={<WidgetIcon className="hinline-icon w-4 h-4" />} options={[]} />
-                <InlineFilter label="Usuário" icon={<UsersIcon className="hinline-icon w-4 h-4" />} options={["Maria Souza"]} />
-                <InlineFilter label="Filtros" icon={<ActivityIcon className="hinline-icon w-4 h-4" />} options={[]} />
-                <span className="hactionbar-sep" aria-hidden="true" />
-                <button type="button" className="hbtn hbtn--ghost hbtn--sm">
-                  <WidgetIcon className="w-4 h-4" />
+                <button type="button" className="hbtn hbtn--ghost hbtn--sm" onClick={() => setOrdering(true)}>
+                  <SortIcon className="w-4 h-4" />
                   <span className="hactionbar-label">Organizar</span>
                 </button>
                 <span className="hactionbar-sep" aria-hidden="true" />
-                <InlineFilter label="Configurações" icon={<SettingsIcon className="hinline-icon w-4 h-4" />} options={[]} />
+                <SettingsMenu />
               </div>
               <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
                 <ChevronRightIcon className="w-4 h-4" />
@@ -303,10 +268,22 @@ export function AgendaSettings() {
           <div className="sm:ml-auto flex items-center gap-2">
             <div className="htabs" role="tablist" aria-label="Visualização" style={{ "--htabs-count": 2 } as CSSProperties}>
               <span className="htabs-indicator" aria-hidden="true" style={{ transform: `translateX(calc(${view === "cards" ? 0 : 100}%))` }} />
-              <button type="button" role="tab" aria-selected={view === "cards"} className={`htabs-tab${view === "cards" ? " is-active" : ""}`} onClick={() => setView("cards")}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={view === "cards"}
+                className={`htabs-tab${view === "cards" ? " is-active" : ""}`}
+                onClick={() => setView("cards")}
+              >
                 Cards
               </button>
-              <button type="button" role="tab" aria-selected={view === "table"} className={`htabs-tab${view === "table" ? " is-active" : ""}`} onClick={() => setView("table")}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={view === "table"}
+                className={`htabs-tab${view === "table" ? " is-active" : ""}`}
+                onClick={() => setView("table")}
+              >
                 Tabela
               </button>
             </div>
@@ -330,7 +307,7 @@ export function AgendaSettings() {
           <div id="card_lists" className="grid grid-cols-1 lg:grid-cols-2 gap-9 pl-7 lg:pl-0">
             {agendas.map((a) => (
               <div key={a.id} className="w-full min-w-0 h-full">
-                <AgendaNoteCard agenda={a} />
+                <AgendaNoteCard agenda={a} onToggle={() => toggleAgenda(a.id)} onRemove={() => removeAgenda(a.id)} />
               </div>
             ))}
           </div>
@@ -338,6 +315,7 @@ export function AgendaSettings() {
           <AgendasTable rows={agendas} />
         )}
       </div>
+      {ordering && <AgendaOrderModal onClose={() => setOrdering(false)} />}
     </>
   );
 }
