@@ -59,6 +59,7 @@ const PATHS = {
   novoAgendamento: "/agendamentos/novo_agendamento",
   agendamentos: "/agendamentos/listar",
   configurarAgendas: "/agendamentos/configurar",
+  novaAgenda: "/agendamentos/configurar/agenda/add",
   linksAgendamento: "/agendamentos/link_agendamento",
   limitesAgendamentos: "/agendamentos/limites",
   listasBloqueio: "/agendamentos/limites/lista_bloqueios",

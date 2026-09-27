@@ -150,7 +150,7 @@ export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda;
         </div>
 
         <footer className="hnote-foot">
-          <a href={ROUTES.configurarAgendas} className="hbtn hbtn--primary hbtn--sm">
+          <a href={`${ROUTES.novaAgenda}/?id=${agenda.id}`} className="hbtn hbtn--primary hbtn--sm">
             <SettingsIcon className="w-4 h-4" />
             Configurar
           </a>

@@ -235,7 +235,7 @@ export function AgendaSettings() {
           </label>
 
           <div className="w-full md:w-auto md:ml-auto flex items-center gap-2 min-w-0">
-            <a href="#" className="hbtn hbtn--primary hbtn--sm">
+            <a href={ROUTES.novaAgenda} className="hbtn hbtn--primary hbtn--sm">
               <CalendarAddIcon className="w-4 h-4" />
               Nova Agenda
             </a>
