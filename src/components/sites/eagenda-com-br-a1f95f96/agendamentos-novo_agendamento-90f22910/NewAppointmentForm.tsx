@@ -8,6 +8,7 @@ import { CheckboxMark, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
 import { SaveBar } from "../shared/SaveBar";
 import { ACTIONS, STATUSES, dayOptions, timeOptions } from "./formOptions";
 import { useData, update, nextId } from "@/lib/seiri/store";
+import { exceeded, intervalLabel, keyLabel } from "@/lib/seiri/limits";
 import { withBase } from "@/lib/basePath";
 import type { Status } from "@/lib/seiri/types";
 
@@ -41,13 +42,8 @@ export function NewAppointmentForm() {
   const [clients, setClients] = useState<string[]>([]);
   const [companions, setCompanions] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
-  const dirty =
-    Boolean(agenda || day || time) ||
-    tags.length > 0 ||
-    clients.length > 0 ||
-    companions.length > 0 ||
-    action !== "new" ||
-    status !== "CONFIRMED";
+  const [blocked, setBlocked] = useState("");
+  const dirty = Boolean(agenda || day || time) || tags.length > 0 || clients.length > 0 || companions.length > 0 || action !== "new" || status !== "CONFIRMED";
 
   const days = useMemo(() => dayOptions(new Date()), []);
   const times = useMemo(() => timeOptions(), []);
@@ -61,6 +57,18 @@ export function NewAppointmentForm() {
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!agenda || !day || !time || !clients.length) return;
+    const serviceId = service || data.services.find((s) => s.agendaIds.includes(agenda))?.id || "";
+    for (const clientId of clients) {
+      const hit = exceeded(data, { clientId, agendaId: agenda, serviceId, start: `${day}T${time}` });
+      if (hit) {
+        const who = data.clients.find((c) => c.id === clientId)?.name ?? "O cliente";
+        setBlocked(
+          `${who} já atingiu o limite de ${hit.max} ${hit.type === "FALTAS" ? "falta(s)" : "agendamento(s)"} ${intervalLabel(hit)} (${keyLabel(hit)}).`,
+        );
+        return;
+      }
+    }
+    setBlocked("");
     update((d) => {
       const rows = [...d.appointments];
       clients.forEach((clientId) => {
@@ -70,7 +78,7 @@ export function NewAppointmentForm() {
           code: String(48000 + rows.length * 7),
           clientId,
           agendaId: agenda,
-          serviceId: service || d.services.find((s) => s.agendaIds.includes(agenda))?.id || "",
+          serviceId,
           start: `${day}T${time}`,
           duration: picked?.duration ?? 30,
           status: (status === "AWAITING_PAYMENT" ? "PENDING" : status) as Status,
@@ -227,9 +235,9 @@ export function NewAppointmentForm() {
         saveIcon={<SaveIcon />}
         dirty={dirty}
         toastIcon={<PenIcon className="w-4 h-4" />}
-        toastTitle={saved ? "Agendamento criado" : "Agendamento ainda não registrado"}
-        toastSub={saved ? "Abrindo a lista de agendamentos…" : "Conclua para criar o agendamento."}
-        forceToast={saved}
+        toastTitle={blocked ? "Limite atingido" : saved ? "Agendamento criado" : "Agendamento ainda não registrado"}
+        toastSub={blocked || (saved ? "Abrindo a lista de agendamentos…" : "Conclua para criar o agendamento.")}
+        forceToast={saved || Boolean(blocked)}
       />
     </form>
   );

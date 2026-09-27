@@ -44,6 +44,14 @@ mesma coisa pronta em `/agendamentos/calendar/get/`.
 agendamentos dela na hora, marcados com `recurrenceId`, e apagar a regra remove os que ainda não
 aconteceram.
 
+## Limites de agendamentos
+`data.limits` guarda as regras de "Limites de Agendamentos". `src/lib/seiri/limits.ts` conta, para
+um agendamento novo, quantos já existem na mesma janela (o mesmo horário, dia, semana, mês ou os
+últimos N dias corridos) para a mesma chave — CPF, e-mail, nome, telefone, as combinações deles, ou
+o total sem separar por cliente — dentro das agendas e dos serviços que a regra alcança. Um limite
+de FALTAS conta só os agendamentos com status NO_SHOW; um de AGENDAMENTOS conta todos menos os
+cancelados. "Novo Agendamento" consulta isso antes de gravar.
+
 ## Criação e alterações
 Cada agendamento guarda `createdAt` (semeado três dias antes dele), `updatedAt` e `changes`, a lista
 que a aba "Alterações" da tela de detalhes mostra: uma linha por mudança de status, com data/hora,

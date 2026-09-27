@@ -133,6 +133,52 @@ export type Recurrence = {
   notify: boolean;
 };
 
+/** "Limites de Agendamentos": how many appointments or no-shows a client may pile up. */
+export type LimitType = "AGENDAMENTOS" | "FALTAS";
+
+/** The window the count is taken over. */
+export type LimitInterval = "HORARIO" | "DIA" | "SEMANA" | "MES" | "NDAYS";
+
+export const LIMIT_INTERVALS: { value: LimitInterval; label: string }[] = [
+  { value: "HORARIO", label: "POR HORÁRIOS" },
+  { value: "DIA", label: "POR DIA" },
+  { value: "SEMANA", label: "POR SEMANA" },
+  { value: "MES", label: "POR MÊS" },
+  { value: "NDAYS", label: "DIAS CORRIDOS" },
+];
+
+/** Which client fields identify "the same person" for the count. */
+export type LimitKey =
+  "personal_identification_number" | "user" | "email" | "nome" | "phone" | "phone+name" | "email+name" | "phone+name+email" | "source_ip" | "custom" | "count";
+
+export const LIMIT_KEYS: { value: LimitKey; label: string }[] = [
+  { value: "personal_identification_number", label: "CPF" },
+  { value: "user", label: "Usuário Cadastrado" },
+  { value: "email", label: "Email" },
+  { value: "nome", label: "Nome" },
+  { value: "phone", label: "Telefone" },
+  { value: "phone+name", label: "Mesmos Nome e Telefone" },
+  { value: "email+name", label: "Mesmos Nome e E-mail" },
+  { value: "phone+name+email", label: "Mesmos Nome, Telefone e E-mail" },
+  { value: "source_ip", label: "IP de Origem" },
+  { value: "custom", label: "Chave Customizada" },
+  { value: "count", label: "Total de Agendamentos" },
+];
+
+export type BookingLimit = {
+  id: string;
+  type: LimitType;
+  key: LimitKey | "";
+  /** Empty means "todas as agendas em conjunto". */
+  agendaIds: string[];
+  /** Empty means "todos os serviços". */
+  serviceIds: string[];
+  interval: LimitInterval | "";
+  /** Only used when the interval is NDAYS. */
+  days: number;
+  max: number;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -309,6 +355,7 @@ export type Data = {
   agendaRules: Record<string, AgendaRules>;
   agendaOptions: Record<string, AgendaOptions>;
   recurrences: Recurrence[];
+  limits: BookingLimit[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

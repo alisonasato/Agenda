@@ -163,6 +163,7 @@ export function seed(): Data {
     slotInfo: {},
     // The rules each agenda shows on its card and on the "Horários" step.
     recurrences: [],
+    limits: [],
     agendaOptions: { a1: { ...DEFAULT_OPTIONS, ownerUser: "Maria Souza" }, a2: { ...DEFAULT_OPTIONS, ownerUser: "João Pedro" } },
     agendaRules: { a1: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 }, a2: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 } },
   };
@@ -182,4 +183,5 @@ export const EMPTY: Data = {
   agendaRules: {},
   agendaOptions: {},
   recurrences: [],
+  limits: [],
 };
