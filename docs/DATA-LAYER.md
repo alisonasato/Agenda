@@ -44,6 +44,12 @@ mesma coisa pronta em `/agendamentos/calendar/get/`.
 agendamentos dela na hora, marcados com `recurrenceId`, e apagar a regra remove os que ainda não
 aconteceram.
 
+## Identificador da agenda
+`Agenda.slug` é o "Identificador da Agenda". O passo Básicas da configuração da agenda e a tela
+"Links de Agendamento" gravam o mesmo campo, e é dele que sai o link amigável
+`https://minhaempresa.seiri.com.br/agenda/minhaempresa/<slug>`. Sem slug, a agenda aparece como
+"Sem identificador" e a tela pede um.
+
 ## Limites de agendamentos
 `data.limits` guarda as regras de "Limites de Agendamentos". `src/lib/seiri/limits.ts` conta, para
 um agendamento novo, quantos já existem na mesma janela (o mesmo horário, dia, semana, mês ou os

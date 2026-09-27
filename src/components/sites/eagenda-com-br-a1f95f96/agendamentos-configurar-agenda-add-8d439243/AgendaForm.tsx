@@ -37,7 +37,7 @@ export function AgendaForm() {
   const agenda = data.agendas.find((a) => a.id === id);
 
   const [name, setName] = useState(agenda?.name ?? "");
-  const [slug, setSlug] = useState(agenda ? slugify(agenda.name) : "");
+  const [slug, setSlug] = useState(agenda ? (agenda.slug ?? slugify(agenda.name)) : "");
   const [slugTouched, setSlugTouched] = useState(Boolean(agenda));
   const [serviceIds, setServiceIds] = useState(data.services.filter((s) => (id ? s.agendaIds.includes(id) : false)).map((s) => s.id));
   const [maxSubtypes, setMaxSubtypes] = useState("1");
@@ -75,7 +75,7 @@ export function AgendaForm() {
     if (!name.trim()) return;
     update((d) => {
       const agendaId = agenda?.id ?? nextId("a", d.agendas);
-      const row = { id: agendaId, name: name.trim(), color: agenda?.color ?? "#0A70D6", active: agenda?.active ?? true };
+      const row = { id: agendaId, name: name.trim(), color: agenda?.color ?? "#0A70D6", active: agenda?.active ?? true, slug: slug.trim() };
       return {
         ...d,
         agendas: agenda ? d.agendas.map((a) => (a.id === agendaId ? row : a)) : [...d.agendas, row],
@@ -184,8 +184,8 @@ export function AgendaForm() {
                               Slug
                             </label>
                             <div className="hslug-group">
-                              <span className="hslug-prefix" title="seiri.com.br/agenda/minha-empresa/">
-                                seiri.com.br/agenda/minha-empresa/
+                              <span className="hslug-prefix" title="seiri.com.br/agenda/minhaempresa/">
+                                seiri.com.br/agenda/minhaempresa/
                               </span>
                               <input
                                 id="id_slug"

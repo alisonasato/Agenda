@@ -12,7 +12,7 @@ import {
 } from "./types";
 
 const AGENDAS = [
-  { id: "a1", name: "Agenda Principal", color: "#0A70D6", active: true },
+  { id: "a1", name: "Agenda Principal", color: "#0A70D6", active: true, slug: "agenda-principal" },
   { id: "a2", name: "Unidade Centro", color: "#17C964", active: true },
 ];
 

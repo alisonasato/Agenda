@@ -2,7 +2,8 @@
 
 export type Status = "PENDING" | "CONFIRMED" | "ATTENDED" | "NO_SHOW" | "CANCELED";
 
-export type Agenda = { id: string; name: string; color: string; active: boolean };
+/** `slug` is the "Identificador da Agenda"; without it the agenda has no friendly link. */
+export type Agenda = { id: string; name: string; color: string; active: boolean; slug?: string };
 
 export type Service = {
   id: string;
