@@ -1,4 +1,4 @@
-import type { Appointment, Client, Data, Hours, Interval, Service, Status, WaitingEntry } from "./types";
+import { DEFAULT_RULES, type Appointment, type Client, type Data, type Hours, type Interval, type Service, type Status, type WaitingEntry } from "./types";
 
 const AGENDAS = [
   { id: "a1", name: "Agenda Principal", color: "#0A70D6", active: true },
@@ -150,8 +150,21 @@ export function seed(): Data {
     hours: HOURS,
     blocks: [],
     slotInfo: {},
+    // The rules each agenda shows on its card and on the "Horários" step.
+    agendaRules: { a1: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 }, a2: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 } },
   };
 }
 
 /** What the prerendered HTML shows, before the browser loads its own data. */
-export const EMPTY: Data = { agendas: [], services: [], tags: [], clients: [], appointments: [], waiting: [], hours: {}, blocks: [], slotInfo: {} };
+export const EMPTY: Data = {
+  agendas: [],
+  services: [],
+  tags: [],
+  clients: [],
+  appointments: [],
+  waiting: [],
+  hours: {},
+  blocks: [],
+  slotInfo: {},
+  agendaRules: {},
+};

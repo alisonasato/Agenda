@@ -19,7 +19,7 @@ import { AgendaNoteCard } from "./AgendaNoteCard";
 import { AGENDAS, type Agenda } from "./agendas";
 import { update, useData } from "@/lib/seiri/store";
 import { fold, formatDate, formatDuration } from "@/lib/seiri/select";
-import type { Data } from "@/lib/seiri/types";
+import { DEFAULT_RULES, type Data } from "@/lib/seiri/types";
 
 /**
  * The card needs more than the store keeps about an agenda (notice, asks, notifications), so the
@@ -36,6 +36,7 @@ function agendaRows(data: Data): Agenda[] {
       .sort()
       .at(-1);
     const services = data.services.filter((svc) => svc.agendaIds.includes(a.id));
+    const rules = data.agendaRules[a.id] ?? DEFAULT_RULES;
     return {
       ...template,
       id: a.id,
@@ -45,8 +46,10 @@ function agendaRows(data: Data): Agenda[] {
       upcoming: upcoming.length,
       freeSlots: Math.max(0, 40 - booked.length),
       lastDate: last ? formatDate(last) : "—",
-      duration: services.length ? formatDuration(services[0].duration) : template.duration,
-      maxPerSlot: services.reduce((max, svc) => Math.max(max, svc.maxPeople ?? 1), 1),
+      duration: formatDuration(rules.duration),
+      step: formatDuration(rules.granularity || rules.duration + rules.gap),
+      notice: `${rules.minNotice}h – ${rules.maxAhead} dia(s)`,
+      maxPerSlot: rules.maxPeople,
       services: services.map((svc) => svc.name),
       week: data.hours[a.id],
     };

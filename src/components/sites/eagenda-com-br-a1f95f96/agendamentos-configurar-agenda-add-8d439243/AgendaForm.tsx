@@ -9,9 +9,13 @@ import { CopyIcon, InfoIcon, SaveIcon, WarningTriangleIcon } from "../shared/ico
 import { ROUTES } from "../shared/Sidebar";
 import { nextId, update, useData } from "@/lib/seiri/store";
 import { formatDuration, formatMoney } from "@/lib/seiri/select";
+import { DEFAULT_RULES, type AgendaRules, type Interval } from "@/lib/seiri/types";
+import { HoursStep } from "./HoursStep";
 
 /** The six sections the original's stepper lists; only the first is cloned so far. */
 const STEPS = ["Básicas", "Horários", "Formulários", "Notificações", "Avançadas", "Acessos"];
+/** How many of them this clone has so far. */
+const CLONED = 2;
 
 /** Where the agenda takes place, the original's radio group. */
 const PLACES = [
@@ -44,11 +48,14 @@ export function AgendaForm() {
   const [place, setPlace] = useState("default");
   const [description, setDescription] = useState("");
   const [copyFrom, setCopyFrom] = useState("");
+  const [step, setStep] = useState(0);
+  const [rules, setRules] = useState<AgendaRules>(() => (id && data.agendaRules[id]) || DEFAULT_RULES);
+  const [week, setWeek] = useState<Interval[][]>(() => (id && data.hours[id]) || Array.from({ length: 7 }, () => []));
   const [saved, setSaved] = useState(false);
 
   const services = data.services.filter((s) => serviceIds.includes(s.id));
   const members = [...new Set(data.services.flatMap((s) => s.members))].sort();
-  const snapshot = JSON.stringify({ name, slug, serviceIds, maxSubtypes, options, owner, unit, place, description });
+  const snapshot = JSON.stringify({ name, slug, serviceIds, maxSubtypes, options, owner, unit, place, description, rules, week });
   const [savedSnapshot, setSavedSnapshot] = useState(snapshot);
   const dirty = snapshot !== savedSnapshot;
 
@@ -77,7 +84,8 @@ export function AgendaForm() {
           ...s,
           agendaIds: serviceIds.includes(s.id) ? [...new Set([...s.agendaIds, agendaId])] : s.agendaIds.filter((x) => x !== agendaId),
         })),
-        hours: { ...d.hours, [agendaId]: d.hours[agendaId] ?? Array.from({ length: 7 }, () => []) },
+        hours: { ...d.hours, [agendaId]: week },
+        agendaRules: { ...d.agendaRules, [agendaId]: rules },
       };
     });
     setSavedSnapshot(snapshot);
@@ -90,16 +98,28 @@ export function AgendaForm() {
         <div className="cfg-nav-col hui-reveal">
           <nav className="cfg-nav--stepper">
             <ol className="hstepper hstepper--lg hstepper--responsive hstepper--nav" role="list" aria-label="Seções da configuração da agenda">
-              {STEPS.map((step, i) => (
-                <li key={step} className="hstepper__step" data-status={i === 0 ? "active" : "inactive"} data-clickable={i === 0 ? "true" : undefined}>
-                  <button type="button" className="hstepper__step-button" aria-current={i === 0 ? "step" : undefined} disabled={i > 0} aria-disabled={i > 0}>
+              {STEPS.map((label, i) => (
+                <li
+                  key={label}
+                  className="hstepper__step"
+                  data-status={i === step ? "active" : i < CLONED ? "done" : "inactive"}
+                  data-clickable={i < CLONED ? "true" : undefined}
+                >
+                  <button
+                    type="button"
+                    className="hstepper__step-button"
+                    aria-current={i === step ? "step" : undefined}
+                    disabled={i >= CLONED}
+                    aria-disabled={i >= CLONED}
+                    onClick={() => setStep(i)}
+                  >
                     <span className="hstepper__indicator">
                       <span className="hstepper__icon" aria-hidden="true">
                         <span className="hstepper__num">{i + 1}</span>
                       </span>
                     </span>
                     <span className="hstepper__content">
-                      <span className="hstepper__title">{step}</span>
+                      <span className="hstepper__title">{label}</span>
                     </span>
                   </button>
                   <span className="hstepper__separator" aria-hidden="true" />
@@ -118,258 +138,263 @@ export function AgendaForm() {
             }}
           >
             <div className="cfg-content">
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Copiar de outra agenda</h3>
-                  <p className="cfg-group-desc">Comece a partir das configurações de uma agenda existente.</p>
-                </div>
-                <div className="cfg-group-body">
-                  <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
-                    <div className="flex-1 min-w-0">
-                      <Combobox
-                        id="id_calendar_copy"
-                        label="Agenda de origem"
-                        options={data.agendas.filter((a) => a.id !== agenda?.id).map((a) => ({ value: a.id, label: a.name }))}
-                        value={copyFrom}
-                        onChange={setCopyFrom}
-                        placeholder="Selecione uma agenda"
-                      />
+              {step === 0 && (
+                <>
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Copiar de outra agenda</h3>
+                      <p className="cfg-group-desc">Comece a partir das configurações de uma agenda existente.</p>
                     </div>
-                    <button type="button" className="hbtn hbtn--secondary" disabled={!copyFrom} onClick={copy}>
-                      <CopyIcon className="w-4 h-4" />
-                      Copiar
-                    </button>
-                  </div>
-                </div>
-              </section>
-
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Identificação da agenda</h3>
-                </div>
-                <div className="cfg-group-body">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <div className="hinput-field hinput-field--block">
-                        <label className="hinput-label" htmlFor="id_label">
-                          Nome <span className="hinput-req">*</span>
-                        </label>
-                        <div className="hinput-wrap">
-                          <input
-                            id="id_label"
-                            className="hinput"
-                            type="text"
-                            name="label"
-                            placeholder="Agenda"
-                            value={name}
-                            onChange={(e) => typeName(e.target.value)}
+                    <div className="cfg-group-body">
+                      <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+                        <div className="flex-1 min-w-0">
+                          <Combobox
+                            id="id_calendar_copy"
+                            label="Agenda de origem"
+                            options={data.agendas.filter((a) => a.id !== agenda?.id).map((a) => ({ value: a.id, label: a.name }))}
+                            value={copyFrom}
+                            onChange={setCopyFrom}
+                            placeholder="Selecione uma agenda"
                           />
                         </div>
+                        <button type="button" className="hbtn hbtn--secondary" disabled={!copyFrom} onClick={copy}>
+                          <CopyIcon className="w-4 h-4" />
+                          Copiar
+                        </button>
                       </div>
                     </div>
-                    <div>
-                      <div className="hslug-field">
-                        <label className="hinput-label" htmlFor="id_slug">
-                          Slug
-                        </label>
-                        <div className="hslug-group">
-                          <span className="hslug-prefix" title="seiri.com.br/agenda/minha-empresa/">
-                            seiri.com.br/agenda/minha-empresa/
-                          </span>
-                          <input
-                            id="id_slug"
-                            className="hslug-input"
-                            type="text"
-                            name="slug"
-                            placeholder="agenda-exemplo"
-                            maxLength={250}
-                            value={slug}
-                            onChange={(e) => {
-                              setSlugTouched(true);
-                              setSlug(slugify(e.target.value));
-                            }}
-                          />
-                        </div>
-                        <p className="hinput-desc">Use apenas letras minúsculas, números, hífens (-) e underlines (_). Espaços viram hífens.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+                  </section>
 
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Serviços</h3>
-                </div>
-                <div className="cfg-group-body space-y-4">
-                  <div>
-                    <ChipMultiSelect
-                      id="subtypes"
-                      placeholder="Selecione os serviços..."
-                      options={data.services.map((s) => ({ id: s.id, label: s.name }))}
-                      values={serviceIds}
-                      onChange={setServiceIds}
-                    />
-                  </div>
-                  {services.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div className="cfg-dep-field">
-                        <div className="hinput-field hinput-field--block">
-                          <label className="hinput-label" htmlFor="id_max_subtypes">
-                            Seleção Máxima
-                          </label>
-                          <div className="hinput-wrap">
-                            <input
-                              id="id_max_subtypes"
-                              className="hinput"
-                              type="number"
-                              min={1}
-                              value={maxSubtypes}
-                              onChange={(e) => setMaxSubtypes(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="cfg-dep-field">
-                        <div className="hinput-field hinput-field--block">
-                          <label className="hinput-label">Duração Total</label>
-                          <div className="hinput-wrap">
-                            <input className="hinput" type="text" readOnly value={formatDuration(services.reduce((total, s) => total + s.duration, 0))} />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="cfg-dep-field">
-                        <div className="hinput-field hinput-field--block">
-                          <label className="hinput-label">Valor Total</label>
-                          <div className="hinput-wrap">
-                            <input className="hinput" type="text" readOnly value={formatMoney(services.reduce((total, s) => total + (s.price ?? 0), 0))} />
-                          </div>
-                        </div>
-                      </div>
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Identificação da agenda</h3>
                     </div>
-                  )}
-                </div>
-              </section>
-
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Opções da agenda</h3>
-                </div>
-                <div className="cfg-group-body">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                    {(
-                      [
-                        ["video", "Videoconferência"],
-                        ["hybrid", "Flexível"],
-                        ["home", "Atendimento em domicílio"],
-                        ["confirm", "Confirmar Agendamento"],
-                      ] as const
-                    ).map(([key, label]) => (
-                      <div key={key} className="cfg-opt">
-                        <label className="hcheckbox">
-                          <input
-                            type="checkbox"
-                            className="hcheckbox-input"
-                            checked={options[key]}
-                            onChange={(e) => setOptions((o) => ({ ...o, [key]: e.target.checked }))}
-                          />
-                          <span className="hcheckbox-box" aria-hidden="true">
-                            <svg className="hcheckbox-check" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <polyline
-                                className="hcheckbox-check-line"
-                                points="1 9 7 14 15 4"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                    <div className="cfg-group-body">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <div className="hinput-field hinput-field--block">
+                            <label className="hinput-label" htmlFor="id_label">
+                              Nome <span className="hinput-req">*</span>
+                            </label>
+                            <div className="hinput-wrap">
+                              <input
+                                id="id_label"
+                                className="hinput"
+                                type="text"
+                                name="label"
+                                placeholder="Agenda"
+                                value={name}
+                                onChange={(e) => typeName(e.target.value)}
                               />
-                            </svg>
-                            <span className="hcheckbox-dash" aria-hidden="true" />
-                          </span>
-                          <span className="hcheckbox-label">{label}</span>
-                        </label>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="hslug-field">
+                            <label className="hinput-label" htmlFor="id_slug">
+                              Slug
+                            </label>
+                            <div className="hslug-group">
+                              <span className="hslug-prefix" title="seiri.com.br/agenda/minha-empresa/">
+                                seiri.com.br/agenda/minha-empresa/
+                              </span>
+                              <input
+                                id="id_slug"
+                                className="hslug-input"
+                                type="text"
+                                name="slug"
+                                placeholder="agenda-exemplo"
+                                maxLength={250}
+                                value={slug}
+                                onChange={(e) => {
+                                  setSlugTouched(true);
+                                  setSlug(slugify(e.target.value));
+                                }}
+                              />
+                            </div>
+                            <p className="hinput-desc">Use apenas letras minúsculas, números, hífens (-) e underlines (_). Espaços viram hífens.</p>
+                          </div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Responsáveis</h3>
-                </div>
-                <div className="cfg-group-body">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <Combobox
-                        id="owner_user"
-                        label="Proprietário da agenda"
-                        options={members.map((m) => ({ value: m, label: m }))}
-                        value={owner}
-                        onChange={setOwner}
-                        placeholder="Selecione o proprietário..."
-                      />
                     </div>
-                    <div>
-                      <Combobox
-                        id="unidade"
-                        label="Unidade"
-                        options={[{ value: "Padrão", label: "Padrão" }]}
-                        value={unit}
-                        onChange={setUnit}
-                        placeholder="Padrão"
-                        clearable={false}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
+                  </section>
 
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Endereço de Atendimento</h3>
-                </div>
-                <div className="cfg-group-body space-y-4">
-                  <div>
-                    <div className="hradiogroup hradiogroup--grid" role="radiogroup" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
-                      {PLACES.map((option) => (
-                        <label key={option.value} className="hradio-pill">
-                          <input
-                            type="radio"
-                            className="hradio-input"
-                            name="place"
-                            value={option.value}
-                            checked={place === option.value}
-                            onChange={() => setPlace(option.value)}
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Serviços</h3>
+                    </div>
+                    <div className="cfg-group-body space-y-4">
+                      <div>
+                        <ChipMultiSelect
+                          id="subtypes"
+                          placeholder="Selecione os serviços..."
+                          options={data.services.map((s) => ({ id: s.id, label: s.name }))}
+                          values={serviceIds}
+                          onChange={setServiceIds}
+                        />
+                      </div>
+                      {services.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="cfg-dep-field">
+                            <div className="hinput-field hinput-field--block">
+                              <label className="hinput-label" htmlFor="id_max_subtypes">
+                                Seleção Máxima
+                              </label>
+                              <div className="hinput-wrap">
+                                <input
+                                  id="id_max_subtypes"
+                                  className="hinput"
+                                  type="number"
+                                  min={1}
+                                  value={maxSubtypes}
+                                  onChange={(e) => setMaxSubtypes(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="cfg-dep-field">
+                            <div className="hinput-field hinput-field--block">
+                              <label className="hinput-label">Duração Total</label>
+                              <div className="hinput-wrap">
+                                <input className="hinput" type="text" readOnly value={formatDuration(services.reduce((total, s) => total + s.duration, 0))} />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="cfg-dep-field">
+                            <div className="hinput-field hinput-field--block">
+                              <label className="hinput-label">Valor Total</label>
+                              <div className="hinput-wrap">
+                                <input className="hinput" type="text" readOnly value={formatMoney(services.reduce((total, s) => total + (s.price ?? 0), 0))} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Opções da agenda</h3>
+                    </div>
+                    <div className="cfg-group-body">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                        {(
+                          [
+                            ["video", "Videoconferência"],
+                            ["hybrid", "Flexível"],
+                            ["home", "Atendimento em domicílio"],
+                            ["confirm", "Confirmar Agendamento"],
+                          ] as const
+                        ).map(([key, label]) => (
+                          <div key={key} className="cfg-opt">
+                            <label className="hcheckbox">
+                              <input
+                                type="checkbox"
+                                className="hcheckbox-input"
+                                checked={options[key]}
+                                onChange={(e) => setOptions((o) => ({ ...o, [key]: e.target.checked }))}
+                              />
+                              <span className="hcheckbox-box" aria-hidden="true">
+                                <svg className="hcheckbox-check" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <polyline
+                                    className="hcheckbox-check-line"
+                                    points="1 9 7 14 15 4"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                                <span className="hcheckbox-dash" aria-hidden="true" />
+                              </span>
+                              <span className="hcheckbox-label">{label}</span>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Responsáveis</h3>
+                    </div>
+                    <div className="cfg-group-body">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <Combobox
+                            id="owner_user"
+                            label="Proprietário da agenda"
+                            options={members.map((m) => ({ value: m, label: m }))}
+                            value={owner}
+                            onChange={setOwner}
+                            placeholder="Selecione o proprietário..."
                           />
-                          <span className="hradio-pill-label">{option.label}</span>
-                        </label>
-                      ))}
+                        </div>
+                        <div>
+                          <Combobox
+                            id="unidade"
+                            label="Unidade"
+                            options={[{ value: "Padrão", label: "Padrão" }]}
+                            value={unit}
+                            onChange={setUnit}
+                            placeholder="Padrão"
+                            clearable={false}
+                          />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2 text-sm">
-                    <InfoIcon className="w-4 h-4 text-gray-400 mt-0.5" />
-                    <div className="min-w-0">
-                      <span>
-                        <span className="text-gray-500 inter-regular">Endereço padrão da conta:</span>{" "}
-                        <span className="text-gray-500 inter-regular">não cadastrado</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </section>
+                  </section>
 
-              <section className="cfg-group">
-                <div className="cfg-group-head">
-                  <h3 className="cfg-group-title">Descrição</h3>
-                  <p className="cfg-group-desc">Texto exibido aos clientes na página de agendamento.</p>
-                </div>
-                <div className="cfg-group-body">
-                  <div className="hinput-wrap">
-                    <textarea className="htextarea" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
-                  </div>
-                </div>
-              </section>
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Endereço de Atendimento</h3>
+                    </div>
+                    <div className="cfg-group-body space-y-4">
+                      <div>
+                        <div className="hradiogroup hradiogroup--grid" role="radiogroup" style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+                          {PLACES.map((option) => (
+                            <label key={option.value} className="hradio-pill">
+                              <input
+                                type="radio"
+                                className="hradio-input"
+                                name="place"
+                                value={option.value}
+                                checked={place === option.value}
+                                onChange={() => setPlace(option.value)}
+                              />
+                              <span className="hradio-pill-label">{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm">
+                        <InfoIcon className="w-4 h-4 text-gray-400 mt-0.5" />
+                        <div className="min-w-0">
+                          <span>
+                            <span className="text-gray-500 inter-regular">Endereço padrão da conta:</span>{" "}
+                            <span className="text-gray-500 inter-regular">não cadastrado</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="cfg-group">
+                    <div className="cfg-group-head">
+                      <h3 className="cfg-group-title">Descrição</h3>
+                      <p className="cfg-group-desc">Texto exibido aos clientes na página de agendamento.</p>
+                    </div>
+                    <div className="cfg-group-body">
+                      <div className="hinput-wrap">
+                        <textarea className="htextarea" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
+                      </div>
+                    </div>
+                  </section>
+                </>
+              )}
+              {step === 1 && <HoursStep rules={rules} onRules={setRules} week={week} onWeek={setWeek} />}
             </div>
 
             <SaveBar

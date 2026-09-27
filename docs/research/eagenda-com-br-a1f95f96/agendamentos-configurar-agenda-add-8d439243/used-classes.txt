@@ -7,3 +7,4 @@ hslug-prefix hstepper hstepper--lg hstepper--nav hstepper--responsive hstepper__
 hstepper__separator hstepper__step hstepper__step-button hstepper__title htextarea hsavebar hsavebar-dock hsavebar-dock-actions hsavebar-toast
 hui-reveal items-start lg:grid lg:grid-cols-[19rem_minmax(0,1fr)] lg:gap-8 lg:px-10 min-w-0 mt-0.5 mx-auto px-6 py-8 relative sm:flex-row
 sm:grid-cols-2 sm:grid-cols-3 sm:items-end space-y-4 text-gray-400 text-gray-500 text-sm w-full xl:grid-cols-4
+htable htable-cell htable-cell--end htable-col htable-col--end htable-footer htable-scroll htable-table align-top hchip hchip--default hchip--soft hchip--sm tabular-nums htime htime-field htime-input htime-clock htime-popover htime-cols htime-col htime-col-head htime-col-scroll htime-opt hdatepicker hdatepicker-input hdatepicker-cal btn-icon btn-icon-sm btn-icon-flat btn-icon-danger flex-wrap gap-1 gap-2 whitespace-nowrap font-semibold text-gray-900 text-xs mt-1.5 hstepper__step[data-status]

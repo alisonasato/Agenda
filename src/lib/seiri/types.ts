@@ -117,6 +117,47 @@ export type WaitingEntry = {
   createdAt: string;
 };
 
+/** The rules the agenda's "Horários" step keeps: how long, how often and how far ahead. */
+export type AgendaRules = {
+  /** "Duração do Atendimento (min)". */
+  duration: number;
+  /** "Intervalo entre Atendimentos (min)". */
+  gap: number;
+  /** "Agendamentos por Horário". */
+  maxPeople: number;
+  /** "Granularidade dos Horários (min)"; 0 uses duration + gap. */
+  granularity: number;
+  /** "Antecedência Mínima (horas)" and "Antecedência Máxima (dias)". */
+  minNotice: number;
+  maxAhead: number;
+  releaseHour: number;
+  cancelMin: number;
+  cancelDeadline: number;
+  businessDaysOnly: boolean;
+  blockNationalHolidays: boolean;
+  blockStateHolidays: boolean;
+  /** "dd/mm/aaaa", empty for an agenda with no end. */
+  startDate: string;
+  endDate: string;
+};
+
+export const DEFAULT_RULES: AgendaRules = {
+  duration: 30,
+  gap: 0,
+  maxPeople: 1,
+  granularity: 0,
+  minNotice: 1,
+  maxAhead: 30,
+  releaseHour: 0,
+  cancelMin: 0,
+  cancelDeadline: 0,
+  businessDaysOnly: false,
+  blockNationalHolidays: true,
+  blockStateHolidays: false,
+  startDate: "",
+  endDate: "",
+};
+
 /** One working interval of a weekday, as "Configurar Horários" edits it. */
 export type Interval = { start: string; end: string; max: number | null };
 
@@ -149,6 +190,7 @@ export type Data = {
   hours: Hours;
   blocks: Block[];
   slotInfo: Record<string, SlotInfo>;
+  agendaRules: Record<string, AgendaRules>;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

@@ -33,10 +33,27 @@ Os sete blocos do passo "Básicas", cada um `section.cfg-group` com
 6. **Endereço de Atendimento** — grupo de rádio e a linha "Endereço padrão da conta: não cadastrado".
 7. **Descrição** — texto exibido na página de agendamento.
 
+## Passo 2 — Horários
+Quatro blocos, capturados em 27/09/2026 em `/agendamentos/configurar_agenda/E<id>` (é lá que os
+passos 2 a 6 ficam habilitados):
+
+1. **Configuração de Horários** — "Duração, intervalos e capacidade dos atendimentos.": Duração do
+   Atendimento (min) · Intervalo entre Atendimentos (min) · Agendamentos por Horário ·
+   Granularidade dos Horários (min), cada um com a sua explicação.
+2. **Restrições de Agendamento** — "Quando os clientes podem agendar e cancelar.": Antecedência
+   Mínima (horas) · Antecedência Máxima (dias) · Horário de Liberação (hora) · Tempo Mínimo para
+   Cancelar (horas) · Prazo Máximo para Cancelar (horas); as caixas Antecedência em dias úteis ·
+   Bloquear feriados nacionais · Bloquear feriados estaduais; e Data de início / Data de fim.
+3. **Tabela de Horários Semanal** — os botões "Copiar Seg → Ter a Sex", "Copiar Seg → Ter a Dom" e
+   "Adicionar Horário" sobre a tabela Dia · Início · Fim · Por Horário · Horários Gerados · Ações,
+   uma linha por dia da semana.
+4. **Horários Extras e Limites** — "Datas específicas fora da grade semanal e regras de volume de
+   agendamentos.", com as tabelas vazias.
+
 ## Interaction model
 | Seção | Modelo |
 |---|---|
-| Stepper | o original habilita um passo por vez; só "Básicas" está clonado, os outros ficam desabilitados |
+| Stepper | "Básicas" e "Horários" trocam a seção ao clicar; os outros quatro ficam desabilitados até serem clonados |
 | Nome → Slug | o slug segue o nome até alguém editá-lo à mão |
 | Serviços | os totais só aparecem com serviço escolhido, como no original |
 | Save bar | o mesmo `hsavebar` das outras telas de formulário |
