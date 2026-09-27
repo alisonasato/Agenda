@@ -50,10 +50,23 @@ passos 2 a 6 ficam habilitados):
 4. **Horários Extras e Limites** — "Datas específicas fora da grade semanal e regras de volume de
    agendamentos.", com as tabelas vazias.
 
+## Passos 3 a 6
+- **Formulários**: "Dados solicitados no agendamento" — treze caixas numa grade de três colunas
+  (e-mail, telefone e os dois "obrigatório", CPF, documento, data de nascimento, gênero,
+  nacionalidade, naturalidade, profissão, endereço e campo texto adicional) — e "Formulários", com o
+  botão "Gerenciar formulários" e os quatro seletores (Formulário de Agendamento, Pré-atendimento,
+  Atendimento interno, Pesquisa de satisfação) sobre o aviso de que não há formulário cadastrado.
+- **Notificações**: "Notificações internas" (Notificar internamente · Notificar por e-mail · E-mail
+  CC · SMS CC), "Notificações para clientes" (E-mail para o cliente), e as tabelas "Regras de
+  lembrete" e "Regras de status", cada uma com o seu botão "Gerenciar".
+- **Avançadas**: Privacidade e Acesso · Distribuição de Agendamentos · Acompanhantes · Capacidade e
+  Modalidades · Agendas Vinculadas · Pagamento.
+- **Acessos**: "Responsável e acesso", com Usuário Responsável e Usuários com Acesso.
+
 ## Interaction model
 | Seção | Modelo |
 |---|---|
-| Stepper | "Básicas" e "Horários" trocam a seção ao clicar; os outros quatro ficam desabilitados até serem clonados |
+| Stepper | os seis passos trocam a seção ao clicar |
 | Nome → Slug | o slug segue o nome até alguém editá-lo à mão |
 | Serviços | os totais só aparecem com serviço escolhido, como no original |
 | Save bar | o mesmo `hsavebar` das outras telas de formulário |

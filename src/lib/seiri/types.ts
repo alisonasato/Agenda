@@ -117,6 +117,94 @@ export type WaitingEntry = {
   createdAt: string;
 };
 
+/** The switches the agenda's Formulários, Notificações, Avançadas and Acessos steps keep. */
+export type AgendaOptions = {
+  /** "Dados solicitados no agendamento". */
+  requestEmail: boolean;
+  emailRequired: boolean;
+  requestPhone: boolean;
+  phoneRequired: boolean;
+  requestCpf: boolean;
+  requestDocument: boolean;
+  requestBirthday: boolean;
+  requestGender: boolean;
+  requestNationality: boolean;
+  requestPlaceOfBirth: boolean;
+  requestProfession: boolean;
+  requestAddress: boolean;
+  extraTextField: boolean;
+  /** "Formulários": which form answers each stage. */
+  appointmentForm: string;
+  preSurvey: string;
+  internalSurvey: string;
+  postSurvey: string;
+  /** "Notificações". */
+  notifyInternally: boolean;
+  notifyByEmail: boolean;
+  emailCc: string;
+  smsCc: string;
+  emailClient: boolean;
+  /** "Avançadas". */
+  blockExternalBooking: boolean;
+  authorizedOnly: boolean;
+  password: string;
+  distributeAutomatically: boolean;
+  usersGroup: string;
+  allowCompanions: boolean;
+  countCompanions: boolean;
+  requestCompanionData: boolean;
+  emailCompanions: boolean;
+  maxCompanions: number;
+  groupService: boolean;
+  allowRecurring: boolean;
+  waitingList: boolean;
+  defaultValue: number;
+  /** "Acessos". */
+  ownerUser: string;
+  accessUsers: string[];
+};
+
+export const DEFAULT_OPTIONS: AgendaOptions = {
+  requestEmail: true,
+  emailRequired: true,
+  requestPhone: true,
+  phoneRequired: true,
+  requestCpf: false,
+  requestDocument: false,
+  requestBirthday: false,
+  requestGender: false,
+  requestNationality: false,
+  requestPlaceOfBirth: false,
+  requestProfession: false,
+  requestAddress: false,
+  extraTextField: false,
+  appointmentForm: "",
+  preSurvey: "",
+  internalSurvey: "",
+  postSurvey: "",
+  notifyInternally: true,
+  notifyByEmail: true,
+  emailCc: "",
+  smsCc: "",
+  emailClient: true,
+  blockExternalBooking: false,
+  authorizedOnly: false,
+  password: "",
+  distributeAutomatically: false,
+  usersGroup: "",
+  allowCompanions: false,
+  countCompanions: false,
+  requestCompanionData: false,
+  emailCompanions: false,
+  maxCompanions: 0,
+  groupService: false,
+  allowRecurring: false,
+  waitingList: false,
+  defaultValue: 0,
+  ownerUser: "",
+  accessUsers: [],
+};
+
 /** The rules the agenda's "Horários" step keeps: how long, how often and how far ahead. */
 export type AgendaRules = {
   /** "Duração do Atendimento (min)". */
@@ -191,6 +279,7 @@ export type Data = {
   blocks: Block[];
   slotInfo: Record<string, SlotInfo>;
   agendaRules: Record<string, AgendaRules>;
+  agendaOptions: Record<string, AgendaOptions>;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

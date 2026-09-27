@@ -9,13 +9,12 @@ import { CopyIcon, InfoIcon, SaveIcon, WarningTriangleIcon } from "../shared/ico
 import { ROUTES } from "../shared/Sidebar";
 import { nextId, update, useData } from "@/lib/seiri/store";
 import { formatDuration, formatMoney } from "@/lib/seiri/select";
-import { DEFAULT_RULES, type AgendaRules, type Interval } from "@/lib/seiri/types";
+import { DEFAULT_OPTIONS, DEFAULT_RULES, type AgendaOptions, type AgendaRules, type Interval } from "@/lib/seiri/types";
 import { HoursStep } from "./HoursStep";
+import { AccessStep, AdvancedStep, FormsStep, NotificationsStep } from "./Steps";
 
 /** The six sections the original's stepper lists; only the first is cloned so far. */
 const STEPS = ["Básicas", "Horários", "Formulários", "Notificações", "Avançadas", "Acessos"];
-/** How many of them this clone has so far. */
-const CLONED = 2;
 
 /** Where the agenda takes place, the original's radio group. */
 const PLACES = [
@@ -42,7 +41,7 @@ export function AgendaForm() {
   const [slugTouched, setSlugTouched] = useState(Boolean(agenda));
   const [serviceIds, setServiceIds] = useState(data.services.filter((s) => (id ? s.agendaIds.includes(id) : false)).map((s) => s.id));
   const [maxSubtypes, setMaxSubtypes] = useState("1");
-  const [options, setOptions] = useState({ video: false, hybrid: false, home: false, confirm: false });
+  const [basics, setBasics] = useState({ video: false, hybrid: false, home: false, confirm: false });
   const [owner, setOwner] = useState("");
   const [unit, setUnit] = useState("Padrão");
   const [place, setPlace] = useState("default");
@@ -51,11 +50,12 @@ export function AgendaForm() {
   const [step, setStep] = useState(0);
   const [rules, setRules] = useState<AgendaRules>(() => (id && data.agendaRules[id]) || DEFAULT_RULES);
   const [week, setWeek] = useState<Interval[][]>(() => (id && data.hours[id]) || Array.from({ length: 7 }, () => []));
+  const [options, setOptions] = useState<AgendaOptions>(() => (id && data.agendaOptions[id]) || DEFAULT_OPTIONS);
   const [saved, setSaved] = useState(false);
 
   const services = data.services.filter((s) => serviceIds.includes(s.id));
   const members = [...new Set(data.services.flatMap((s) => s.members))].sort();
-  const snapshot = JSON.stringify({ name, slug, serviceIds, maxSubtypes, options, owner, unit, place, description, rules, week });
+  const snapshot = JSON.stringify({ name, slug, serviceIds, maxSubtypes, basics, agendaOptions: options, owner, unit, place, description, rules, week });
   const [savedSnapshot, setSavedSnapshot] = useState(snapshot);
   const dirty = snapshot !== savedSnapshot;
 
@@ -86,6 +86,7 @@ export function AgendaForm() {
         })),
         hours: { ...d.hours, [agendaId]: week },
         agendaRules: { ...d.agendaRules, [agendaId]: rules },
+        agendaOptions: { ...d.agendaOptions, [agendaId]: options },
       };
     });
     setSavedSnapshot(snapshot);
@@ -99,20 +100,8 @@ export function AgendaForm() {
           <nav className="cfg-nav--stepper">
             <ol className="hstepper hstepper--lg hstepper--responsive hstepper--nav" role="list" aria-label="Seções da configuração da agenda">
               {STEPS.map((label, i) => (
-                <li
-                  key={label}
-                  className="hstepper__step"
-                  data-status={i === step ? "active" : i < CLONED ? "done" : "inactive"}
-                  data-clickable={i < CLONED ? "true" : undefined}
-                >
-                  <button
-                    type="button"
-                    className="hstepper__step-button"
-                    aria-current={i === step ? "step" : undefined}
-                    disabled={i >= CLONED}
-                    aria-disabled={i >= CLONED}
-                    onClick={() => setStep(i)}
-                  >
+                <li key={label} className="hstepper__step" data-status={i === step ? "active" : "inactive"} data-clickable="true">
+                  <button type="button" className="hstepper__step-button" aria-current={i === step ? "step" : undefined} onClick={() => setStep(i)}>
                     <span className="hstepper__indicator">
                       <span className="hstepper__icon" aria-hidden="true">
                         <span className="hstepper__num">{i + 1}</span>
@@ -292,8 +281,8 @@ export function AgendaForm() {
                               <input
                                 type="checkbox"
                                 className="hcheckbox-input"
-                                checked={options[key]}
-                                onChange={(e) => setOptions((o) => ({ ...o, [key]: e.target.checked }))}
+                                checked={basics[key]}
+                                onChange={(e) => setBasics((o) => ({ ...o, [key]: e.target.checked }))}
                               />
                               <span className="hcheckbox-box" aria-hidden="true">
                                 <svg className="hcheckbox-check" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -395,6 +384,10 @@ export function AgendaForm() {
                 </>
               )}
               {step === 1 && <HoursStep rules={rules} onRules={setRules} week={week} onWeek={setWeek} />}
+              {step === 2 && <FormsStep options={options} onOptions={setOptions} members={members} />}
+              {step === 3 && <NotificationsStep options={options} onOptions={setOptions} members={members} />}
+              {step === 4 && <AdvancedStep options={options} onOptions={setOptions} members={members} />}
+              {step === 5 && <AccessStep options={options} onOptions={setOptions} members={members} />}
             </div>
 
             <SaveBar

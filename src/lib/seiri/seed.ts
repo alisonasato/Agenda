@@ -1,4 +1,15 @@
-import { DEFAULT_RULES, type Appointment, type Client, type Data, type Hours, type Interval, type Service, type Status, type WaitingEntry } from "./types";
+import {
+  DEFAULT_OPTIONS,
+  DEFAULT_RULES,
+  type Appointment,
+  type Client,
+  type Data,
+  type Hours,
+  type Interval,
+  type Service,
+  type Status,
+  type WaitingEntry,
+} from "./types";
 
 const AGENDAS = [
   { id: "a1", name: "Agenda Principal", color: "#0A70D6", active: true },
@@ -151,6 +162,7 @@ export function seed(): Data {
     blocks: [],
     slotInfo: {},
     // The rules each agenda shows on its card and on the "Horários" step.
+    agendaOptions: { a1: { ...DEFAULT_OPTIONS, ownerUser: "Maria Souza" }, a2: { ...DEFAULT_OPTIONS, ownerUser: "João Pedro" } },
     agendaRules: { a1: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 }, a2: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 } },
   };
 }
@@ -167,4 +179,5 @@ export const EMPTY: Data = {
   blocks: [],
   slotInfo: {},
   agendaRules: {},
+  agendaOptions: {},
 };
