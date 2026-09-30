@@ -1,4 +1,4 @@
-#add-credits-modal-body
+#add-credits-modal-body hchip hchip--sm hchip--primary hchip--warning btn-icon btn-icon-sm btn-icon-flat btn-icon-danger halertdialog-backdrop halertdialog-backdrop--opaque halertdialog-container halertdialog-dialog halertdialog-dialog--sm halertdialog-close halertdialog-header halertdialog-icon halertdialog-icon--danger halertdialog-heading hbtn--danger hbtn--tertiary line-clamp-2 text-gray-400 text-gray-600
 #add-credits-modal-spinner
 #add-credits-modal-submit
 #add-credits-modal-title

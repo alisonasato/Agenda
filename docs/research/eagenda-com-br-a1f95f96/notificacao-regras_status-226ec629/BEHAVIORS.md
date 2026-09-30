@@ -28,3 +28,22 @@ not the old brand name, but it will need a decision when the product gets its ow
 ## Not cloned
 The rule delete dialog and the "cancel recurring recharge" confirmation — neither is
 reachable on an account without rules or recharges.
+
+## Data (fase de lógica)
+- As regras vivem em `data.statusRules`. **Regras Gerais** mostra as que valem para todas as
+  agendas; **Regras por Agenda** mostra as demais, filtradas pela agenda e pelo canal.
+- Uma regra pode marcar mais de um canal, e a tabela abre uma linha por canal — é o que as colunas
+  Canal, Template e Conteúdo pedem. Conteúdo traz o texto do SMS; Template, o modelo de WhatsApp ou
+  de email.
+- O lápis abre o formulário com `?id=` e a lixeira pede confirmação antes de apagar.
+- O filtro de agenda passa a oferecer as agendas da conta.
+
+## Verificação
+No build estático: salvar uma regra de "Confirmado", em todas as agendas, por SMS, leva de volta
+para esta tela com a linha em Regras Gerais — Confirmado, chip SMS, Template “—” e o texto do SMS
+em Conteúdo. O lápis abre `?id=sr2` com status, agendas e canal preenchidos; excluir tira a linha.
+
+## Diferenças em relação ao original
+- O original edita por `/notificacao/regras_status/<id>/editar`; como o clone é estático, a mesma
+  página de criar carrega a regra por `?id=`.
+- Os cartões de crédito e Adicionar Créditos continuam sem faturamento por trás.

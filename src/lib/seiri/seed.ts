@@ -166,6 +166,7 @@ export function seed(): Data {
     limits: [],
     holidays: [],
     suppressions: [],
+    statusRules: [],
     notificationRules: [
       {
         id: "nr1",
@@ -242,4 +243,5 @@ export const EMPTY: Data = {
   holidayRules: {},
   suppressions: [],
   notificationRules: [],
+  statusRules: [],
 };

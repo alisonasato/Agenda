@@ -7,16 +7,11 @@ import { ChipMultiSelect } from "../shared/ChipMultiSelect";
 import { Combobox } from "../shared/Combobox";
 import { SaveBar } from "../shared/SaveBar";
 import { ROUTES } from "../shared/Sidebar";
+import { nextId, update, useData } from "@/lib/seiri/store";
+import { withBase } from "@/lib/basePath";
+import { STATUS_RULE_STATUSES, type StatusRule } from "@/lib/seiri/types";
 
-const STATUSES = [
-  { value: "PENDING", label: "Pendente" },
-  { value: "DECLINED", label: "Recusado" },
-  { value: "CONFIRMED", label: "Confirmado" },
-  { value: "CANCELED", label: "Cancelado" },
-  { value: "ATTENDED", label: "Atendido" },
-  { value: "NO_SHOW", label: "Não Compareceu" },
-  { value: "PENDING_PAYMENT", label: "Pagamento Pendente" },
-];
+const STATUSES = STATUS_RULE_STATUSES;
 
 const SMS_DEFAULT = "{{nome}}, seu agendamento em {{agenda}} no dia {{dia}} às {{hora}} está {{status}}.";
 
@@ -48,7 +43,15 @@ const shown = (visible: boolean) => (visible ? undefined : { display: "none" as 
 function Checkbox({ name, label, checked, onChange }: { name: string; label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="hcheckbox">
-      <input type="checkbox" name={name} id={`id_${name}`} value="true" className="hcheckbox-input" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input
+        type="checkbox"
+        name={name}
+        id={`id_${name}`}
+        value="true"
+        className="hcheckbox-input"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
       <span className="hcheckbox-box" aria-hidden="true">
         <CheckboxMark />
         <span className="hcheckbox-dash" aria-hidden="true" />
@@ -70,6 +73,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export function StatusRuleForm() {
+  const data = useData();
+  // Static export: the rule being edited comes in the query string, not the path.
+  const id = typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get("id") ?? "");
+  const rule = data.statusRules.find((r) => r.id === id);
+  const [loaded, setLoaded] = useState("");
   const [status, setStatus] = useState("");
   const [agendas, setAgendas] = useState<string[]>([]);
   const [flags, setFlags] = useState<Flags>(NO_FLAGS);
@@ -77,6 +85,27 @@ export function StatusRuleForm() {
   const [smsText, setSmsText] = useState(SMS_DEFAULT);
   const [emailTemplate, setEmailTemplate] = useState("");
   const [addingCredits, setAddingCredits] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // The browser's data arrives after the first render, so fill the form once it does.
+  if (rule && loaded !== rule.id) {
+    setLoaded(rule.id);
+    setStatus(rule.status);
+    setAgendas(rule.agendaIds);
+    setFlags({
+      allAgendas: !rule.agendaIds.length,
+      applyToSubaccounts: rule.applyToSubaccounts,
+      forceOnSubaccounts: rule.forceOnSubaccounts,
+      sendToCompanions: rule.sendToCompanions,
+      sendToOwner: rule.sendToOwner,
+      isWhatsapp: rule.channels.whatsapp,
+      isSms: rule.channels.sms,
+      isEmail: rule.channels.email,
+    });
+    setWhatsappTemplate(rule.whatsappTemplate);
+    setSmsText(rule.smsText || SMS_DEFAULT);
+    setEmailTemplate(rule.emailTemplate);
+  }
 
   const flag = (key: keyof Flags) => ({ checked: flags[key], onChange: (v: boolean) => setFlags((f) => ({ ...f, [key]: v })) });
   const dirty =
@@ -85,8 +114,31 @@ export function StatusRuleForm() {
     smsText !== SMS_DEFAULT ||
     (Object.keys(flags) as (keyof Flags)[]).some((k) => flags[k] !== NO_FLAGS[k]);
 
-  // No backend in the prototype: saving does nothing.
-  const onSubmit = (e: FormEvent) => e.preventDefault();
+  // No server here: saving writes the rule into the browser's own data.
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!status) return;
+    update((d) => {
+      const row: StatusRule = {
+        id: rule?.id ?? nextId("sr", d.statusRules),
+        status,
+        agendaIds: flags.allAgendas ? [] : agendas,
+        applyToSubaccounts: flags.applyToSubaccounts,
+        forceOnSubaccounts: flags.forceOnSubaccounts,
+        sendToCompanions: flags.sendToCompanions,
+        sendToOwner: flags.sendToOwner,
+        channels: { whatsapp: flags.isWhatsapp, sms: flags.isSms, email: flags.isEmail },
+        whatsappTemplate: flags.isWhatsapp ? whatsappTemplate : "",
+        smsText: flags.isSms ? smsText : "",
+        emailTemplate: flags.isEmail ? emailTemplate : "",
+      };
+      return { ...d, statusRules: rule ? d.statusRules.map((r) => (r.id === rule.id ? row : r)) : [...d.statusRules, row] };
+    });
+    setSaved(true);
+    window.setTimeout(() => {
+      window.location.href = withBase("/notificacao/regras_status");
+    }, 900);
+  };
 
   return (
     <>
@@ -102,14 +154,29 @@ export function StatusRuleForm() {
           <Section title="Configuração Geral">
             <div className="space-y-4">
               <div className="md:max-w-md">
-                <Combobox id="status" label="Status do Agendamento" options={STATUSES} value={status} onChange={setStatus} placeholder="Selecione um status" clearable={false} />
+                <Combobox
+                  id="status"
+                  label="Status do Agendamento"
+                  options={STATUSES}
+                  value={status}
+                  onChange={setStatus}
+                  placeholder="Selecione um status"
+                  clearable={false}
+                />
               </div>
               <div className="hcheckbox-stack">
                 <Checkbox name="is_all_agendas" label="Aplicar a regra em todas as agendas" {...flag("allAgendas")} />
               </div>
               <div style={shown(!flags.allAgendas)}>
                 {/* The live account's picker offers no agendas here. */}
-                <ChipMultiSelect id="id_agendas" label="Agendas" placeholder="Selecione as agendas" options={[]} values={agendas} onChange={setAgendas} />
+                <ChipMultiSelect
+                  id="id_agendas"
+                  label="Agendas"
+                  placeholder="Selecione as agendas"
+                  options={data.agendas.map((a) => ({ id: a.id, label: a.name }))}
+                  values={agendas}
+                  onChange={setAgendas}
+                />
               </div>
             </div>
           </Section>
@@ -164,13 +231,27 @@ export function StatusRuleForm() {
                   <label className="hinput-label" htmlFor="id_sms_text">
                     Texto do SMS
                   </label>
-                  <textarea id="id_sms_text" name="sms_text" rows={4} className="htextarea mt-1.5" value={smsText} onChange={(e) => setSmsText(e.target.value)} />
+                  <textarea
+                    id="id_sms_text"
+                    name="sms_text"
+                    rows={4}
+                    className="htextarea mt-1.5"
+                    value={smsText}
+                    onChange={(e) => setSmsText(e.target.value)}
+                  />
                   <p className="hinput-desc">Texto da mensagem SMS. Use variáveis como {"{{nome}}, {{agenda}}"}, etc.</p>
                 </div>
               </div>
 
               <div style={shown(flags.isEmail)}>
-                <Combobox id="email_template" label="Template de Email" options={[]} value={emailTemplate} onChange={setEmailTemplate} placeholder="Selecione um template de email" />
+                <Combobox
+                  id="email_template"
+                  label="Template de Email"
+                  options={[]}
+                  value={emailTemplate}
+                  onChange={setEmailTemplate}
+                  placeholder="Selecione um template de email"
+                />
               </div>
             </div>
           </Section>
@@ -182,8 +263,9 @@ export function StatusRuleForm() {
           saveIcon={<SaveIcon />}
           dirty={dirty}
           toastIcon={<PenIcon className="w-4 h-4" />}
-          toastTitle="Regra ainda não salva"
-          toastSub="Salve para a notificação começar a disparar neste status."
+          toastTitle={saved ? "Regra salva" : "Regra ainda não salva"}
+          toastSub={saved ? "Voltando para as regras por status…" : "Salve para a notificação começar a disparar neste status."}
+          forceToast={saved}
         />
       </form>
 

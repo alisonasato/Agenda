@@ -49,6 +49,11 @@ aconteceram.
 todas), os destinatários, a forma de envio com o texto ou o modelo, e quando enviar — imediato, ou
 um deslocamento em dias/horas/minutos antes ou depois do horário, com um filtro de status.
 
+## Notificações por status
+`data.statusRules` guarda as regras que disparam quando um agendamento chega a um status. Uma
+regra sem agendas é uma regra geral; com agendas, vale só para elas. Cada regra pode enviar por
+WhatsApp, SMS e email ao mesmo tempo, e a lista abre uma linha por canal.
+
 ## Listas de bloqueio
 `data.suppressions` guarda os contatos impedidos de agendar. `blockedBy` em
 `src/lib/seiri/limits.ts` procura um bloqueio ativo e não vencido cujo e-mail, telefone ou CPF seja

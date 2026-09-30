@@ -27,3 +27,20 @@ Confirmado, Cancelado, Atendido, Não Compareceu, Pagamento Pendente.
 
 ## Empty lists
 Agendas, WhatsApp templates and email templates are empty on the live account; kept empty.
+
+## Data (fase de lógica)
+- Sem `?id=`, a página cria uma regra; com `?id=`, carrega aquela regra e salva por cima.
+- O seletor de agendas oferece as agendas da conta, e marcar **Aplicar a regra em todas as
+  agendas** grava a regra sem agenda nenhuma — que é como a lista sabe separar Regras Gerais de
+  Regras por Agenda.
+- Salvar grava em `data.statusRules` e volta para Notificações por Status; o toast passa a
+  "Regra salva".
+- Os campos de cada canal só entram no que é gravado quando o canal está marcado.
+
+## Verificação
+No build estático: escolher "Confirmado", marcar todas as agendas e "Envio por SMS" e salvar
+cria a linha em Regras Gerais; reabrir pelo lápis traz status, agendas e canal como foram salvos.
+
+## Diferenças em relação ao original
+- Herança para Subcontas é gravada, mas não faz nada: o clone não tem subcontas.
+- Os modelos de WhatsApp e de email ficam vazios porque nenhum é cadastrado neste clone.

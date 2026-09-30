@@ -258,6 +258,34 @@ export type NotificationRule = {
   statusFilter: string;
 };
 
+/** A rule from "Notificações por Status": fires when an appointment reaches a status. */
+export type StatusRule = {
+  id: string;
+  /** One of STATUS_RULE_STATUSES below. */
+  status: string;
+  /** Empty means "aplicar a regra em todas as agendas", which is what "Regras Gerais" lists. */
+  agendaIds: string[];
+  applyToSubaccounts: boolean;
+  forceOnSubaccounts: boolean;
+  sendToCompanions: boolean;
+  sendToOwner: boolean;
+  channels: { whatsapp: boolean; sms: boolean; email: boolean };
+  whatsappTemplate: string;
+  smsText: string;
+  emailTemplate: string;
+};
+
+/** The statuses that form offers, which are not quite the appointment ones. */
+export const STATUS_RULE_STATUSES: { value: string; label: string }[] = [
+  { value: "PENDING", label: "Pendente" },
+  { value: "DECLINED", label: "Recusado" },
+  { value: "CONFIRMED", label: "Confirmado" },
+  { value: "CANCELED", label: "Cancelado" },
+  { value: "ATTENDED", label: "Atendido" },
+  { value: "NO_SHOW", label: "Não Compareceu" },
+  { value: "PENDING_PAYMENT", label: "Pagamento Pendente" },
+];
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -439,6 +467,7 @@ export type Data = {
   holidayRules: Record<string, HolidayRules>;
   suppressions: Suppression[];
   notificationRules: NotificationRule[];
+  statusRules: StatusRule[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {
