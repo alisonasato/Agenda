@@ -180,6 +180,32 @@ export type BookingLimit = {
   max: number;
 };
 
+/** A "Feriado Customizado": a day (or a stretch of days) an agenda does not attend. */
+export type Holiday = {
+  id: string;
+  name: string;
+  /** "aaaa-mm-dd". */
+  date: string;
+  /** "aaaa-mm-dd" for a stretch of days, empty for a single one. */
+  endDate: string;
+  allDay: boolean;
+  /** "hh:mm", only used when it does not block the whole day. */
+  startTime: string;
+  endTime: string;
+  /** Empty means "aplicar em todas as agendas". */
+  agendaIds: string[];
+};
+
+/** What "Feriados da agenda" decides for one agenda. */
+export type HolidayRules = {
+  national: boolean;
+  state: boolean;
+  /** The national dates ("aaaa-mm-dd") unticked in "Personalizar quais feriados bloquear". */
+  skipped: string[];
+};
+
+export const DEFAULT_HOLIDAY_RULES: HolidayRules = { national: false, state: false, skipped: [] };
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -357,6 +383,8 @@ export type Data = {
   agendaOptions: Record<string, AgendaOptions>;
   recurrences: Recurrence[];
   limits: BookingLimit[];
+  holidays: Holiday[];
+  holidayRules: Record<string, HolidayRules>;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

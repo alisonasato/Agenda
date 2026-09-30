@@ -1,4 +1,5 @@
 import { dayKey } from "./select";
+import { holidayOf } from "./holidays";
 import type { Appointment, Data, Interval, SlotInfo } from "./types";
 
 /** The original serves the calendar as half-hour slots (`slotDuration: "0:30:00"`). */
@@ -49,6 +50,8 @@ export function slotsOf(data: Data, agendaId: string, day: Date): Slot[] {
     for (let at = toMinutes(interval.start); at + SLOT_MINUTES <= toMinutes(interval.end); at += SLOT_MINUTES) {
       const to = at + SLOT_MINUTES;
       const block = blockOf(data, agendaId, key, at, to);
+      // A holiday closes the agenda the same way a manual block does.
+      const holiday = block ? "" : holidayOf(data, agendaId, key, at, to);
       const start = `${key}T${toTime(at)}`;
       const info = data.slotInfo[slotKey(agendaId, start)] ?? {};
       slots.push({
@@ -62,8 +65,8 @@ export function slotsOf(data: Data, agendaId: string, day: Date): Slot[] {
           const from = toMinutes(a.start.slice(11, 16));
           return from < to && from + a.duration > at;
         }),
-        blocked: Boolean(block),
-        blockReason: block?.reason ?? "",
+        blocked: Boolean(block || holiday),
+        blockReason: block?.reason ?? holiday,
       });
     }
     return slots;

@@ -44,6 +44,13 @@ mesma coisa pronta em `/agendamentos/calendar/get/`.
 agendamentos dela na hora, marcados com `recurrenceId`, e apagar a regra remove os que ainda não
 aconteceram.
 
+## Feriados
+`data.holidays` guarda os feriados customizados e `data.holidayRules` o que cada agenda bloqueia.
+`src/lib/seiri/holidays.ts` junta os dois: um feriado customizado fecha os dias (e as horas) que
+nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas que pediram os
+nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
+o motivo que aparece no horário fechado é o nome do feriado.
+
 ## Identificador da agenda
 `Agenda.slug` é o "Identificador da Agenda". O passo Básicas da configuração da agenda e a tela
 "Links de Agendamento" gravam o mesmo campo, e é dele que sai o link amigável

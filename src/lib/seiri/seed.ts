@@ -164,6 +164,9 @@ export function seed(): Data {
     // The rules each agenda shows on its card and on the "Horários" step.
     recurrences: [],
     limits: [],
+    holidays: [],
+    // The live account blocks national holidays on its main agenda.
+    holidayRules: { a1: { national: true, state: false, skipped: [] } },
     agendaOptions: { a1: { ...DEFAULT_OPTIONS, ownerUser: "Maria Souza" }, a2: { ...DEFAULT_OPTIONS, ownerUser: "João Pedro" } },
     agendaRules: { a1: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 }, a2: { ...DEFAULT_RULES, duration: 60, maxPeople: 2, maxAhead: 7 } },
   };
@@ -184,4 +187,6 @@ export const EMPTY: Data = {
   agendaOptions: {},
   recurrences: [],
   limits: [],
+  holidays: [],
+  holidayRules: {},
 };
