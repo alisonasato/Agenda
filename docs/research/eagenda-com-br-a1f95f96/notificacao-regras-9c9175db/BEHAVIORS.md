@@ -47,3 +47,30 @@ without touching the URL.
 
 ## Not cloned
 The delete confirmation (`rule-delete-dialog`) — reachable only from a rule row.
+
+## Data (fase de lógica)
+- As regras vivem em `data.notificationRules`, semeadas com as duas que a conta de origem tem:
+  "Confirmação Por E-Mail" (imediata) e "Lembrete 24h Por E-Mail" (1 dia antes, só confirmados).
+- **Nova Regra** e o lápis de cada linha abrem o mesmo modal, com o título trocando entre
+  "Nova Regra de Notificação" e "Editar Regra de Notificação"; editar abre com tudo preenchido,
+  inclusive a forma de envio, o template, o envio imediato, o deslocamento e o filtro de status.
+- O seletor de agendas oferece as agendas da conta; marcar **Aplicar a todas as agendas** grava a
+  regra sem agenda nenhuma, que é o que a coluna mostra como "Todas".
+- A coluna **Envio** escreve "Imediato" no chip accent, ou o deslocamento por extenso
+  ("1 dia, Antes do Horário Agendado"). A coluna **Canal** usa o chip warning com SMS, Email ou
+  WhatsApp, e **Template** mostra o modelo de WhatsApp quando é esse o canal.
+- A busca filtra pelo nome da regra; a lixeira pede confirmação antes de apagar.
+
+## Verificação
+No build estático: a tabela abre com as duas regras semeadas, iguais às do original; editar
+"Lembrete 24h Por E-Mail" traz 1 dia, "Antes do horário" e "Agendamentos Confirmados", e renomear
+reescreve a linha; criar uma regra de WhatsApp com o modelo
+"Lembrete com Campo Observações" preenche as colunas Canal e Template; buscar "whats" deixa só ela;
+excluir devolve a tabela ao estado vazio com "Nada por aqui ainda".
+
+## Diferenças em relação ao original
+- Os cartões de crédito (Créditos Gerais, SMS, Email, WhatsApp) continuam zerados e os botões
+  Comprar/Extrato ainda não levam a lugar nenhum: o clone não tem faturamento.
+- Os modelos de email e os formulários de pesquisa ficam vazios porque nenhum é cadastrado neste
+  clone; o original mostra o mesmo quando a conta também não tem.
+- A regra ainda não dispara envio: quem registra isso é Acompanhamento, que segue só como tela.

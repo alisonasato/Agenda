@@ -230,6 +230,34 @@ export type Suppression = {
   active: boolean;
 };
 
+/** How a notification rule reaches people. */
+export type Channel = "sms" | "email" | "whatsapp";
+
+export const CHANNEL_LABELS: Record<Channel, string> = { sms: "SMS", email: "Email", whatsapp: "WhatsApp" };
+
+/** A rule from "Regras de Notificações". */
+export type NotificationRule = {
+  id: string;
+  title: string;
+  /** Empty means "aplicar a todas as agendas". */
+  agendaIds: string[];
+  recipients: { client: boolean; companions: boolean; owner: boolean; team: boolean };
+  channel: Channel | "";
+  smsText: string;
+  /** The template id, for the email and whatsapp channels. */
+  emailTemplate: string;
+  whatsappTemplate: string;
+  survey: string;
+  /** Sends as soon as the appointment is created; otherwise the offset below applies. */
+  immediate: boolean;
+  when: "before" | "after";
+  days: number;
+  hours: number;
+  minutes: number;
+  /** The "Filtro de Status" of whichever side `when` picked. */
+  statusFilter: string;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -410,6 +438,7 @@ export type Data = {
   holidays: Holiday[];
   holidayRules: Record<string, HolidayRules>;
   suppressions: Suppression[];
+  notificationRules: NotificationRule[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

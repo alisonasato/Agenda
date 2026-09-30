@@ -1,4 +1,4 @@
-#activity-drawer-body
+#activity-drawer-body hchip hchip--sm hchip--soft hchip--primary hchip--default hchip--warning hchip--accent btn-icon btn-icon-sm btn-icon-flat btn-icon-danger halertdialog-backdrop halertdialog-backdrop--opaque halertdialog-container halertdialog-dialog halertdialog-dialog--sm halertdialog-close halertdialog-header halertdialog-icon halertdialog-icon--danger halertdialog-heading hbtn--danger text-gray-400 text-gray-600
 #activity-drawer-title
 #closeSidebarMobile
 #confirm_backdrop

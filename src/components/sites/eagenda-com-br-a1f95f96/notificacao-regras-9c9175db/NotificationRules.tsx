@@ -3,6 +3,9 @@
 import { Fragment, useRef, useState, type CSSProperties } from "react";
 import {
   AddAppointmentIcon,
+  DangerCircleIcon,
+  PenIcon,
+  TrashIcon,
   BellIcon,
   CaretDownIcon,
   CaretUpIcon,
@@ -23,6 +26,10 @@ import { Combobox } from "../shared/Combobox";
 import { ScrollRail } from "../shared/ScrollRail";
 import { ROUTES } from "../shared/Sidebar";
 import { useDismiss } from "../shared/useDismiss";
+import { AlertDialog } from "../shared/AlertDialog";
+import { nextId, update, useData } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
+import { CHANNEL_LABELS, type Channel, type NotificationRule } from "@/lib/seiri/types";
 
 // The Comunicação pages, shown inline from 1536px and folded into a menu below that.
 const COMMUNICATION_LINKS = [
@@ -43,7 +50,8 @@ const WHATSAPP_TEMPLATES = [
 // Template texts as the original's /whatsapp_template_text/ endpoint returns them.
 const WHATSAPP_TEXTS: Record<string, string> = {
   "1": "Olá, {{nome}}!\n\nEstamos enviando um lembrete do seu agendamento para:\n {{agenda}}\n📅 Data: {{dia}}\n🕒 Horário: {{hora}}\n📍 Local: {{local}}\n\nCaso precise reagendar ou tenha alguma dúvida, é só nos chamar por aqui.",
-  "110": "Olá, {{1}}!\n\nEstamos enviando um lembrete do seu agendamento para *{{2}}*:\n\n📅 Data: *{{3}}*\n🕒 Horário: *{{4}}*\n📍 Local: *{{5}}*\n\n📝 Observações:\n{{6}}\n\nCaso precise reagendar ou tenha alguma dúvida, é só nos chamar por aqui",
+  "110":
+    "Olá, {{1}}!\n\nEstamos enviando um lembrete do seu agendamento para *{{2}}*:\n\n📅 Data: *{{3}}*\n🕒 Horário: *{{4}}*\n📍 Local: *{{5}}*\n\n📝 Observações:\n{{6}}\n\nCaso precise reagendar ou tenha alguma dúvida, é só nos chamar por aqui",
 };
 
 const BEFORE_FILTERS = [
@@ -61,6 +69,18 @@ const AFTER_FILTERS = [
  * them. That matters: a hidden sibling keeps the space-y margin on the field before it.
  */
 const shown = (visible: boolean) => (visible ? undefined : { display: "none" as const });
+
+/** "1 dia, Antes do Horário Agendado", the way the original words a rule's timing. */
+function sendingLabel(rule: NotificationRule) {
+  if (rule.immediate) return "Imediato";
+  const parts = [
+    rule.days ? `${rule.days} dia${rule.days > 1 ? "s" : ""}` : "",
+    rule.hours ? `${rule.hours} hora${rule.hours > 1 ? "s" : ""}` : "",
+    rule.minutes ? `${rule.minutes} minuto${rule.minutes > 1 ? "s" : ""}` : "",
+  ].filter(Boolean);
+  const side = rule.when === "before" ? "Antes do Horário Agendado" : "Após o Horário Agendado";
+  return parts.length ? `${parts.join(" ")}, ${side}` : side;
+}
 
 const SMS_DEFAULT = "{{nome}}, seu agendamento foi confirmado!{{agenda}}, dia {{dia}}, {{hora}}";
 const SMS_MAX = 160;
@@ -124,28 +144,55 @@ function NumberField({ name, label, max, value, onChange }: { name: string; labe
   );
 }
 
-function RuleFormModal({ onClose }: { onClose: () => void }) {
-  const [allAgendas, setAllAgendas] = useState(false);
-  const [agendas, setAgendas] = useState<string[]>([]);
-  const [recipients, setRecipients] = useState({ client: true, companions: false, owner: false, team: false });
-  const [channel, setChannel] = useState("");
-  const [smsText, setSmsText] = useState(SMS_DEFAULT);
-  const [emailTemplate, setEmailTemplate] = useState("");
-  const [whatsappTemplate, setWhatsappTemplate] = useState("");
+function RuleFormModal({ rule, onClose }: { rule?: NotificationRule; onClose: () => void }) {
+  const data = useData();
+  const [title, setTitle] = useState(rule?.title ?? "");
+  const [allAgendas, setAllAgendas] = useState(rule ? !rule.agendaIds.length : false);
+  const [agendas, setAgendas] = useState<string[]>(rule?.agendaIds ?? []);
+  const [recipients, setRecipients] = useState(rule?.recipients ?? { client: true, companions: false, owner: false, team: false });
+  const [channel, setChannel] = useState<string>(rule?.channel ?? "");
+  const [smsText, setSmsText] = useState(rule?.smsText || SMS_DEFAULT);
+  const [emailTemplate, setEmailTemplate] = useState(rule?.emailTemplate ?? "");
+  const [whatsappTemplate, setWhatsappTemplate] = useState(rule?.whatsappTemplate ?? "");
   const [customTemplates, setCustomTemplates] = useState<string[]>([]);
-  const [survey, setSurvey] = useState("");
-  const [immediate, setImmediate] = useState(false);
-  const [when, setWhen] = useState("before");
-  const [offset, setOffset] = useState({ dias: 0, horas: 0, minutos: 0 });
-  const [beforeFilter, setBeforeFilter] = useState("");
-  const [afterFilter, setAfterFilter] = useState("");
+  const [survey, setSurvey] = useState(rule?.survey ?? "");
+  const [immediate, setImmediate] = useState(rule?.immediate ?? false);
+  const [when, setWhen] = useState<string>(rule?.when ?? "before");
+  const [offset, setOffset] = useState({ dias: rule?.days ?? 0, horas: rule?.hours ?? 0, minutos: rule?.minutes ?? 0 });
+  const [beforeFilter, setBeforeFilter] = useState(rule && rule.when === "before" ? rule.statusFilter : "");
+  const [afterFilter, setAfterFilter] = useState(rule && rule.when === "after" ? rule.statusFilter : "");
+
+  const save = () => {
+    if (!title.trim() || !channel) return;
+    update((d) => {
+      const row: NotificationRule = {
+        id: rule?.id ?? nextId("nr", d.notificationRules),
+        title: title.trim(),
+        agendaIds: allAgendas ? [] : agendas,
+        recipients,
+        channel: channel as Channel,
+        smsText: channel === "sms" ? smsText : "",
+        emailTemplate: channel === "email" ? emailTemplate : "",
+        whatsappTemplate: channel === "whatsapp" ? whatsappTemplate : "",
+        survey,
+        immediate,
+        when: when as "before" | "after",
+        days: offset.dias,
+        hours: offset.horas,
+        minutes: offset.minutos,
+        statusFilter: immediate ? "" : when === "before" ? beforeFilter : afterFilter,
+      };
+      return { ...d, notificationRules: rule ? d.notificationRules.map((r) => (r.id === rule.id ? row : r)) : [...d.notificationRules, row] };
+    });
+    onClose();
+  };
 
   const preview = WHATSAPP_TEXTS[whatsappTemplate] ?? "";
 
   return (
     <Modal
       id="rule-form-modal"
-      title="Nova Regra de Notificação"
+      title={rule ? "Editar Regra de Notificação" : "Nova Regra de Notificação"}
       onClose={onClose}
       footer={
         <>
@@ -156,13 +203,29 @@ function RuleFormModal({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <form id="notification-rule-form" className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+      <form
+        id="notification-rule-form"
+        className="space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          save();
+        }}
+      >
         <div className="hinput-field hinput-field--block">
           <label className="hinput-label" htmlFor="id_title">
             Nome da Regra <span className="hinput-req">*</span>
           </label>
           <div className="hinput-wrap">
-            <input id="id_title" className="hinput" type="text" name="title" placeholder="Ex.: Lembrete 24h antes" required />
+            <input
+              id="id_title"
+              className="hinput"
+              type="text"
+              name="title"
+              placeholder="Ex.: Lembrete 24h antes"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </div>
         </div>
 
@@ -170,17 +233,38 @@ function RuleFormModal({ onClose }: { onClose: () => void }) {
           <h4 className="text-sm font-semibold text-gray-900 inter-semibold">Agendas</h4>
           <Checkbox name="is_all_agendas" label="Aplicar a todas as agendas" checked={allAgendas} onChange={setAllAgendas} />
           <div style={shown(!allAgendas)}>
-            {/* The live account's picker offers no agendas here. */}
-            <ChipMultiSelect id="id_agendas" label="Selecione as Agendas" placeholder="Selecione as agendas" options={[]} values={agendas} onChange={setAgendas} />
+            <ChipMultiSelect
+              id="id_agendas"
+              label="Selecione as Agendas"
+              placeholder="Selecione as agendas"
+              options={data.agendas.map((a) => ({ id: a.id, label: a.name }))}
+              values={agendas}
+              onChange={setAgendas}
+            />
           </div>
         </div>
 
         <div className="pt-5 border-t border-gray-100 space-y-4">
           <h4 className="text-sm font-semibold text-gray-900 inter-semibold">Destinatários</h4>
           <div className="hcheckbox-stack">
-            <Checkbox name="send_to_client" label="Cliente principal do agendamento" checked={recipients.client} onChange={(v) => setRecipients((r) => ({ ...r, client: v }))} />
-            <Checkbox name="send_to_companions" label="Acompanhantes" checked={recipients.companions} onChange={(v) => setRecipients((r) => ({ ...r, companions: v }))} />
-            <Checkbox name="send_to_owner_user" label="Responsável pelo atendimento" checked={recipients.owner} onChange={(v) => setRecipients((r) => ({ ...r, owner: v }))} />
+            <Checkbox
+              name="send_to_client"
+              label="Cliente principal do agendamento"
+              checked={recipients.client}
+              onChange={(v) => setRecipients((r) => ({ ...r, client: v }))}
+            />
+            <Checkbox
+              name="send_to_companions"
+              label="Acompanhantes"
+              checked={recipients.companions}
+              onChange={(v) => setRecipients((r) => ({ ...r, companions: v }))}
+            />
+            <Checkbox
+              name="send_to_owner_user"
+              label="Responsável pelo atendimento"
+              checked={recipients.owner}
+              onChange={(v) => setRecipients((r) => ({ ...r, owner: v }))}
+            />
             <Checkbox
               name="send_to_related_users"
               label="Membros da equipe vinculados ao agendamento"
@@ -228,7 +312,16 @@ function RuleFormModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div style={shown(channel === "email")}>
-            <Combobox id="email_template" label="Modelo do email" options={[]} value={emailTemplate} onChange={setEmailTemplate} placeholder="Selecione um modelo" searchInPopover clearable />
+            <Combobox
+              id="email_template"
+              label="Modelo do email"
+              options={[]}
+              value={emailTemplate}
+              onChange={setEmailTemplate}
+              placeholder="Selecione um modelo"
+              searchInPopover
+              clearable
+            />
             <p className="mt-1.5 text-xs inter-regular">
               <a
                 href={ROUTES.modelosEmail}
@@ -271,7 +364,16 @@ function RuleFormModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div style={shown(channel === "email" || channel === "sms")}>
-            <Combobox id="survey" label="Vincular Formulário de Pesquisa" options={[]} value={survey} onChange={setSurvey} placeholder="Nenhuma pesquisa" searchInPopover clearable />
+            <Combobox
+              id="survey"
+              label="Vincular Formulário de Pesquisa"
+              options={[]}
+              value={survey}
+              onChange={setSurvey}
+              placeholder="Nenhuma pesquisa"
+              searchInPopover
+              clearable
+            />
             <p className="mt-1.5 text-xs text-gray-500 inter-regular">Um link para a pesquisa será incluído na notificação</p>
           </div>
         </div>
@@ -302,10 +404,26 @@ function RuleFormModal({ onClose }: { onClose: () => void }) {
             </div>
             <div>
               <div style={shown(when === "before")}>
-                <Combobox id="before_filter" label="Filtro de Status" options={BEFORE_FILTERS} value={beforeFilter} onChange={setBeforeFilter} placeholder="Selecione o status" searchInPopover />
+                <Combobox
+                  id="before_filter"
+                  label="Filtro de Status"
+                  options={BEFORE_FILTERS}
+                  value={beforeFilter}
+                  onChange={setBeforeFilter}
+                  placeholder="Selecione o status"
+                  searchInPopover
+                />
               </div>
               <div style={shown(when === "after")}>
-                <Combobox id="after_filter" label="Filtro de Status" options={AFTER_FILTERS} value={afterFilter} onChange={setAfterFilter} placeholder="Selecione o status" searchInPopover />
+                <Combobox
+                  id="after_filter"
+                  label="Filtro de Status"
+                  options={AFTER_FILTERS}
+                  value={afterFilter}
+                  onChange={setAfterFilter}
+                  placeholder="Selecione o status"
+                  searchInPopover
+                />
               </div>
               <p className="mt-1.5 text-xs text-gray-500 inter-regular">Só envia se o agendamento estiver com este status</p>
             </div>
@@ -345,8 +463,23 @@ function CommunicationMenu() {
 }
 
 export function NotificationRules() {
+  const data = useData();
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<NotificationRule | null>(null);
+  const [removing, setRemoving] = useState<NotificationRule | null>(null);
+
+  const term = fold(query.trim());
+  const rows = data.notificationRules
+    .filter((rule) => (term ? fold(rule.title).includes(term) : true))
+    .map((rule) => ({
+      rule,
+      agendas: rule.agendaIds.length ? rule.agendaIds.map((id) => data.agendas.find((a) => a.id === id)?.name ?? id).join(", ") : "Todas",
+      template: WHATSAPP_TEMPLATES.find((t) => t.value === rule.whatsappTemplate)?.label ?? "",
+      sending: sendingLabel(rule),
+    }));
+
+  const remove = (id: string) => update((d) => ({ ...d, notificationRules: d.notificationRules.filter((r) => r.id !== id) }));
 
   return (
     <>
@@ -405,7 +538,7 @@ export function NotificationRules() {
 
       <div className="mt-4 hui-reveal">
         <div id="rules-table">
-          <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
+          <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
             <div className="htable-scroll">
               <table className="htable-table w-full htable-fixed">
                 <thead>
@@ -419,7 +552,56 @@ export function NotificationRules() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: SLOTS }, (_, i) => (
+                  {rows.map((row) => (
+                    <tr key={row.rule.id}>
+                      <td className="htable-cell">
+                        <span className="text-sm text-gray-900 font-semibold inter-semibold">{row.rule.title}</span>
+                      </td>
+                      <td className="htable-cell whitespace-nowrap">
+                        <span className="hchip hchip--default hchip--soft hchip--sm">{row.agendas}</span>
+                      </td>
+                      <td className="htable-cell whitespace-nowrap">
+                        {row.rule.channel ? <span className="hchip hchip--warning hchip--primary hchip--sm">{CHANNEL_LABELS[row.rule.channel]}</span> : null}
+                      </td>
+                      <td className="htable-cell">
+                        {row.template ? (
+                          <span className="text-sm text-gray-600 inter-regular">{row.template}</span>
+                        ) : (
+                          <span className="text-sm text-gray-400">—</span>
+                        )}
+                      </td>
+                      <td className="htable-cell">
+                        {row.rule.immediate ? (
+                          <span className="hchip hchip--accent hchip--soft hchip--sm">Imediato</span>
+                        ) : (
+                          <span className="text-sm text-gray-600 inter-regular">{row.sending}</span>
+                        )}
+                      </td>
+                      <td className="htable-cell htable-cell--end whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            className="btn-icon btn-icon-sm btn-icon-flat"
+                            title="Editar Regra"
+                            aria-label="Editar Regra"
+                            onClick={() => setEditing(row.rule)}
+                          >
+                            <PenIcon className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon btn-icon-sm btn-icon-danger"
+                            title="Excluir Regra"
+                            aria-label="Excluir Regra"
+                            onClick={() => setRemoving(row.rule)}
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                     <tr key={i} className="htable-row--empty" aria-hidden="true">
                       {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                         <td key={j} className="htable-cell" />
@@ -429,20 +611,49 @@ export function NotificationRules() {
                 </tbody>
               </table>
             </div>
-            {/* With no rules at all the live page keeps the default variant even while searching. */}
-            <div className="htable-empty" role="status" aria-live="polite">
-              <div className="hempty hempty--inline hui-reveal">
-                <InboxIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
-                <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+            {!rows.length && (
+              <div className="htable-empty" role="status" aria-live="polite">
+                <div className="hempty hempty--inline hui-reveal">
+                  <InboxIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
+                  <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+                </div>
               </div>
-            </div>
+            )}
             <div className="htable-footer" />
           </div>
         </div>
       </div>
 
       {creating && <RuleFormModal onClose={() => setCreating(false)} />}
+      {editing && <RuleFormModal rule={editing} onClose={() => setEditing(null)} />}
+      {removing && (
+        <AlertDialog
+          id="rule-delete-dialog"
+          heading="Excluir regra"
+          icon={<DangerCircleIcon className="w-6 h-6" />}
+          onClose={() => setRemoving(null)}
+          footer={
+            <>
+              <button type="button" className="hbtn hbtn--tertiary" onClick={() => setRemoving(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="hbtn hbtn--danger"
+                onClick={() => {
+                  remove(removing.id);
+                  setRemoving(null);
+                }}
+              >
+                Excluir
+              </button>
+            </>
+          }
+        >
+          Os agendamentos deixam de disparar esta notificação.
+        </AlertDialog>
+      )}
     </>
   );
 }

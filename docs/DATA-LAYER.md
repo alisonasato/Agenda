@@ -44,6 +44,11 @@ mesma coisa pronta em `/agendamentos/calendar/get/`.
 agendamentos dela na hora, marcados com `recurrenceId`, e apagar a regra remove os que ainda não
 aconteceram.
 
+## Regras de notificação
+`data.notificationRules` guarda as regras de notificação: o nome, as agendas que alcança (vazio =
+todas), os destinatários, a forma de envio com o texto ou o modelo, e quando enviar — imediato, ou
+um deslocamento em dias/horas/minutos antes ou depois do horário, com um filtro de status.
+
 ## Listas de bloqueio
 `data.suppressions` guarda os contatos impedidos de agendar. `blockedBy` em
 `src/lib/seiri/limits.ts` procura um bloqueio ativo e não vencido cujo e-mail, telefone ou CPF seja
