@@ -165,6 +165,7 @@ export function seed(): Data {
     recurrences: [],
     limits: [],
     holidays: [],
+    suppressions: [],
     // The live account blocks national holidays on its main agenda.
     holidayRules: { a1: { national: true, state: false, skipped: [] } },
     agendaOptions: { a1: { ...DEFAULT_OPTIONS, ownerUser: "Maria Souza" }, a2: { ...DEFAULT_OPTIONS, ownerUser: "João Pedro" } },
@@ -189,4 +190,5 @@ export const EMPTY: Data = {
   limits: [],
   holidays: [],
   holidayRules: {},
+  suppressions: [],
 };

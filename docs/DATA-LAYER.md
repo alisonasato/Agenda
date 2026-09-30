@@ -44,6 +44,12 @@ mesma coisa pronta em `/agendamentos/calendar/get/`.
 agendamentos dela na hora, marcados com `recurrenceId`, e apagar a regra remove os que ainda não
 aconteceram.
 
+## Listas de bloqueio
+`data.suppressions` guarda os contatos impedidos de agendar. `blockedBy` em
+`src/lib/seiri/limits.ts` procura um bloqueio ativo e não vencido cujo e-mail, telefone ou CPF seja
+o do cliente — o telefone e o CPF comparados só pelos dígitos — e é isso que o Novo Agendamento
+consulta antes dos limites.
+
 ## Feriados
 `data.holidays` guarda os feriados customizados e `data.holidayRules` o que cada agenda bloqueia.
 `src/lib/seiri/holidays.ts` junta os dois: um feriado customizado fecha os dias (e as horas) que

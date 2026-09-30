@@ -75,3 +75,21 @@ export function exceeded(data: Data, candidate: Candidate): BookingLimit | null 
   }
   return null;
 }
+
+/** Only digits, so "(11) 99999-0000" and "11999990000" are the same phone. */
+const digits = (text: string) => text.replace(/\D+/g, "");
+
+/** The "Lista de Bloqueio" entry that stops this client from booking, or null. */
+export function blockedBy(data: Data, clientId: string, now = new Date()) {
+  const client = data.clients.find((c) => c.id === clientId);
+  if (!client) return null;
+  const at = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}T${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  return (
+    data.suppressions.find((s) => {
+      if (!s.active || (s.expiresAt && s.expiresAt <= at)) return false;
+      if (s.type === "email") return s.contact.trim().toLowerCase() === client.email.trim().toLowerCase();
+      if (s.type === "phone") return digits(s.contact) === digits(client.phone);
+      return digits(s.contact) === digits(client.cpf ?? client.identificationNumber ?? "");
+    }) ?? null
+  );
+}

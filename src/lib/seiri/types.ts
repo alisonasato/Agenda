@@ -206,6 +206,30 @@ export type HolidayRules = {
 
 export const DEFAULT_HOLIDAY_RULES: HolidayRules = { national: false, state: false, skipped: [] };
 
+/** What a "Lista de Bloqueio" entry matches a would-be client by. */
+export type BlockType = "email" | "phone" | "identification";
+
+export const BLOCK_TYPES: { value: BlockType; label: string }[] = [
+  { value: "email", label: "E-mail" },
+  { value: "phone", label: "Telefone" },
+  { value: "identification", label: "CPF" },
+];
+
+/** A contact that may not book, from "Listas de Bloqueio". */
+export type Suppression = {
+  id: string;
+  type: BlockType;
+  /** The e-mail, phone or CPF itself. */
+  contact: string;
+  reason: string;
+  /** "aaaa-mm-ddThh:mm", empty when the block never expires. */
+  expiresAt: string;
+  /** "dd/mm/aaaa hh:mm". */
+  createdAt: string;
+  createdBy: string;
+  active: boolean;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -385,6 +409,7 @@ export type Data = {
   limits: BookingLimit[];
   holidays: Holiday[];
   holidayRules: Record<string, HolidayRules>;
+  suppressions: Suppression[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

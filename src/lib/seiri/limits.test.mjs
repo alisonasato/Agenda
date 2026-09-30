@@ -5,7 +5,7 @@ import { register } from "node:module";
 // Node wants the extension that the source's own imports leave out.
 register('data:text/javascript,export function resolve(s, c, next) { return next(s[0] === "." && !s.endsWith(".ts") ? s + ".ts" : s, c); }');
 
-const { exceeded } = await import("./limits.ts");
+const { exceeded, blockedBy } = await import("./limits.ts");
 
 const clients = [
   { id: "c1", name: "Ana", email: "ana@exemplo.com.br", phone: "11999990001" },
@@ -82,6 +82,38 @@ const candidate = (clientId, start) => ({ clientId, agendaId: "a1", serviceId: "
 {
   const data = { ...base, limits: [limit({ agendaIds: ["a2"] })], appointments: [appointment("c1", "2026-09-27T09:00")] };
   assert.equal(exceeded(data, candidate("c1", "2026-09-27T15:00")), null, "a limit on another agenda does not apply");
+}
+
+// The block list stops a client outright, whatever the limits say.
+{
+  const entry = (over) => ({
+    id: "sp1",
+    type: "email",
+    contact: "ana@exemplo.com.br",
+    reason: "Faltas",
+    expiresAt: "",
+    createdAt: "",
+    createdBy: "",
+    active: true,
+    ...over,
+  });
+  const now = new Date(2026, 8, 30, 12, 0);
+
+  const byEmail = { ...base, suppressions: [entry({})] };
+  assert.ok(blockedBy(byEmail, "c1", now), "the blocked e-mail matches Ana");
+  assert.equal(blockedBy(byEmail, "c3", now), null, "Bruno is not on the list");
+
+  const off = { ...base, suppressions: [entry({ active: false })] };
+  assert.equal(blockedBy(off, "c1", now), null, "an inactive block lets the client through");
+
+  const expired = { ...base, suppressions: [entry({ expiresAt: "2026-09-29T00:00" })] };
+  assert.equal(blockedBy(expired, "c1", now), null, "a block past its date no longer holds");
+  const pending = { ...base, suppressions: [entry({ expiresAt: "2026-10-31T00:00" })] };
+  assert.ok(blockedBy(pending, "c1", now), "a block that has not expired still holds");
+
+  // A phone matches however it is punctuated.
+  const byPhone = { ...base, suppressions: [entry({ type: "phone", contact: "(11) 99999-0001" })] };
+  assert.ok(blockedBy(byPhone, "c1", now), "11999990001 and (11) 99999-0001 are the same phone");
 }
 
 console.log("limits ok");

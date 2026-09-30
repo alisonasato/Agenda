@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { ChecklistIcon, CloseCircleIcon, SearchSolidIcon, UsersIcon } from "../shared/icons";
+import { ChecklistIcon, CloseCircleIcon, DangerCircleIcon, PenIcon, PowerIcon, SearchSolidIcon, TrashIcon, UsersIcon } from "../shared/icons";
+import { AlertDialog } from "../shared/AlertDialog";
+import { SuppressionModal, showStamp } from "./SuppressionModal";
+import { update, useData } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
+import { BLOCK_TYPES, type Suppression } from "@/lib/seiri/types";
 import { InlineFilter } from "../shared/InlineFilter";
 import { ROUTES } from "../shared/Sidebar";
 
@@ -11,15 +16,27 @@ const STATUSES = [
   { value: "inactive", label: "Inativos" },
 ];
 
-const TYPES = ["E-mail", "Telefone", "CPF"];
+const TYPES = BLOCK_TYPES.map((t) => t.label);
 const SLOTS = 10;
 
-// The live account has no blocked contacts, so the table always renders its empty state.
 export function BlockLists() {
+  const data = useData();
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<Suppression | null>(null);
+  const [removing, setRemoving] = useState<Suppression | null>(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [types, setTypes] = useState<string[]>([]);
   const filtered = Boolean(query.trim()) || status !== "all" || types.length > 0;
+  const term = fold(query.trim());
+  const rows = data.suppressions
+    .map((entry) => ({ entry, typeLabel: BLOCK_TYPES.find((t) => t.value === entry.type)?.label ?? entry.type }))
+    .filter((row) => (term ? fold(`${row.entry.contact} ${row.entry.reason}`).includes(term) : true))
+    .filter((row) => (status === "all" ? true : status === "active" ? row.entry.active : !row.entry.active))
+    .filter((row) => (types.length ? types.includes(row.typeLabel) : true));
+
+  const toggle = (id: string) => update((d) => ({ ...d, suppressions: d.suppressions.map((s) => (s.id === id ? { ...s, active: !s.active } : s)) }));
+  const remove = (id: string) => update((d) => ({ ...d, suppressions: d.suppressions.filter((s) => s.id !== id) }));
 
   const reset = () => {
     setQuery("");
@@ -49,7 +66,7 @@ export function BlockLists() {
           </label>
 
           <div className="w-full md:w-auto md:ml-auto flex items-center gap-2 min-w-0">
-            <button type="button" className="hbtn hbtn--primary hbtn--sm">
+            <button type="button" className="hbtn hbtn--primary hbtn--sm" onClick={() => setCreating(true)}>
               <CloseCircleIcon className="w-4 h-4" />
               Incluir bloqueio
             </button>
@@ -88,7 +105,7 @@ export function BlockLists() {
       </div>
 
       <div id="suppression-table-container" className="mt-4">
-        <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.25rem", "--htable-head-h": "38px" } as CSSProperties}>
+        <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "3.25rem", "--htable-head-h": "38px" } as CSSProperties}>
           <div className="htable-scroll">
             <table className="htable-table w-full htable-fixed">
               <thead>
@@ -104,7 +121,40 @@ export function BlockLists() {
                 </tr>
               </thead>
               <tbody>
-                {Array.from({ length: SLOTS }, (_, i) => (
+                {rows.map((row) => (
+                  <tr key={row.entry.id}>
+                    <td className="htable-cell whitespace-nowrap">
+                      <span className={`hchip hchip--${row.entry.active ? "success" : "default"} hchip--primary hchip--sm`}>
+                        {row.entry.active ? "Ativo" : "Inativo"}
+                      </span>
+                    </td>
+                    <td className="htable-cell whitespace-nowrap">{row.typeLabel}</td>
+                    <td className="htable-cell">{row.entry.contact}</td>
+                    <td className="htable-cell">{row.entry.reason || "—"}</td>
+                    <td className="htable-cell whitespace-nowrap">{row.entry.createdAt}</td>
+                    <td className="htable-cell whitespace-nowrap">{row.entry.createdBy}</td>
+                    <td className="htable-cell whitespace-nowrap">{showStamp(row.entry.expiresAt)}</td>
+                    <td className="htable-cell htable-cell--end whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          className="btn-icon btn-icon-sm btn-icon-flat"
+                          title={row.entry.active ? "Desativar" : "Reativar"}
+                          onClick={() => toggle(row.entry.id)}
+                        >
+                          <PowerIcon className="w-4 h-4" />
+                        </button>
+                        <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Editar" onClick={() => setEditing(row.entry)}>
+                          <PenIcon className="w-4 h-4" />
+                        </button>
+                        <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir" onClick={() => setRemoving(row.entry)}>
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                   <tr key={i} className="htable-row--empty" aria-hidden="true">
                     <td className="htable-cell" />
                     <td className="htable-cell" />
@@ -119,20 +169,52 @@ export function BlockLists() {
               </tbody>
             </table>
           </div>
-          <div className="htable-empty" role="status" aria-live="polite">
-            <div className="hempty hempty--inline hui-reveal">
-              <CloseCircleIcon className="hempty-icon" />
-              <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum bloqueio encontrado" : "Nenhum bloqueio cadastrado"}</h3>
-              <p className="hempty-desc inter-regular">
-                {filtered
-                  ? "Nenhum bloqueio corresponde aos filtros aplicados. Ajuste a busca ou limpe os filtros."
-                  : "Contatos impedidos de agendar por e-mail, telefone ou CPF aparecerão nesta lista."}
-              </p>
+          {!rows.length && (
+            <div className="htable-empty" role="status" aria-live="polite">
+              <div className="hempty hempty--inline hui-reveal">
+                <CloseCircleIcon className="hempty-icon" />
+                <h3 className="hempty-title nunito-bold">{filtered ? "Nenhum bloqueio encontrado" : "Nenhum bloqueio cadastrado"}</h3>
+                <p className="hempty-desc inter-regular">
+                  {filtered
+                    ? "Nenhum bloqueio corresponde aos filtros aplicados. Ajuste a busca ou limpe os filtros."
+                    : "Contatos impedidos de agendar por e-mail, telefone ou CPF aparecerão nesta lista."}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
           <div className="htable-footer" />
         </div>
       </div>
+
+      {creating && <SuppressionModal onClose={() => setCreating(false)} />}
+      {editing && <SuppressionModal entry={editing} onClose={() => setEditing(null)} />}
+      {removing && (
+        <AlertDialog
+          id="suppression-delete-dialog"
+          heading="Excluir bloqueio"
+          icon={<DangerCircleIcon className="w-6 h-6" />}
+          onClose={() => setRemoving(null)}
+          footer={
+            <>
+              <button type="button" className="hbtn hbtn--tertiary" onClick={() => setRemoving(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="hbtn hbtn--danger"
+                onClick={() => {
+                  remove(removing.id);
+                  setRemoving(null);
+                }}
+              >
+                Excluir
+              </button>
+            </>
+          }
+        >
+          Esse contato volta a poder agendar.
+        </AlertDialog>
+      )}
     </>
   );
 }

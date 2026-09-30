@@ -8,7 +8,7 @@ import { CheckboxMark, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
 import { SaveBar } from "../shared/SaveBar";
 import { ACTIONS, STATUSES, dayOptions, timeOptions } from "./formOptions";
 import { useData, update, nextId } from "@/lib/seiri/store";
-import { exceeded, intervalLabel, keyLabel } from "@/lib/seiri/limits";
+import { blockedBy, exceeded, intervalLabel, keyLabel } from "@/lib/seiri/limits";
 import { withBase } from "@/lib/basePath";
 import type { Status } from "@/lib/seiri/types";
 
@@ -59,6 +59,12 @@ export function NewAppointmentForm() {
     if (!agenda || !day || !time || !clients.length) return;
     const serviceId = service || data.services.find((s) => s.agendaIds.includes(agenda))?.id || "";
     for (const clientId of clients) {
+      const barred = blockedBy(data, clientId);
+      if (barred) {
+        const who = data.clients.find((c) => c.id === clientId)?.name ?? "O cliente";
+        setBlocked(`${who} está na lista de bloqueio${barred.reason ? `: ${barred.reason}` : "."}`);
+        return;
+      }
       const hit = exceeded(data, { clientId, agendaId: agenda, serviceId, start: `${day}T${time}` });
       if (hit) {
         const who = data.clients.find((c) => c.id === clientId)?.name ?? "O cliente";
