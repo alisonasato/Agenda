@@ -11,9 +11,15 @@ import { PhoneInput } from "../shared/PhoneInput";
 import { ScrollRail } from "../shared/ScrollRail";
 import { COUNTRY_OPTIONS, lookupCep, useGeoCascade } from "../shared/useGeoCascade";
 import { useDismiss } from "../shared/useDismiss";
+import { AlertDialog } from "../shared/AlertDialog";
+import { nextId, update, useData } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
+import { MEMBER_PROFILES, type Member } from "@/lib/seiri/types";
 import {
   BoxIcon,
   BuildingsDuoIcon,
+  DangerCircleIcon,
+  TrashIcon,
   CalendarIcon,
   CaretDownIcon,
   CheckReadIcon,
@@ -22,7 +28,6 @@ import {
   EyeClosedIcon,
   EyeIcon,
   FunnelIcon,
-  HistoryIcon,
   InboxIcon,
   LockIcon,
   MapPointIcon,
@@ -87,7 +92,14 @@ const STATUS_TAGS = [
 function Check({ name, label, checked, onChange }: { name: string; label: string; checked?: boolean; onChange?: (v: boolean) => void }) {
   return (
     <label className="hcheckbox">
-      <input type="checkbox" name={name} id={`id_${name}`} className="hcheckbox-input" checked={checked} onChange={onChange && ((e) => onChange(e.target.checked))} />
+      <input
+        type="checkbox"
+        name={name}
+        id={`id_${name}`}
+        className="hcheckbox-input"
+        checked={checked}
+        onChange={onChange && ((e) => onChange(e.target.checked))}
+      />
       <span className="hcheckbox-box" aria-hidden="true">
         <CheckboxMark />
         <span className="hcheckbox-dash" aria-hidden="true" />
@@ -97,7 +109,16 @@ function Check({ name, label, checked, onChange }: { name: string; label: string
   );
 }
 
-function Field({ name, id = `id_${name}`, label, required, type = "text", defaultValue, placeholder, desc }: {
+function Field({
+  name,
+  id = `id_${name}`,
+  label,
+  required,
+  type = "text",
+  defaultValue,
+  placeholder,
+  desc,
+}: {
   name: string;
   id?: string;
   label: string;
@@ -133,8 +154,7 @@ function Heading({ icon, children }: { icon: ReactNode; children: ReactNode }) {
 const Divider = () => <div className="border-t border-gray-100" />;
 
 /** "Permissões Adicionais" (the original searches /autocomplete/member_permissions). */
-function PermissionsField() {
-  const [perms, setPerms] = useState<string[]>([]);
+function PermissionsField({ values, onChange }: { values: string[]; onChange: (v: string[]) => void }) {
   return (
     <AutocompleteMulti
       id="id_member_permissions"
@@ -142,32 +162,104 @@ function PermissionsField() {
       label="Permissões Adicionais - Colaboradores e Visualizador"
       placeholder="Digite para buscar permissões..."
       options={PERMISSIONS}
-      values={perms}
-      onChange={setPerms}
+      values={values}
+      onChange={onChange}
     />
   );
 }
 
 /** "Permitir acesso à todas as agendas" hides the agenda picker. */
-function AgendaAccess({ withHelp }: { withHelp?: boolean }) {
-  const [all, setAll] = useState(false);
-  const [agendas, setAgendas] = useState<string[]>([]);
+function AgendaAccess({
+  withHelp,
+  all,
+  onAll,
+  agendas,
+  onAgendas,
+  options,
+}: {
+  withHelp?: boolean;
+  all: boolean;
+  onAll: (v: boolean) => void;
+  agendas: string[];
+  onAgendas: (v: string[]) => void;
+  options: { id: string; label: string }[];
+}) {
   return (
     <>
-      <Check name="all_agendas" label="Permitir acesso à todas as agendas" checked={all} onChange={setAll} />
+      <Check name="all_agendas" label="Permitir acesso à todas as agendas" checked={all} onChange={onAll} />
       <div style={all ? { display: "none" } : undefined}>
-        <ChipMultiSelect id="id_agendas" label="Agendas" placeholder="Selecione as agendas..." options={[]} values={agendas} onChange={setAgendas} />
-        {withHelp && <p className="hinput-desc">Selecione as agendas que o usuário pode acessar. Ou selecione a opção abaixo para permitir acesso à qualquer agenda.</p>}
+        <ChipMultiSelect id="id_agendas" label="Agendas" placeholder="Selecione as agendas..." options={options} values={agendas} onChange={onAgendas} />
+        {withHelp && (
+          <p className="hinput-desc">Selecione as agendas que o usuário pode acessar. Ou selecione a opção abaixo para permitir acesso à qualquer agenda.</p>
+        )}
       </div>
     </>
   );
 }
 
-const PROFILES_EDIT = [{ value: "owner", label: "Proprietário da Conta" }, ...PROFILES];
+const PROFILES_EDIT = MEMBER_PROFILES;
+
+/** What both user modals edit, and what saving writes into `data.members`. */
+function useMemberDraft(member?: Member) {
+  const data = useData();
+  const [profile, setProfile] = useState(member?.profile ?? "");
+  const [permissions, setPermissions] = useState<string[]>(member?.permissions ?? []);
+  const [tags, setTags] = useState<string[]>(member?.tagIds ?? []);
+  const [services, setServices] = useState<string[]>(member?.serviceIds ?? []);
+  const [allAgendas, setAllAgendas] = useState(member ? !member.agendaIds.length : false);
+  const [agendas, setAgendas] = useState<string[]>(member?.agendaIds ?? []);
+
+  const save = (form: HTMLFormElement | null) => {
+    const field = new FormData(form ?? undefined);
+    const text = (name: string) => String(field.get(name) ?? "").trim();
+    const name = text("name") || member?.name || "";
+    if (!name || !text("email")) return false;
+    update((d) => {
+      const row: Member = {
+        id: member?.id ?? nextId("mb", d.members),
+        name,
+        email: text("email"),
+        phone: text("phone"),
+        profile: profile || member?.profile || "oper",
+        active: member?.active ?? true,
+        agendaIds: allAgendas ? [] : agendas,
+        serviceIds: services,
+        tagIds: tags,
+        permissions,
+        lastLogin: member?.lastLogin ?? "",
+      };
+      return { ...d, members: member ? d.members.map((m) => (m.id === member.id ? row : m)) : [...d.members, row] };
+    });
+    return true;
+  };
+
+  const pickers = {
+    permissions: { values: permissions, onChange: setPermissions },
+    tagsAndServices: {
+      tags,
+      onTags: setTags,
+      services,
+      onServices: setServices,
+      tagOptions: data.tags.map((t) => ({ id: t.id, label: t.name })),
+      serviceOptions: data.services.map((x) => ({ id: x.id, label: x.name })),
+    },
+    agendas: {
+      all: allAgendas,
+      onAll: setAllAgendas,
+      agendas,
+      onAgendas: setAgendas,
+      options: data.agendas.map((a) => ({ id: a.id, label: a.name })),
+    },
+  };
+
+  return { profile, setProfile, save, pickers };
+}
 
 function CreateUserModal({ onClose }: { onClose: () => void }) {
   const [reveal, setReveal] = useState(false);
-  const [profile, setProfile] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const draft = useMemberDraft();
+  const { profile, setProfile } = draft;
   const [accounts, setAccounts] = useState(["1"]);
   return (
     <Modal
@@ -184,7 +276,16 @@ function CreateUserModal({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <form id="team-create-form" method="post" noValidate onSubmit={(e) => e.preventDefault()}>
+      <form
+        id="team-create-form"
+        method="post"
+        noValidate
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (draft.save(formRef.current)) onClose();
+        }}
+      >
         <div className="space-y-6">
           <div>
             <Heading icon={<UserCircleIcon className="w-4 h-4 text-primary" />}>Dados Básicos</Heading>
@@ -208,7 +309,13 @@ function CreateUserModal({ onClose }: { onClose: () => void }) {
                       name="password1"
                       placeholder="Deixe em branco para enviar link de ativação"
                     />
-                    <button type="button" tabIndex={-1} className="hpwd-toggle" aria-label={reveal ? "Ocultar senha" : "Mostrar senha"} onClick={() => setReveal((r) => !r)}>
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      className="hpwd-toggle"
+                      aria-label={reveal ? "Ocultar senha" : "Mostrar senha"}
+                      onClick={() => setReveal((r) => !r)}
+                    >
                       {reveal ? <EyeClosedIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
                     </button>
                   </div>
@@ -221,22 +328,31 @@ function CreateUserModal({ onClose }: { onClose: () => void }) {
           <div>
             <Heading icon={<ShieldIcon className="w-4 h-4 text-primary" />}>Perfil de Acesso</Heading>
             <div className="space-y-5">
-              <Combobox id="type_member" label="Perfil" options={PROFILES} value={profile} onChange={setProfile} placeholder="Selecione o perfil de acesso" clearable={false} required />
-              <PermissionsField />
+              <Combobox
+                id="type_member"
+                label="Perfil"
+                options={PROFILES}
+                value={profile}
+                onChange={setProfile}
+                placeholder="Selecione o perfil de acesso"
+                clearable={false}
+                required
+              />
+              <PermissionsField {...draft.pickers.permissions} />
             </div>
           </div>
           <Divider />
           <div>
             <Heading icon={<TagIcon className="w-4 h-4 text-primary" />}>Tags e Serviços</Heading>
             <div className="space-y-5">
-              <TagsAndServices />
+              <TagsAndServices {...draft.pickers.tagsAndServices} />
             </div>
           </div>
           <Divider />
           <div>
             <Heading icon={<CalendarIcon className="w-4 h-4 text-primary" />}>Agendas</Heading>
             <div className="space-y-5">
-              <AgendaAccess withHelp />
+              <AgendaAccess withHelp {...draft.pickers.agendas} />
             </div>
           </div>
           <Divider />
@@ -260,28 +376,42 @@ function CreateUserModal({ onClose }: { onClose: () => void }) {
 }
 
 // No tags or services exist on the account.
-function TagsAndServices() {
-  const [tags, setTags] = useState<string[]>([]);
-  const [services, setServices] = useState<string[]>([]);
+function TagsAndServices({
+  tags,
+  onTags,
+  services,
+  onServices,
+  tagOptions,
+  serviceOptions,
+}: {
+  tags: string[];
+  onTags: (v: string[]) => void;
+  services: string[];
+  onServices: (v: string[]) => void;
+  tagOptions: { id: string; label: string }[];
+  serviceOptions: { id: string; label: string }[];
+}) {
   return (
     <>
-      <AutocompleteMulti id="id_tags" name="tags" label="Tags" placeholder="Digite para buscar tags..." options={[]} values={tags} onChange={setTags} />
+      <AutocompleteMulti id="id_tags" name="tags" label="Tags" placeholder="Digite para buscar tags..." options={tagOptions} values={tags} onChange={onTags} />
       <AutocompleteMulti
         id="id_services"
         name="services"
         label="Serviços vinculados ao usuário"
         placeholder="Digite para buscar serviços..."
-        options={[]}
+        options={serviceOptions}
         values={services}
-        onChange={setServices}
+        onChange={onServices}
       />
     </>
   );
 }
 
-function EditUserModal({ onClose }: { onClose: () => void }) {
+function EditUserModal({ member, onClose }: { member: Member; onClose: () => void }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const draft = useMemberDraft(member);
+  const { profile, setProfile } = draft;
   const [account, setAccount] = useState("1");
-  const [profile, setProfile] = useState("owner");
   const [gender, setGender] = useState("");
   const [today] = useState(() => new Date());
   const [birthday, setBirthday] = useState<Date | null>(null);
@@ -322,22 +452,38 @@ function EditUserModal({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <form id="team-edit-form" method="post" encType="multipart/form-data" onSubmit={(e) => e.preventDefault()}>
+      <form
+        id="team-edit-form"
+        method="post"
+        encType="multipart/form-data"
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (draft.save(formRef.current)) onClose();
+        }}
+      >
         <div className="space-y-6">
           <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
             <span className="havatar">
-              <span className="havatar-fallback">{OWNER.name[0]}</span>
+              <span className="havatar-fallback">{member.name[0]}</span>
             </span>
             <div>
-              <p className="text-sm font-semibold text-gray-900 inter-semibold">{OWNER.name}</p>
-              <p className="text-xs text-gray-500 inter-regular">{OWNER.email}</p>
+              <p className="text-sm font-semibold text-gray-900 inter-semibold">{member.name}</p>
+              <p className="text-xs text-gray-500 inter-regular">{member.email}</p>
             </div>
           </div>
           <div>
             <Heading icon={<LockIcon className="w-4 h-4 text-primary" />}>Dados de Acesso</Heading>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field name="email" label="Email" type="email" required defaultValue={OWNER.email} />
-              <Combobox id="selected_organization" label="Conta Ativa" options={ACCOUNTS} value={account} onChange={setAccount} placeholder="Selecione a conta ativa" />
+              <Field name="email" label="Email" type="email" required defaultValue={member.email} />
+              <Combobox
+                id="selected_organization"
+                label="Conta Ativa"
+                options={ACCOUNTS}
+                value={account}
+                onChange={setAccount}
+                placeholder="Selecione a conta ativa"
+              />
               <div className="sm:col-span-2">
                 <Check name="is_mfa_required" label="Autenticação de dois fatores." />
                 <p className="hinput-desc ml-0">Usar autenticação de dois fatores.</p>
@@ -348,10 +494,18 @@ function EditUserModal({ onClose }: { onClose: () => void }) {
           <div>
             <Heading icon={<UserCircleIcon className="w-4 h-4 text-primary" />}>Dados de Membro</Heading>
             <div className="space-y-5">
-              <Combobox id="type_member" label="Perfil" options={PROFILES_EDIT} value={profile} onChange={setProfile} placeholder="Selecione o perfil de acesso" clearable={false} />
-              <PermissionsField />
-              <TagsAndServices />
-              <AgendaAccess />
+              <Combobox
+                id="type_member"
+                label="Perfil"
+                options={PROFILES_EDIT}
+                value={profile}
+                onChange={setProfile}
+                placeholder="Selecione o perfil de acesso"
+                clearable={false}
+              />
+              <PermissionsField {...draft.pickers.permissions} />
+              <TagsAndServices {...draft.pickers.tagsAndServices} />
+              <AgendaAccess {...draft.pickers.agendas} />
             </div>
           </div>
           <Divider />
@@ -379,7 +533,16 @@ function EditUserModal({ onClose }: { onClose: () => void }) {
             <Heading icon={<MapPointIcon className="w-4 h-4 text-primary" />}>Endereço</Heading>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div id="addr_country_wrapper">
-                <Combobox id="country" label="País" options={COUNTRY_OPTIONS} value={geo.country} onChange={geo.setCountry} placeholder="Buscar país..." required clearable={false} />
+                <Combobox
+                  id="country"
+                  label="País"
+                  options={COUNTRY_OPTIONS}
+                  value={geo.country}
+                  onChange={geo.setCountry}
+                  placeholder="Buscar país..."
+                  required
+                  clearable={false}
+                />
               </div>
               <div id="addr_state_wrapper">
                 <Combobox id="state" label="Estado" options={geo.stateOptions} value={geo.state} onChange={geo.setState} placeholder="Buscar estado..." />
@@ -394,7 +557,14 @@ function EditUserModal({ onClose }: { onClose: () => void }) {
                       <input id="id_cep" maxLength={9} className="hinput" type="text" name="cep" placeholder="00000-000" />
                     </div>
                   </div>
-                  <button type="button" disabled={cepState.loading} className="btn-base btn-primary inter-regular shrink-0" style={{ padding: "0 .75rem" }} onClick={searchCep} aria-label="Buscar CEP">
+                  <button
+                    type="button"
+                    disabled={cepState.loading}
+                    className="btn-base btn-primary inter-regular shrink-0"
+                    style={{ padding: "0 .75rem" }}
+                    onClick={searchCep}
+                    aria-label="Buscar CEP"
+                  >
                     {cepState.loading ? <RefreshIcon className="w-4 h-4 animate-spin" /> : <SearchSolidIcon className="w-4 h-4" />}
                   </button>
                 </div>
@@ -435,7 +605,13 @@ function MoreFilters({ value, onChange }: { value: More; onChange: (v: More) => 
   const count = (value.access ? 1 : 0) + (value.agendas.length ? 1 : 0) + (value.account ? 1 : 0);
   return (
     <div ref={ref} className="hinline">
-      <button type="button" className={`hinline-trigger hinline-trigger--bare${open ? " is-open" : ""}${count ? " is-active" : ""}`} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+      <button
+        type="button"
+        className={`hinline-trigger hinline-trigger--bare${open ? " is-open" : ""}${count ? " is-active" : ""}`}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
         <FunnelIcon className="hinline-icon w-4 h-4" />
         <span className="hinline-label hactionbar-label">Filtros</span>
         {count > 0 && <span className="hinline-count">{count}</span>}
@@ -446,13 +622,34 @@ function MoreFilters({ value, onChange }: { value: More; onChange: (v: More) => 
       {open && (
         <div id="team-more-panel" className="hselect-popover hmenu-popover hmenu-filters" role="dialog">
           <div className="hmenu-filter-row">
-            <Combobox id="acesso" label="Perfil de Acesso" options={ACCESS_FILTER} value={value.access} onChange={(access) => onChange({ ...value, access })} placeholder="Todos" />
+            <Combobox
+              id="acesso"
+              label="Perfil de Acesso"
+              options={ACCESS_FILTER}
+              value={value.access}
+              onChange={(access) => onChange({ ...value, access })}
+              placeholder="Todos"
+            />
           </div>
           <div className="hmenu-filter-row">
-            <ChipMultiSelect id="filter-agendas" label="Agendas" placeholder="Selecione as agendas..." options={[]} values={value.agendas} onChange={(agendas) => onChange({ ...value, agendas })} />
+            <ChipMultiSelect
+              id="filter-agendas"
+              label="Agendas"
+              placeholder="Selecione as agendas..."
+              options={[]}
+              values={value.agendas}
+              onChange={(agendas) => onChange({ ...value, agendas })}
+            />
           </div>
           <div className="hmenu-filter-row">
-            <Combobox id="account" label="Conta" options={ACCOUNTS} value={value.account} onChange={(account) => onChange({ ...value, account })} placeholder="Todas" />
+            <Combobox
+              id="account"
+              label="Conta"
+              options={ACCOUNTS}
+              value={value.account}
+              onChange={(account) => onChange({ ...value, account })}
+              placeholder="Todas"
+            />
           </div>
         </div>
       )}
@@ -469,6 +666,7 @@ const Chip = ({ icon, strong, text }: { icon: ReactNode; strong: string; text: s
 );
 
 export function TeamAdmin() {
+  const data = useData();
   const [query, setQuery] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [services, setServices] = useState<string[]>([]);
@@ -476,18 +674,25 @@ export function TeamAdmin() {
   const [more, setMore] = useState<More>({ access: "", agendas: [], account: "" });
   const [status, setStatus] = useState<(typeof STATUS_TAGS)[number][0]>("active");
   const [resetKey, setResetKey] = useState(0);
-  const [modal, setModal] = useState<"create" | "edit" | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<Member | null>(null);
+  const [removing, setRemoving] = useState<Member | null>(null);
 
-  const q = query.trim().toLowerCase();
-  // The owner is active, an owner (not a filterable profile) with access to every agenda.
-  const showOwner =
-    status !== "inactive" &&
-    (!q || OWNER.name.toLowerCase().includes(q) || OWNER.email.includes(q)) &&
-    !tags.length &&
-    !services.length &&
-    !groups.length &&
-    !more.access &&
-    (!more.account || more.account === ACCOUNTS[0].value);
+  const term = fold(query.trim());
+  const rows = data.members
+    .filter((m) => (term ? fold(`${m.name} ${m.email}`).includes(term) : true))
+    .filter((m) => (status === "all" ? true : status === "active" ? m.active : !m.active))
+    .filter((m) => (tags.length ? m.tagIds.some((id) => tags.includes(id)) : true))
+    .filter((m) => (services.length ? m.serviceIds.some((id) => services.includes(id)) : true))
+    .filter((m) => (more.access ? m.profile === more.access : true))
+    .filter((m) => (more.agendas.length ? !m.agendaIds.length || m.agendaIds.some((id) => more.agendas.includes(id)) : true))
+    .map((member) => ({
+      member,
+      profileLabel: MEMBER_PROFILES.find((x) => x.value === member.profile)?.label ?? member.profile,
+      agendas: member.agendaIds.length ? String(member.agendaIds.length) : "Todas",
+    }));
+
+  const remove = (id: string) => update((d) => ({ ...d, members: d.members.filter((m) => m.id !== id) }));
 
   const reset = () => {
     setQuery("");
@@ -522,14 +727,21 @@ export function TeamAdmin() {
             </button>
           </label>
           <div className="w-full md:w-auto md:ml-auto flex items-center gap-2 min-w-0">
-            <button type="button" className="hbtn hbtn--primary hbtn--sm" onClick={() => setModal("create")}>
+            <button type="button" className="hbtn hbtn--primary hbtn--sm" onClick={() => setCreating(true)}>
               <UserAddIcon />
               Novo Usuário
             </button>
             <ScrollRail key={resetKey} className="hactionbar" trackClassName="hrail-track hactionbar-track">
               {/* Server-searched lists: always show the search box; nothing exists on the account. */}
               <InlineFilter label="Tags" icon={<TagIcon className="hinline-icon w-4 h-4" />} options={[]} values={tags} onChange={setTags} searchable />
-              <InlineFilter label="Serviços" icon={<BoxIcon className="hinline-icon w-4 h-4" />} options={[]} values={services} onChange={setServices} searchable />
+              <InlineFilter
+                label="Serviços"
+                icon={<BoxIcon className="hinline-icon w-4 h-4" />}
+                options={[]}
+                values={services}
+                onChange={setServices}
+                searchable
+              />
               <InlineFilter label="Grupos" icon={<UsersIcon className="hinline-icon w-4 h-4" />} options={[]} values={groups} onChange={setGroups} searchable />
               <MoreFilters value={more} onChange={setMore} />
               <span className="hactionbar-sep" aria-hidden="true" />
@@ -561,7 +773,7 @@ export function TeamAdmin() {
 
       <div className="mt-4 min-w-0 hui-reveal" style={{ animationDelay: ".04s" }}>
         <div id="team-table-container">
-          <div className={`htable${showOwner ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "4rem" } as CSSProperties}>
+          <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "4rem" } as CSSProperties}>
             <div className="htable-scroll">
               <table className="htable-table w-full htable-fixed">
                 <thead>
@@ -575,52 +787,68 @@ export function TeamAdmin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {showOwner && (
-                    <tr className="group">
+                  {rows.map((row) => (
+                    <tr key={row.member.id} className="group">
                       <td className="htable-cell whitespace-nowrap">
-                        <span className="hchip hchip--default hchip--soft">{OWNER.account}</span>
+                        <span className="hchip hchip--default hchip--soft">{ACCOUNTS[0].label}</span>
                       </td>
                       <td className="htable-cell">
                         <div className="flex items-center gap-3 min-w-0">
                           <span className="havatar havatar--sm">
-                            <span className="havatar-fallback">{OWNER.name[0]}</span>
+                            <span className="havatar-fallback">{row.member.name[0]}</span>
                           </span>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 inter-semibold truncate">{OWNER.name}</p>
+                            <p className="text-sm font-semibold text-gray-900 inter-semibold truncate">{row.member.name}</p>
                           </div>
                         </div>
                       </td>
                       <td className="htable-cell whitespace-nowrap">
-                        <p className="text-sm text-gray-900 inter-regular">{OWNER.email}</p>
-                        <p className="text-xs text-gray-500 inter-regular">Último login: {OWNER.lastLogin}</p>
+                        <p className="text-sm text-gray-900 inter-regular">{row.member.email}</p>
+                        {row.member.lastLogin && <p className="text-xs text-gray-500 inter-regular">Último login: {row.member.lastLogin}</p>}
                       </td>
                       <td className="htable-cell whitespace-nowrap">
-                        <span className="hchip hchip--accent hchip--primary hchip--sm">Proprietário da Conta</span>
+                        <span className="hchip hchip--accent hchip--primary hchip--sm">{row.profileLabel}</span>
                       </td>
                       <td className="htable-cell">
                         <div className="flex flex-wrap gap-2">
-                          <Chip icon={<CalendarIcon className="w-3.5 h-3.5 text-gray-500" />} strong="Todas" text="agendas" />
-                          <Chip icon={<BoxIcon className="w-3.5 h-3.5 text-gray-500" />} strong="0" text="serviços" />
-                          <Chip icon={<TagIcon className="w-3.5 h-3.5 text-gray-500" />} strong="0" text="tags" />
+                          <Chip icon={<CalendarIcon className="w-3.5 h-3.5 text-gray-500" />} strong={row.agendas} text="agendas" />
+                          <Chip icon={<BoxIcon className="w-3.5 h-3.5 text-gray-500" />} strong={String(row.member.serviceIds.length)} text="serviços" />
+                          <Chip icon={<TagIcon className="w-3.5 h-3.5 text-gray-500" />} strong={String(row.member.tagIds.length)} text="tags" />
                         </div>
                       </td>
                       <td className="htable-cell whitespace-nowrap">
-                        <span className="hchip hchip--success hchip--primary hchip--sm">Ativo</span>
+                        <span className={`hchip ${row.member.active ? "hchip--success" : "hchip--default"} hchip--primary hchip--sm`}>
+                          {row.member.active ? "Ativo" : "Inativo"}
+                        </span>
                       </td>
                       <td className="htable-cell htable-cell--end whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
-                          <button type="button" title="Editar usuário" aria-label="Editar usuário" className="btn-icon btn-icon-sm btn-icon-flat" onClick={() => setModal("edit")}>
+                          <button
+                            type="button"
+                            title="Editar usuário"
+                            aria-label="Editar usuário"
+                            className="btn-icon btn-icon-sm btn-icon-flat"
+                            onClick={() => setEditing(row.member)}
+                          >
                             <PenIcon className="w-4 h-4" />
                           </button>
-                          {/* The activity log isn't cloned yet. */}
-                          <a href="#" className="btn-icon btn-icon-sm btn-icon-flat" title="Histórico de Atividades" aria-label="Histórico de Atividades">
-                            <HistoryIcon className="w-4 h-4" />
-                          </a>
+                          {/* The original's owner cannot be removed from its own team. */}
+                          {row.member.profile !== "owner" && (
+                            <button
+                              type="button"
+                              title="Excluir usuário"
+                              aria-label="Excluir usuário"
+                              className="btn-icon btn-icon-sm btn-icon-danger"
+                              onClick={() => setRemoving(row.member)}
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
-                  )}
-                  {Array.from({ length: SLOTS - (showOwner ? 1 : 0) }, (_, i) => (
+                  ))}
+                  {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                     <tr key={i} className="htable-row--empty" aria-hidden="true">
                       {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                         <td key={j} className="htable-cell" />
@@ -631,7 +859,7 @@ export function TeamAdmin() {
               </table>
             </div>
             {/* With the list emptied by a filter the live page still shows the default variant. */}
-            <div className="htable-empty" hidden={showOwner} role="status" aria-live="polite">
+            <div className="htable-empty" hidden={rows.length > 0} role="status" aria-live="polite">
               <div className="hempty hempty--inline hui-reveal">
                 <InboxIcon className="hempty-icon" />
                 <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
@@ -643,8 +871,35 @@ export function TeamAdmin() {
         </div>
       </div>
 
-      {modal === "create" && <CreateUserModal onClose={() => setModal(null)} />}
-      {modal === "edit" && <EditUserModal onClose={() => setModal(null)} />}
+      {creating && <CreateUserModal onClose={() => setCreating(false)} />}
+      {editing && <EditUserModal member={editing} onClose={() => setEditing(null)} />}
+      {removing && (
+        <AlertDialog
+          id="member-delete-dialog"
+          heading="Excluir usuário"
+          icon={<DangerCircleIcon className="w-6 h-6" />}
+          onClose={() => setRemoving(null)}
+          footer={
+            <>
+              <button type="button" className="hbtn hbtn--tertiary" onClick={() => setRemoving(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="hbtn hbtn--danger"
+                onClick={() => {
+                  remove(removing.id);
+                  setRemoving(null);
+                }}
+              >
+                Excluir
+              </button>
+            </>
+          }
+        >
+          O usuário perde o acesso à conta.
+        </AlertDialog>
+      )}
     </>
   );
 }

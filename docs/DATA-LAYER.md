@@ -73,6 +73,10 @@ nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas q
 nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
 o motivo que aparece no horário fechado é o nome do feriado.
 
+## Equipe
+`data.members` guarda quem tem acesso à conta: perfil, permissões, e as agendas, serviços e tags a
+que o membro está vinculado. Um membro sem agendas tem acesso a todas.
+
 ## Unidades
 `data.units` guarda as unidades de atendimento. A ligação com as agendas fica do lado da agenda,
 em `Agenda.unitId`, então o formulário da unidade reescreve esse campo nas agendas que ele marca.

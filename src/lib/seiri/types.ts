@@ -309,6 +309,31 @@ export type Unit = {
   address: Address;
 };
 
+/** Someone on the team, from "Administrar Equipe". */
+export type Member = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  /** One of MEMBER_PROFILES below. */
+  profile: string;
+  active: boolean;
+  /** Empty means "permitir acesso à todas as agendas". */
+  agendaIds: string[];
+  serviceIds: string[];
+  tagIds: string[];
+  permissions: string[];
+  /** "dd/mm/aaaa hh:mm", empty for someone who never signed in. */
+  lastLogin: string;
+};
+
+export const MEMBER_PROFILES: { value: string; label: string }[] = [
+  { value: "owner", label: "Proprietário da Conta" },
+  { value: "manager", label: "Administrador" },
+  { value: "oper", label: "Colaborador" },
+  { value: "read", label: "Visualização" },
+];
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -494,6 +519,7 @@ export type Data = {
   emailTemplates: EmailTemplate[];
   whatsappTemplates: WhatsappTemplate[];
   units: Unit[];
+  members: Member[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {
