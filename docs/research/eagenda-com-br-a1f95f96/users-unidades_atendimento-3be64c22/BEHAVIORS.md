@@ -15,3 +15,22 @@
   - Word counter: enabled with `RichTextEditor wordCount`. The labels are Portuguese ("Palavras",
     "Caracteres"), so they are wider than the original's English ones.
   - The slug hint uses the mock `seiri.com.br/minhaempresa/...` instead of the real account link.
+
+## Data (fase de lógica)
+- As unidades vivem em `data.units`. **Nova Unidade** grava nome, link, contatos, descrição e
+  endereço; o lápis reabre o mesmo formulário com `?id=` e a lixeira pede confirmação.
+- **Agendas Vinculadas** escreve do outro lado: cada agenda guarda a unidade dela em
+  `Agenda.unitId`, e tirar a agenda da unidade (ou apagar a unidade) deixa a agenda sem unidade.
+- Os três KPIs contam as linhas que sobraram do filtro: unidades, agendas vinculadas e unidades com
+  algum contato.
+- A busca cobre nome, slug, email, telefone e whatsapp; o popover de filtros casa campo a campo.
+
+## Verificação
+No build estático: criar "Unidade Norte" com e-mail e a Agenda Principal põe a linha com o contato
+e o chip da agenda, e os KPIs passam a 1 / 1 / 1; o lápis abre `?id=un1` com nome, e-mail e o chip
+da agenda carregados, e o título vira "Editar Unidade".
+
+## Diferenças em relação ao original
+- A imagem da tela da unidade é escolhida mas não é guardada: o clone não tem onde pôr arquivos.
+- O original edita por `/users/unidades_atendimento/<id>`; como o clone é estático, a mesma página
+  carrega a unidade por `?id=`.

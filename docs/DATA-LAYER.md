@@ -73,6 +73,10 @@ nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas q
 nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
 o motivo que aparece no horário fechado é o nome do feriado.
 
+## Unidades
+`data.units` guarda as unidades de atendimento. A ligação com as agendas fica do lado da agenda,
+em `Agenda.unitId`, então o formulário da unidade reescreve esse campo nas agendas que ele marca.
+
 ## Identificador da agenda
 `Agenda.slug` é o "Identificador da Agenda". O passo Básicas da configuração da agenda e a tela
 "Links de Agendamento" gravam o mesmo campo, e é dele que sai o link amigável

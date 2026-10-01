@@ -3,7 +3,7 @@
 export type Status = "PENDING" | "CONFIRMED" | "ATTENDED" | "NO_SHOW" | "CANCELED";
 
 /** `slug` is the "Identificador da Agenda"; without it the agenda has no friendly link. */
-export type Agenda = { id: string; name: string; color: string; active: boolean; slug?: string };
+export type Agenda = { id: string; name: string; color: string; active: boolean; slug?: string; unitId?: string };
 
 export type Service = {
   id: string;
@@ -296,6 +296,19 @@ export const WHATSAPP_TEMPLATE_TYPES: { value: string; label: string }[] = [
   { value: "follow_up_info", label: "Mensagem de Resposta Automática - Mais Informações" },
 ];
 
+/** A place from "Administrar Unidades"; agendas point at one through `Agenda.unitId`. */
+export type Unit = {
+  id: string;
+  name: string;
+  /** "Nome para o Link". */
+  slug: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  description: string;
+  address: Address;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -480,6 +493,7 @@ export type Data = {
   statusRules: StatusRule[];
   emailTemplates: EmailTemplate[];
   whatsappTemplates: WhatsappTemplate[];
+  units: Unit[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

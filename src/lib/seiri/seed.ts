@@ -167,6 +167,7 @@ export function seed(): Data {
     holidays: [],
     suppressions: [],
     statusRules: [],
+    units: [],
     emailTemplates: [],
     whatsappTemplates: [],
     notificationRules: [
@@ -248,4 +249,5 @@ export const EMPTY: Data = {
   statusRules: [],
   emailTemplates: [],
   whatsappTemplates: [],
+  units: [],
 };

@@ -10,6 +10,9 @@ import { SaveBar } from "../shared/SaveBar";
 import { ROUTES } from "../shared/Sidebar";
 import { COUNTRY_OPTIONS, useGeoCascade } from "../shared/useGeoCascade";
 import { PenIcon, SaveIcon } from "../shared/icons";
+import { nextId, update, useData } from "@/lib/seiri/store";
+import { withBase } from "@/lib/basePath";
+import type { Unit } from "@/lib/seiri/types";
 
 // CKEditor touches `window` on import, so it only loads in the browser.
 const RichTextEditor = dynamic(() => import("../shared/RichTextEditor").then((m) => m.RichTextEditor), { ssr: false });
@@ -34,6 +37,7 @@ function TextField({
   placeholder,
   type = "text",
   desc,
+  value,
   onInput,
 }: {
   id: string;
@@ -42,6 +46,7 @@ function TextField({
   placeholder: string;
   type?: string;
   desc?: string;
+  value?: string;
   onInput?: (e: React.FormEvent<HTMLInputElement>) => void;
 }) {
   return (
@@ -50,20 +55,74 @@ function TextField({
         {label}
       </label>
       <div className="hinput-wrap">
-        <input id={id} className="hinput" type={type} name={name} placeholder={placeholder} onInput={onInput} />
+        <input id={id} className="hinput" type={type} name={name} placeholder={placeholder} defaultValue={value} onInput={onInput} />
       </div>
       {desc && <p className="hinput-desc">{desc}</p>}
     </div>
   );
 }
 
-/** "Nova Unidade" (?action=create). Nothing is saved; the account has no agendas to link here. */
+/** "Nova Unidade" (?action=create), and the same form with `?id=` for an existing one. */
 export function UnitForm() {
+  const data = useData();
+  const id = typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get("id") ?? "");
+  const unit = data.units.find((u) => u.id === id);
+  const [loaded, setLoaded] = useState("");
+  const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
   const markDirty = () => setDirty(true);
   const [agendas, setAgendas] = useState<string[]>([]);
   const geo = useGeoCascade();
   const formRef = useRef<HTMLFormElement>(null);
+
+  // The browser's data arrives after the first render, so fill the form once it does.
+  if (unit && loaded !== unit.id) {
+    setLoaded(unit.id);
+    setAgendas(data.agendas.filter((a) => a.unitId === unit.id).map((a) => a.id));
+    void geo.setByNames(unit.address.state, unit.address.city);
+  }
+
+  // No server here: saving writes the unit into the browser's own data.
+  const save = () => {
+    const form = formRef.current;
+    if (!form) return;
+    const field = new FormData(form);
+    const text = (name: string) => String(field.get(name) ?? "").trim();
+    if (!text("label")) return;
+    update((d) => {
+      const unitId = unit?.id ?? nextId("un", d.units);
+      const row: Unit = {
+        id: unitId,
+        name: text("label"),
+        slug: text("slug"),
+        email: text("email"),
+        phone: text("phone"),
+        whatsapp: text("whatsapp"),
+        description: text("description"),
+        address: {
+          cep: text("cep"),
+          street: text("street_f"),
+          number: text("number"),
+          complement: text("complement"),
+          neighborhood: text("neighbourhood_f"),
+          district: text("district"),
+          country: geo.country,
+          state: geo.state,
+          city: geo.city,
+        },
+      };
+      return {
+        ...d,
+        units: unit ? d.units.map((u) => (u.id === unitId ? row : u)) : [...d.units, row],
+        // An agenda belongs to one unit, so the picks rewrite that side.
+        agendas: d.agendas.map((a) => (agendas.includes(a.id) ? { ...a, unitId } : a.unitId === unitId ? { ...a, unitId: undefined } : a)),
+      };
+    });
+    setSaved(true);
+    window.setTimeout(() => {
+      window.location.href = withBase("/users/unidades_atendimento");
+    }, 900);
+  };
   const fillAddress = async (data: CepAddress) => {
     fillFromCep(formRef.current, data);
     await geo.setByNames(data.estado, data.localidade);
@@ -71,11 +130,22 @@ export function UnitForm() {
   };
 
   return (
-    <form ref={formRef} id="unidade-form" className="cfg-form" noValidate onSubmit={(e) => e.preventDefault()} onInput={markDirty} onChange={markDirty}>
+    <form
+      ref={formRef}
+      id="unidade-form"
+      className="cfg-form"
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        save();
+      }}
+      onInput={markDirty}
+      onChange={markDirty}
+    >
       <div className="cfg-content">
         <Group title="Dados Básicos">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextField id="id_label" name="label" label="Nome da Unidade" placeholder="Nome da Unidade" />
+            <TextField id="id_label" name="label" label="Nome da Unidade" placeholder="Nome da Unidade" value={unit?.name} />
             <TextField
               id="id_slug"
               name="slug"
@@ -91,9 +161,9 @@ export function UnitForm() {
                   .replace(/-{2,}/g, "-");
               }}
             />
-            <TextField id="id_email" name="email" type="email" label="E-mail" placeholder="email@exemplo.com" />
-            <TextField id="id_phone" name="phone" label="Telefone" placeholder="(00) 0000-0000" />
-            <TextField id="id_whatsapp" name="whatsapp" label="WhatsApp" placeholder="(00) 00000-0000" />
+            <TextField id="id_email" name="email" type="email" label="E-mail" placeholder="email@exemplo.com" value={unit?.email} />
+            <TextField id="id_phone" name="phone" label="Telefone" placeholder="(00) 0000-0000" value={unit?.phone} />
+            <TextField id="id_whatsapp" name="whatsapp" label="WhatsApp" placeholder="(00) 00000-0000" value={unit?.whatsapp} />
           </div>
         </Group>
 
@@ -115,7 +185,7 @@ export function UnitForm() {
           <ChipMultiSelect
             id="id_agendas"
             placeholder="Selecione as agendas..."
-            options={[]}
+            options={data.agendas.map((a) => ({ id: a.id, label: a.name }))}
             values={agendas}
             onChange={(v) => {
               setAgendas(v);
@@ -172,23 +242,24 @@ export function UnitForm() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <div className="sm:col-span-2">
-              <TextField id="id_street" name="street_f" label="Logradouro" placeholder="Rua, Avenida, etc." />
+              <TextField id="id_street" name="street_f" label="Logradouro" placeholder="Rua, Avenida, etc." value={unit?.address.street} />
             </div>
-            <TextField id="id_number" name="number" label="Número" placeholder="Número" />
-            <TextField id="id_neighbourhood" name="neighbourhood_f" label="Bairro" placeholder="Bairro" />
-            <TextField id="id_complement" name="complement" label="Complemento" placeholder="Apt, Bloco, etc." />
-            <TextField id="id_district" name="district" label="Distrito" placeholder="Distrito" />
+            <TextField id="id_number" name="number" label="Número" placeholder="Número" value={unit?.address.number} />
+            <TextField id="id_neighbourhood" name="neighbourhood_f" label="Bairro" placeholder="Bairro" value={unit?.address.neighborhood} />
+            <TextField id="id_complement" name="complement" label="Complemento" placeholder="Apt, Bloco, etc." value={unit?.address.complement} />
+            <TextField id="id_district" name="district" label="Distrito" placeholder="Distrito" value={unit?.address.district} />
           </div>
         </Group>
       </div>
       <SaveBar
         backHref={ROUTES.adminUnidades}
-        saveLabel="Criar Unidade"
+        saveLabel={unit ? "Salvar Unidade" : "Criar Unidade"}
         saveIcon={<SaveIcon />}
         dirty={dirty}
         toastIcon={<PenIcon className="w-4 h-4" />}
-        toastTitle="Alterações não salvas"
-        toastSub="Salve para aplicar as mudanças."
+        toastTitle={saved ? "Unidade salva" : "Alterações não salvas"}
+        toastSub={saved ? "Voltando para as unidades…" : "Salve para aplicar as mudanças."}
+        forceToast={saved}
       />
     </form>
   );
