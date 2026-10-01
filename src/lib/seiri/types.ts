@@ -286,6 +286,16 @@ export const STATUS_RULE_STATUSES: { value: string; label: string }[] = [
   { value: "PENDING_PAYMENT", label: "Pagamento Pendente" },
 ];
 
+/** A model from "Modelos de Email". */
+export type EmailTemplate = { id: string; name: string; subject: string; body: string };
+
+/** A model from "Modelos de WhatsApp". */
+export type WhatsappTemplate = { id: string; name: string; type: string; text: string };
+
+export const WHATSAPP_TEMPLATE_TYPES: { value: string; label: string }[] = [
+  { value: "follow_up_info", label: "Mensagem de Resposta Automática - Mais Informações" },
+];
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -468,6 +478,8 @@ export type Data = {
   suppressions: Suppression[];
   notificationRules: NotificationRule[];
   statusRules: StatusRule[];
+  emailTemplates: EmailTemplate[];
+  whatsappTemplates: WhatsappTemplate[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

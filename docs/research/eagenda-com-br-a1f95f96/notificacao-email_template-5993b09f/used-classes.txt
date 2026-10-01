@@ -1,4 +1,4 @@
-bottom-4
+bottom-4 hchip hchip--sm hchip--soft hchip--primary hchip--default hchip--accent hchip--warning hchip--success hchip--danger btn-icon btn-icon-sm btn-icon-flat btn-icon-danger halertdialog-backdrop halertdialog-backdrop--opaque halertdialog-container halertdialog-dialog halertdialog-dialog--sm halertdialog-close halertdialog-header halertdialog-icon halertdialog-icon--danger halertdialog-heading hbtn--danger hbtn--tertiary line-clamp-2 text-gray-400 text-gray-600 text-gray-700
 duration-75
 ease-in
 fixed

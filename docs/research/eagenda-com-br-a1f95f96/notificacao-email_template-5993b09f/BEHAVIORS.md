@@ -31,3 +31,17 @@ does.
 ## Not cloned
 - The "Prévia do Email" modal and the delete dialog: they are only reachable from a template
   row, and the account has none.
+
+## Data (fase de lógica)
+- Os modelos vivem em `data.emailTemplates`. **Novo Modelo** grava nome, assunto e o corpo que o
+  editor produz; o lápis reabre o modal com o corpo carregado no editor e a lixeira confirma antes.
+- **Usado em** conta as regras de notificação que apontam para o modelo, e o seletor de modelo da
+  regra passa a oferecer estes.
+- A busca cobre o nome e o assunto.
+
+## Verificação
+No build estático: criar "Confirmação Seiri" põe a linha; escolher esse modelo numa regra de
+email faz a coluna passar a "1 regra(s)".
+
+## Diferenças em relação ao original
+- O original envia um email de teste a partir do modelo; esse botão não existe aqui.

@@ -187,7 +187,9 @@ function RuleFormModal({ rule, onClose }: { rule?: NotificationRule; onClose: ()
     onClose();
   };
 
-  const preview = WHATSAPP_TEXTS[whatsappTemplate] ?? "";
+  const emailOptions = data.emailTemplates.map((t) => ({ value: t.id, label: t.name }));
+  const whatsappOptions = [...WHATSAPP_TEMPLATES, ...data.whatsappTemplates.map((t) => ({ value: t.id, label: t.name }))];
+  const preview = WHATSAPP_TEXTS[whatsappTemplate] ?? data.whatsappTemplates.find((t) => t.id === whatsappTemplate)?.text ?? "";
 
   return (
     <Modal
@@ -315,7 +317,7 @@ function RuleFormModal({ rule, onClose }: { rule?: NotificationRule; onClose: ()
             <Combobox
               id="email_template"
               label="Modelo do email"
-              options={[]}
+              options={emailOptions}
               value={emailTemplate}
               onChange={setEmailTemplate}
               placeholder="Selecione um modelo"
@@ -339,7 +341,7 @@ function RuleFormModal({ rule, onClose }: { rule?: NotificationRule; onClose: ()
               <Combobox
                 id="whatsapp_template"
                 label="Template de envio via WhatsApp"
-                options={WHATSAPP_TEMPLATES}
+                options={whatsappOptions}
                 value={whatsappTemplate}
                 onChange={setWhatsappTemplate}
                 placeholder="Selecione um template"
@@ -475,7 +477,11 @@ export function NotificationRules() {
     .map((rule) => ({
       rule,
       agendas: rule.agendaIds.length ? rule.agendaIds.map((id) => data.agendas.find((a) => a.id === id)?.name ?? id).join(", ") : "Todas",
-      template: WHATSAPP_TEMPLATES.find((t) => t.value === rule.whatsappTemplate)?.label ?? "",
+      template:
+        WHATSAPP_TEMPLATES.find((t) => t.value === rule.whatsappTemplate)?.label ??
+        data.whatsappTemplates.find((t) => t.id === rule.whatsappTemplate)?.name ??
+        data.emailTemplates.find((t) => t.id === rule.emailTemplate)?.name ??
+        "",
       sending: sendingLabel(rule),
     }));
 

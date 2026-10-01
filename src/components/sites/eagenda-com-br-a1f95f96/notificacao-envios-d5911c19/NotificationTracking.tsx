@@ -7,9 +7,10 @@ import { InlineFilter } from "../shared/InlineFilter";
 import { ScrollRail } from "../shared/ScrollRail";
 import { ROUTES } from "../shared/Sidebar";
 import { useDismiss } from "../shared/useDismiss";
+import { useData } from "@/lib/seiri/store";
+import { SITUATION_TONES, sendsOf, showStamp } from "@/lib/seiri/sends";
+import { STATUS_LABELS, STATUS_TONES } from "@/lib/seiri/types";
 
-// The live account's agenda filter comes back empty here, so it opens on "Nenhum resultado".
-const AGENDAS: string[] = [];
 const TYPES = ["SMS", "WhatsApp", "Email", "Notificação Push", "WhatsApp - via WideChat", "WhatsApp - via Twilio"];
 const APPOINTMENT_STATUSES = [
   "ATENDIDO",
@@ -103,6 +104,7 @@ function MoreFiltersMenu({ value, onChange, today }: { value: MoreFilters; onCha
 }
 
 export function NotificationTracking() {
+  const data = useData();
   const [today] = useState(() => new Date());
   const [sendDate, setSendDate] = useState<Preset>();
   const [agendas, setAgendas] = useState<string[]>([]);
@@ -114,8 +116,15 @@ export function NotificationTracking() {
 
   const periodSet = (p?: Preset) => !!p && p !== "Todos os períodos";
   // Any applied filter swaps the empty state for the "filtered" variant, as on the live page.
-  const filtered =
-    status !== "Todas" || periodSet(sendDate) || periodSet(more.date) || agendas.length + types.length + more.statuses.length > 0;
+  const filtered = status !== "Todas" || periodSet(sendDate) || periodSet(more.date) || agendas.length + types.length + more.statuses.length > 0;
+
+  const sends = sendsOf(data);
+  const agendaNames = [...new Set(data.agendas.map((a) => a.name))];
+  const rows = sends
+    .filter((row) => (status === "Todas" ? true : row.situation === status))
+    .filter((row) => (agendas.length ? agendas.includes(row.agendaName) : true))
+    .filter((row) => (types.length ? types.includes(row.channelLabel) : true))
+    .filter((row) => (more.statuses.length ? more.statuses.includes(STATUS_LABELS[row.status].toUpperCase()) : true));
 
   const reset = () => {
     setSendDate(undefined);
@@ -133,7 +142,13 @@ export function NotificationTracking() {
           <div className="w-full md:w-auto md:ml-auto flex items-center gap-2 min-w-0">
             <ScrollRail key={resetKey} className="hactionbar" trackClassName="hrail-track hactionbar-track">
               <DateFilter label="Envio" preset={sendDate} onPreset={setSendDate} today={today} />
-              <InlineFilter label="Agenda" icon={<CalendarIcon className="hinline-icon w-4 h-4" />} options={AGENDAS} values={agendas} onChange={setAgendas} />
+              <InlineFilter
+                label="Agenda"
+                icon={<CalendarIcon className="hinline-icon w-4 h-4" />}
+                options={agendaNames}
+                values={agendas}
+                onChange={setAgendas}
+              />
               <InlineFilter label="Tipo" icon={<PlaneIcon className="hinline-icon w-4 h-4" />} options={TYPES} values={types} onChange={setTypes} />
               <MoreFiltersMenu value={more} onChange={setMore} today={today} />
               <span className="hactionbar-sep" aria-hidden="true" />
@@ -164,7 +179,7 @@ export function NotificationTracking() {
       </form>
 
       <div id="notifications-table-container" className="mt-4 hui-reveal" style={{ animationDelay: ".06s" }}>
-        <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
+        <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
           <div className="htable-scroll">
             <table className="htable-table w-full htable-fixed">
               <thead>
@@ -178,7 +193,41 @@ export function NotificationTracking() {
                 </tr>
               </thead>
               <tbody>
-                {Array.from({ length: SLOTS }, (_, i) => (
+                {rows.map((row) => (
+                  <tr key={row.id}>
+                    <td className="htable-cell">
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <span className="text-sm text-gray-900 inter-semibold truncate">{row.clientName}</span>
+                        <span className="text-xs text-gray-500 inter-regular truncate">{row.contact}</span>
+                      </div>
+                    </td>
+                    <td className="htable-cell whitespace-nowrap">
+                      <span className="hchip hchip--default hchip--soft hchip--sm">{row.agendaName}</span>
+                    </td>
+                    <td className="htable-cell">
+                      <span className="text-sm text-gray-700 inter-regular">{row.ruleTitle}</span>
+                    </td>
+                    <td className="htable-cell whitespace-nowrap">
+                      <span className="hchip hchip--accent hchip--primary hchip--sm">{row.channelLabel}</span>
+                    </td>
+                    <td className="htable-cell whitespace-nowrap">
+                      <span className={`hchip ${STATUS_TONES[row.status]} hchip--primary hchip--sm`}>{STATUS_LABELS[row.status]}</span>
+                    </td>
+                    <td className="htable-cell">
+                      <span className="text-sm text-gray-700 inter-regular whitespace-nowrap">{showStamp(row.start)}</span>
+                    </td>
+                    <td className="htable-cell">
+                      <span className="text-sm text-gray-700 inter-regular whitespace-nowrap">{showStamp(row.at)}</span>
+                    </td>
+                    <td className="htable-cell whitespace-nowrap">
+                      <span className={`hchip ${SITUATION_TONES[row.situation]} hchip--primary hchip--sm`}>{row.situation}</span>
+                    </td>
+                    <td className="htable-cell htable-cell--end">
+                      <span className="text-xs text-gray-400 inter-regular">-</span>
+                    </td>
+                  </tr>
+                ))}
+                {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                   <tr key={i} className="htable-row--empty" aria-hidden="true">
                     {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                       <td key={j} className="htable-cell" />
@@ -188,23 +237,25 @@ export function NotificationTracking() {
               </tbody>
             </table>
           </div>
-          <div className="htable-empty" role="status" aria-live="polite">
-            {filtered ? (
-              <div className="hempty hempty--inline hui-reveal">
-                <SearchEmptyIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">Nenhum resultado encontrado</h3>
-                <p className="hempty-desc inter-regular">
-                  Nenhum registro corresponde aos filtros aplicados. Ajuste ou limpe os filtros para ver mais resultados.
-                </p>
-              </div>
-            ) : (
-              <div className="hempty hempty--inline hui-reveal">
-                <InboxIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">Nenhuma notificação programada</h3>
-                <p className="hempty-desc inter-regular">Quando uma regra de notificação agendar um envio, ele aparece aqui.</p>
-              </div>
-            )}
-          </div>
+          {!rows.length && (
+            <div className="htable-empty" role="status" aria-live="polite">
+              {filtered ? (
+                <div className="hempty hempty--inline hui-reveal">
+                  <SearchEmptyIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">Nenhum resultado encontrado</h3>
+                  <p className="hempty-desc inter-regular">
+                    Nenhum registro corresponde aos filtros aplicados. Ajuste ou limpe os filtros para ver mais resultados.
+                  </p>
+                </div>
+              ) : (
+                <div className="hempty hempty--inline hui-reveal">
+                  <InboxIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">Nenhuma notificação programada</h3>
+                  <p className="hempty-desc inter-regular">Quando uma regra de notificação agendar um envio, ele aparece aqui.</p>
+                </div>
+              )}
+            </div>
+          )}
           <div className="htable-footer" />
         </div>
       </div>

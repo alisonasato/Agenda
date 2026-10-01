@@ -3,9 +3,25 @@
 import dynamic from "next/dynamic";
 import { Fragment, useRef, useState, type CSSProperties } from "react";
 import type { ClassicEditor } from "ckeditor5";
-import { AddAppointmentIcon, BellIcon, ChatIcon, CheckReadIcon, CloseCircleIcon, InboxIcon, RefreshIcon, SearchSolidIcon } from "../shared/icons";
+import {
+  AddAppointmentIcon,
+  BellIcon,
+  ChatIcon,
+  CheckReadIcon,
+  CloseCircleIcon,
+  InboxIcon,
+  RefreshIcon,
+  SearchSolidIcon,
+  DangerCircleIcon,
+  PenIcon,
+  TrashIcon,
+} from "../shared/icons";
 import { Combobox } from "../shared/Combobox";
 import { Modal, ModalSubmit } from "../shared/Modal";
+import { AlertDialog } from "../shared/AlertDialog";
+import { nextId, update, useData } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
+import type { EmailTemplate } from "@/lib/seiri/types";
 import { ScrollRail } from "../shared/ScrollRail";
 import { ROUTES } from "../shared/Sidebar";
 
@@ -83,9 +99,21 @@ const VARIABLES: { title: string; items: [string, string][] }[] = [
 ];
 
 /** "Novo Modelo de Email" modal. The original loads this body over htmx; the fields are the same. */
-function EmailTemplateModal({ onClose }: { onClose: () => void }) {
+function EmailTemplateModal({ template, onClose }: { template?: EmailTemplate; onClose: () => void }) {
+  const [name, setName] = useState(template?.name ?? "");
+  const [subject, setSubject] = useState(template?.subject ?? "");
   const [example, setExample] = useState("");
   const editorRef = useRef<ClassicEditor | null>(null);
+
+  const save = () => {
+    const body = editorRef.current?.getData() ?? template?.body ?? "";
+    if (!name.trim() || !subject.trim()) return;
+    update((d) => {
+      const row: EmailTemplate = { id: template?.id ?? nextId("et", d.emailTemplates), name: name.trim(), subject: subject.trim(), body };
+      return { ...d, emailTemplates: template ? d.emailTemplates.map((t) => (t.id === template.id ? row : t)) : [...d.emailTemplates, row] };
+    });
+    onClose();
+  };
 
   const pickExample = (value: string) => {
     setExample(value);
@@ -103,7 +131,7 @@ function EmailTemplateModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal
       id="email-template-modal"
-      title="Novo Modelo de Email"
+      title={template ? "Editar Modelo de Email" : "Novo Modelo de Email"}
       size="4xl"
       onClose={onClose}
       footer={
@@ -115,14 +143,30 @@ function EmailTemplateModal({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <form id="email-template-form" className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+      <form
+        id="email-template-form"
+        className="space-y-5"
+        onSubmit={(e) => {
+          e.preventDefault();
+          save();
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="hinput-field hinput-field--block">
             <label className="hinput-label" htmlFor="id_name">
               Nome de Identificação <span className="hinput-req">*</span>
             </label>
             <div className="hinput-wrap">
-              <input id="id_name" className="hinput" type="text" name="name" placeholder="Ex.: Confirmação de Agendamento" required />
+              <input
+                id="id_name"
+                className="hinput"
+                type="text"
+                name="name"
+                placeholder="Ex.: Confirmação de Agendamento"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
           </div>
           <div className="hinput-field hinput-field--block">
@@ -130,7 +174,16 @@ function EmailTemplateModal({ onClose }: { onClose: () => void }) {
               Assunto do Email <span className="hinput-req">*</span>
             </label>
             <div className="hinput-wrap">
-              <input id="id_email_subject" className="hinput" type="text" name="email_subject" placeholder="Ex.: Seu agendamento foi confirmado!" required />
+              <input
+                id="id_email_subject"
+                className="hinput"
+                type="text"
+                name="email_subject"
+                placeholder="Ex.: Seu agendamento foi confirmado!"
+                required
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -154,7 +207,14 @@ function EmailTemplateModal({ onClose }: { onClose: () => void }) {
               Corpo do Email <span className="hinput-req">*</span>
             </label>
             <div className="het-editor mt-1.5">
-              <RichTextEditor editorRef={editorRef} name="email_body_html" id="id_email_body_html" className="w-full" language="pt-br" />
+              <RichTextEditor
+                editorRef={editorRef}
+                name="email_body_html"
+                id="id_email_body_html"
+                className="w-full"
+                language="pt-br"
+                initialData={template?.body}
+              />
             </div>
           </div>
           <div className="min-w-0">
@@ -180,8 +240,19 @@ function EmailTemplateModal({ onClose }: { onClose: () => void }) {
 }
 
 export function EmailTemplates() {
+  const data = useData();
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<EmailTemplate | null>(null);
+  const [removing, setRemoving] = useState<EmailTemplate | null>(null);
+
+  const term = fold(query.trim());
+  const rows = data.emailTemplates
+    .filter((template) => (term ? fold(`${template.name} ${template.subject}`).includes(term) : true))
+    // "Usado em" counts the notification rules pointing at this model.
+    .map((template) => ({ template, usedIn: data.notificationRules.filter((r) => r.emailTemplate === template.id).length }));
+
+  const remove = (id: string) => update((d) => ({ ...d, emailTemplates: d.emailTemplates.filter((t) => t.id !== id) }));
 
   return (
     <>
@@ -228,7 +299,7 @@ export function EmailTemplates() {
 
       <div className="mt-4 hui-reveal" style={{ animationDelay: ".04s" }}>
         <div id="email-template-table">
-          <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
+          <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
             <div className="htable-scroll">
               <table className="htable-table w-full htable-fixed">
                 <thead>
@@ -242,7 +313,30 @@ export function EmailTemplates() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: SLOTS }, (_, i) => (
+                  {rows.map((row) => (
+                    <tr key={row.template.id}>
+                      <td className="htable-cell">
+                        <span className="text-sm text-gray-900 font-semibold inter-semibold">{row.template.name}</span>
+                      </td>
+                      <td className="htable-cell">
+                        <span className="text-sm text-gray-600 inter-regular">{row.template.subject}</span>
+                      </td>
+                      <td className="htable-cell whitespace-nowrap">
+                        <span className="text-sm text-gray-600 inter-regular">{row.usedIn} regra(s)</span>
+                      </td>
+                      <td className="htable-cell htable-cell--end whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Editar" onClick={() => setEditing(row.template)}>
+                            <PenIcon className="w-4 h-4" />
+                          </button>
+                          <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir" onClick={() => setRemoving(row.template)}>
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                     <tr key={i} className="htable-row--empty" aria-hidden="true">
                       {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                         <td key={j} className="htable-cell" />
@@ -253,19 +347,49 @@ export function EmailTemplates() {
               </table>
             </div>
             {/* With no templates at all the live page keeps the default variant even while searching. */}
-            <div className="htable-empty" role="status" aria-live="polite">
-              <div className="hempty hempty--inline hui-reveal">
-                <InboxIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
-                <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+            {!rows.length && (
+              <div className="htable-empty" role="status" aria-live="polite">
+                <div className="hempty hempty--inline hui-reveal">
+                  <InboxIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
+                  <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+                </div>
               </div>
-            </div>
+            )}
             <div className="htable-footer" />
           </div>
         </div>
       </div>
 
       {creating && <EmailTemplateModal onClose={() => setCreating(false)} />}
+      {editing && <EmailTemplateModal template={editing} onClose={() => setEditing(null)} />}
+      {removing && (
+        <AlertDialog
+          id="email-template-delete-dialog"
+          heading="Excluir modelo"
+          icon={<DangerCircleIcon className="w-6 h-6" />}
+          onClose={() => setRemoving(null)}
+          footer={
+            <>
+              <button type="button" className="hbtn hbtn--tertiary" onClick={() => setRemoving(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="hbtn hbtn--danger"
+                onClick={() => {
+                  remove(removing.id);
+                  setRemoving(null);
+                }}
+              >
+                Excluir
+              </button>
+            </>
+          }
+        >
+          As regras que usam este modelo ficam sem modelo.
+        </AlertDialog>
+      )}
     </>
   );
 }

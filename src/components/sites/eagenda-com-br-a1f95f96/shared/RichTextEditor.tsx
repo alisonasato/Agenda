@@ -33,6 +33,8 @@ type RichTextEditorProps = {
   className?: string;
   /** Shows the "Palavras / Caracteres" counter under the editor (django_ckeditor_5 word count). */
   wordCount?: boolean;
+  /** HTML the editor opens with, e.g. the model being edited. */
+  initialData?: string;
 };
 
 /**
@@ -41,8 +43,10 @@ type RichTextEditorProps = {
  * (its UI is English); the product wants Portuguese, so the pt-BR bundle is loaded. The editor
  * replaces a hidden textarea.
  */
-export function RichTextEditor({ editorRef, name, id, language, maxLength, className, wordCount }: RichTextEditorProps) {
+export function RichTextEditor({ editorRef, name, id, language, maxLength, className, wordCount, initialData }: RichTextEditorProps) {
   const hostRef = useRef<HTMLTextAreaElement>(null);
+  // Read when the editor is built, so changing it later does not tear the editor down.
+  const initialDataRef = useRef(initialData);
   const countRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -51,11 +55,42 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
     let editor: ClassicEditor | undefined;
     let cancelled = false;
     ClassicEditor.create(hostRef.current!, {
-      plugins: [Essentials, Autoformat, Paragraph, Heading, Bold, Italic, Link, List, ListProperties, BlockQuote, Font, Alignment, PasteFromOffice, SourceEditing, ...(wordCount ? [WordCount] : [])],
+      plugins: [
+        Essentials,
+        Autoformat,
+        Paragraph,
+        Heading,
+        Bold,
+        Italic,
+        Link,
+        List,
+        ListProperties,
+        BlockQuote,
+        Font,
+        Alignment,
+        PasteFromOffice,
+        SourceEditing,
+        ...(wordCount ? [WordCount] : []),
+      ],
       ...(wordCount && { wordCount: { container: countRef.current! } }),
       toolbar: [
-        "heading", "|", "bold", "italic", "link", "bulletedList", "numberedList", "blockQuote", "undo", "redo",
-        "fontFamily", "fontSize", "fontColor", "fontBackgroundColor", "alignment", "|", "sourceEditing",
+        "heading",
+        "|",
+        "bold",
+        "italic",
+        "link",
+        "bulletedList",
+        "numberedList",
+        "blockQuote",
+        "undo",
+        "redo",
+        "fontFamily",
+        "fontSize",
+        "fontColor",
+        "fontBackgroundColor",
+        "alignment",
+        "|",
+        "sourceEditing",
       ],
       heading: {
         options: [
@@ -85,6 +120,7 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
     }).then((e) => {
       if (cancelled) return void destroy(e);
       editor = e;
+      if (initialDataRef.current) e.setData(initialDataRef.current);
       if (editorRef) editorRef.current = e;
     });
     return () => {

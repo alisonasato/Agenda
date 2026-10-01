@@ -49,6 +49,12 @@ aconteceram.
 todas), os destinatários, a forma de envio com o texto ou o modelo, e quando enviar — imediato, ou
 um deslocamento em dias/horas/minutos antes ou depois do horário, com um filtro de status.
 
+## Modelos e envios
+`data.emailTemplates` e `data.whatsappTemplates` guardam os modelos que as regras escolhem, e
+"Usado em" conta as regras que apontam para cada um. Os envios não são guardados:
+`src/lib/seiri/sends.ts` cruza os agendamentos com as regras e devolve o que Acompanhamento mostra —
+quem recebe, por qual canal, quando sai e se já saiu.
+
 ## Notificações por status
 `data.statusRules` guarda as regras que disparam quando um agendamento chega a um status. Uma
 regra sem agendas é uma regra geral; com agendas, vale só para elas. Cada regra pode enviar por
