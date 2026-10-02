@@ -15,6 +15,7 @@ import {
   StarsIcon,
   WarningTriangleIcon,
 } from "../shared/icons";
+import { update, useData } from "@/lib/seiri/store";
 
 const STEPS = [
   { title: "Gere o código", desc: "Leia o termo de autorização, aceite e o código é criado na hora." },
@@ -113,9 +114,13 @@ function TermsModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
 
 /** Ajuda › Autorizar Suporte: generates the one-time code that lets support into the account. */
 export function SupportAccess() {
+  const data = useData();
   const [terms, setTerms] = useState(false);
-  const [result, setResult] = useState<{ token: string; expires: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  // The code in force is stored, so it survives a reload like the original's two-hour token.
+  const result = data.supportCode;
+  const setResult = (code: { token: string; expires: string } | null) => update((d) => ({ ...d, supportCode: code }));
+  const visits = data.supportVisits;
 
   return (
     <div className="mx-auto w-full max-w-[1550px] px-6 py-8 lg:px-10">
@@ -267,7 +272,10 @@ export function SupportAccess() {
           <div className="hwidget-actions" />
         </div>
         <div className="mt-4">
-          <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.25rem", "--htable-head-h": "38px" } as CSSProperties}>
+          <div
+            className={`htable${visits.length ? "" : " htable-is-empty"}`}
+            style={{ "--htable-row-h": "3.25rem", "--htable-head-h": "38px" } as CSSProperties}
+          >
             <div className="htable-scroll">
               <table className="htable-table w-full htable-fixed">
                 <thead>
@@ -281,7 +289,25 @@ export function SupportAccess() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: SLOTS }, (_, i) => (
+                  {visits.map((visit) => (
+                    <tr key={visit.id}>
+                      <td className="htable-cell whitespace-nowrap">{visit.agent}</td>
+                      <td className="htable-cell whitespace-nowrap">{visit.start}</td>
+                      <td className="htable-cell htable-cell--num">{visit.pages}</td>
+                      <td className="htable-cell whitespace-nowrap">{visit.duration} min</td>
+                      <td className="htable-cell whitespace-nowrap">
+                        <span
+                          className={`hchip ${visit.status === "Em andamento" ? "hchip--warning" : visit.status === "Expirado" ? "hchip--default" : "hchip--success"} hchip--primary hchip--sm`}
+                        >
+                          {visit.status}
+                        </span>
+                      </td>
+                      <td className="htable-cell htable-cell--end">
+                        <span className="text-xs text-gray-400 inter-regular">-</span>
+                      </td>
+                    </tr>
+                  ))}
+                  {Array.from({ length: Math.max(0, SLOTS - visits.length) }, (_, i) => (
                     <tr key={i} className="htable-row--empty" aria-hidden="true">
                       {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                         <td key={j} className="htable-cell" />
@@ -291,23 +317,25 @@ export function SupportAccess() {
                 </tbody>
               </table>
             </div>
-            <div className="htable-empty" role="status" aria-live="polite">
-              <div className="hempty hempty--inline hui-reveal">
-                <ShieldSplitIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">Nenhum acesso de suporte registrado</h3>
-                <p className="hempty-desc inter-regular">O histórico aparecerá aqui quando a equipe de suporte acessar sua conta.</p>
-              </div>
-              {/* The original keeps the filtered copy in the markup, hidden, for when the history has rows. */}
-              <div hidden>
+            {!visits.length && (
+              <div className="htable-empty" role="status" aria-live="polite">
                 <div className="hempty hempty--inline hui-reveal">
-                  <SearchEmptyIcon className="hempty-icon" />
-                  <h3 className="hempty-title nunito-bold">Nenhum resultado encontrado</h3>
-                  <p className="hempty-desc inter-regular">
-                    Nenhum registro corresponde aos filtros aplicados. Ajuste ou limpe os filtros para ver mais resultados.
-                  </p>
+                  <ShieldSplitIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">Nenhum acesso de suporte registrado</h3>
+                  <p className="hempty-desc inter-regular">O histórico aparecerá aqui quando a equipe de suporte acessar sua conta.</p>
+                </div>
+                {/* The original keeps the filtered copy in the markup, hidden, for when the history has rows. */}
+                <div hidden>
+                  <div className="hempty hempty--inline hui-reveal">
+                    <SearchEmptyIcon className="hempty-icon" />
+                    <h3 className="hempty-title nunito-bold">Nenhum resultado encontrado</h3>
+                    <p className="hempty-desc inter-regular">
+                      Nenhum registro corresponde aos filtros aplicados. Ajuste ou limpe os filtros para ver mais resultados.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
             <div className="htable-footer">
               <div className="htable-pagination" hidden />
             </div>

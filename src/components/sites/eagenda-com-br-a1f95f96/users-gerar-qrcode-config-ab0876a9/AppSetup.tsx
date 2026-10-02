@@ -1,6 +1,8 @@
 "use client";
 
 import { withBase } from "@/lib/basePath";
+import { useEffect, useState } from "react";
+import QRCode from "qrcode";
 import { ActivityIcon, QrIcon } from "../shared/icons";
 
 const ASSETS = "/sites/eagenda-com-br-a1f95f96/users-gerar-qrcode-config-ab0876a9";
@@ -12,7 +14,22 @@ const STEPS = [
 ];
 
 /** Ajuda › Aplicativo: the three setup steps and the QR code that pairs the phone with the account. */
+/** The platform the app is pointed at; the QR carries exactly this. */
+const PLATFORM = "seiri.com.br";
+
 export function AppSetup() {
+  // The original serves a ready-made PNG; here the code is drawn in the browser.
+  const [qr, setQr] = useState("");
+  useEffect(() => {
+    let live = true;
+    QRCode.toDataURL(PLATFORM, { width: 352, margin: 1 })
+      .then((data) => live && setQr(data))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+
   return (
     <div className="mx-auto w-full max-w-[1550px] px-6 py-8 lg:px-10">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
@@ -62,10 +79,10 @@ export function AppSetup() {
           </div>
           <div className="rounded-xl border border-[color:var(--color-border)] bg-white p-3 inline-flex">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={withBase(`${ASSETS}/qrcode-config.png`)} alt="QR Code de configuração do aplicativo" width={176} height={176} className="w-44 h-44" />
+            <img src={qr} alt="QR Code de configuração do aplicativo" width={176} height={176} className="w-44 h-44" />
           </div>
           <p className="text-xs text-gray-500 inter-regular mt-4">
-            Este código é único para a plataforma <strong className="text-gray-700">seiri.com.br</strong>.
+            Este código é único para a plataforma <strong className="text-gray-700">{PLATFORM}</strong>.
           </p>
         </div>
       </div>

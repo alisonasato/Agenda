@@ -78,6 +78,10 @@ o motivo que aparece no horário fechado é o nome do feriado.
 configurações: um mapa de nome de campo para valor. O original posta os seis passos num formulário
 só, e o clone grava do mesmo jeito.
 
+## Acesso do suporte
+`data.supportCode` guarda o código de acesso em vigor, para ele sobreviver a um recarregamento, e
+`data.supportVisits` o histórico de visitas da equipe de suporte.
+
 ## Listas de acesso
 `data.accessLists` guarda as listas de controle de acesso: o tipo de chave, os limites por período,
 as agendas e os serviços que a lista alcança (vazio = todos) e os clientes convidados.

@@ -175,6 +175,8 @@ export function seed(): Data {
     creditPurchases: [],
     referrals: [],
     accessLists: [],
+    supportVisits: [],
+    supportCode: null,
     members: [
       {
         id: "mb1",
@@ -293,4 +295,6 @@ export const EMPTY: Data = {
   creditPurchases: [],
     referrals: [],
     accessLists: [],
+    supportVisits: [],
+    supportCode: null,
 };

@@ -30,3 +30,20 @@
 Medido contra o site ao vivo em 1440×900: aviso de SLA, botão de contratação, cartão do código,
 stepper, cartões lado a lado, cabeçalho do histórico, tabela e estado vazio batem, e a altura total
 da página é a mesma (1078).
+
+## Data (fase de lógica)
+- O código gerado vai para `data.supportCode`, então sobrevive a um recarregamento, como o token de
+  2 horas do original. "Gerar novo" troca o que estava lá.
+- O histórico lê `data.supportVisits`: atendente, início, páginas, duração e a situação em chip
+  (Encerrado, Em andamento ou Expirado).
+- O termo continua obrigatório: o botão "Aceitar e gerar código" só funciona com a caixa marcada.
+
+## Verificação
+No build estático: aceitar o termo gera um código de seis caracteres, que fica guardado e continua
+na tela depois de recarregar; uma visita de exemplo sai como
+"Equipe Seiri · 28/09/2026 14:20 · 12 · 18 min · Encerrado".
+
+## Diferenças em relação ao original
+- O código não dá acesso a ninguém: não há equipe de suporte nem sessão para auditar, então as
+  visitas só existem nos dados.
+- "Contratar Suporte Avançado" segue sem destino, porque o clone não tem planos.

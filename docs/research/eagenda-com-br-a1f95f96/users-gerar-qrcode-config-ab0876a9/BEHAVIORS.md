@@ -20,3 +20,15 @@
 ## Verification
 Medido contra o site ao vivo em 1440×900 e 390×844: grade, cartões, lista, selo (40×44) e QR (176×176)
 batem; só a nota final difere em largura, porque o texto cita a plataforma fictícia.
+
+## Data (fase de lógica)
+- O QR é desenhado no navegador a partir do endereço da plataforma, em vez de ser uma imagem
+  pronta — é o mesmo pacote `qrcode` que a tela de Links de Agendamento usa.
+
+## Verificação
+No build estático: a página abre com o QR gerado e a legenda citando a mesma plataforma que ele
+codifica.
+
+## Diferenças em relação ao original
+- O original codifica um payload de configuração da conta; aqui o QR carrega só o endereço da
+  plataforma, porque não há app para parear.

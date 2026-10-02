@@ -1,4 +1,4 @@
-flex flex-col flex-shrink-0 gap-1.5 gap-2 gap-3 gap-6 gap-x-8 gap-y-2.5 grid grid-cols-1 h-3.5 h-4 h-5
+flex flex-col flex-shrink-0 gap-1.5 gap-2 gap-3 gap-6 gap-x-8 gap-y-2.5 grid grid-cols-1 h-3.5 h-4 h-5 hchip hchip--sm hchip--primary hchip--success hchip--warning hchip--default htable-cell--num text-gray-400
 h-[18px] h-full halert halert--warning halert-actions halert-content halert-description halert-indicator
 halert-title hbtn hbtn--primary hbtn--secondary hbtn--sm hbtn--tertiary hcheckbox hcheckbox-box
 hcheckbox-check hcheckbox-check-line hcheckbox-dash hcheckbox-input hcheckbox-label hempty hempty--inline

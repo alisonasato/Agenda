@@ -433,6 +433,22 @@ export const ACCESS_INTERVALS: { value: string; label: string }[] = [
   { value: "UNDEF", label: "Sem Prazo" },
 ];
 
+/** One visit the support team made to the account, from "Autorizar Suporte". */
+export type SupportVisit = {
+  id: string;
+  agent: string;
+  /** "dd/mm/aaaa hh:mm". */
+  start: string;
+  pages: number;
+  /** In minutes. */
+  duration: number;
+  /** "Encerrado", "Em andamento" or "Expirado". */
+  status: string;
+};
+
+/** The access code in force, if any. */
+export type SupportCode = { token: string; expires: string } | null;
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -626,6 +642,8 @@ export type Data = {
   creditPurchases: CreditPurchase[];
   referrals: Referral[];
   accessLists: AccessList[];
+  supportVisits: SupportVisit[];
+  supportCode: SupportCode;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {
