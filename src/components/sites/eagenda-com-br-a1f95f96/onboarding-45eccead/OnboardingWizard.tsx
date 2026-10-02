@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRef } from "react";
+import { nextId, update } from "@/lib/seiri/store";
+import { DEFAULT_RULES } from "@/lib/seiri/types";
 import { withBase } from "@/lib/basePath";
 import { CloseCircleIcon } from "../shared/icons";
 import { Step1Usage } from "./Step1Usage";
@@ -95,7 +98,52 @@ export function OnboardingWizard() {
   const [step, setStep] = useState(1);
   const [phase, setPhase] = useState<Phase>("ask");
   const [skipping, setSkipping] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  // Everything the wizard has collected so far, by the name each step's field carries.
+  const draft = useRef<Record<string, string | boolean>>({});
+
+  /** The original posts each step as it is left; here the step's fields go into the draft. */
+  const collect = () => {
+    for (const el of Array.from(contentRef.current?.querySelectorAll("input, select, textarea") ?? [])) {
+      const field = el as HTMLInputElement;
+      if (!field.name || field.disabled) continue;
+      if (field.type === "radio") {
+        if (field.checked) draft.current[field.name] = field.value;
+      } else {
+        draft.current[field.name] = field.type === "checkbox" ? field.checked : field.value;
+      }
+    }
+  };
+
+  const text = (name: string) => String(draft.current[name] ?? "").trim();
+
+  /** What the wizard set up, written in one go when it finishes. */
+  const finish = () =>
+    update((d) => {
+      const agendaId = nextId("a", d.agendas);
+      const name = text("agenda_name");
+      const agendas = name ? [...d.agendas, { id: agendaId, name, color: text("accent_color") || "#0A70D6", active: true }] : d.agendas;
+      // The schedule step names its days onb-day-<weekday>-{start,end}.
+      const week = Array.from({ length: 7 }, (_, weekday) => {
+        const start = text(`day_${weekday}_start`);
+        const end = text(`day_${weekday}_end`);
+        return start && end ? [{ start, end, max: null }] : [];
+      });
+      return {
+        ...d,
+        agendas,
+        hours: name ? { ...d.hours, [agendaId]: week } : d.hours,
+        agendaRules: name ? { ...d.agendaRules, [agendaId]: DEFAULT_RULES } : d.agendaRules,
+        // The profile and location steps describe the public booking screen.
+        bookingScreen: { ...d.bookingScreen, ...draft.current },
+        integrations: { ...d.integrations, ...(draft.current.google_calendar ? { "Google Calendar": true } : {}) },
+      };
+    });
+
   const go = (next: number) => {
+    collect();
+    if (next > STEP_LABELS.length + 1) return;
+    if (next === 8) finish();
     setStep(next);
     setPhase("ask");
   };
@@ -128,7 +176,7 @@ export function OnboardingWizard() {
 
       <div className="relative flex-1 overflow-hidden">
         <div id="step-wrapper" className="relative h-full">
-          <div id="step-content" className="h-full overflow-y-auto onb-scroll">
+          <div id="step-content" ref={contentRef} className="h-full overflow-y-auto onb-scroll" onInput={collect} onChange={collect}>
             <div className="h-full">
               {step === 1 && <Step1Usage {...props} onSkip={() => setSkipping(true)} />}
               {step === 2 && <Step2Profile {...props} />}

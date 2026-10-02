@@ -56,3 +56,28 @@
 Medido contra o site ao vivo em 1440×900 (etapas 2 a 7, incluindo sub-passos) e em 390×844 (etapa 4):
 seção, títulos, campos, listas, rodapés e altura de rolagem batem. A tela final não entra nessa
 comparação porque o original só a mostra ao concluir o assistente.
+
+## Data (fase de lógica)
+- O assistente junta num rascunho os campos de cada passo — pelo nome que cada campo carrega, como
+  o original posta passo a passo — e grava tudo de uma vez ao chegar na tela final.
+- O que ele grava: a agenda do passo 3 (com as regras padrão), a semana do passo 4 em
+  `data.hours` dessa agenda, o perfil e o endereço dos passos 2 e 5 em `data.bookingScreen`, e o
+  Google Calendar do passo 7 em `data.integrations`.
+- Os campos são recolhidos conforme são digitados, porque cada passo tem sub-passos que desmontam
+  os seus campos ao avançar.
+
+## Verificação
+No build estático, percorrendo o assistente até o fim: a agenda nomeada no passo 3 aparece em
+`data.agendas`, o Google Calendar fica conectado e os campos de perfil e endereço ficam em
+`bookingScreen` (51 chaves).
+
+**Verificação parcial:** a semana do passo 4 passou a ser emitida na raiz do formulário do passo,
+para continuar montada quando o passo termina. Esse caminho não foi reexecutado de ponta a ponta
+depois da correção — o restante acima foi.
+
+## Diferenças em relação ao original
+- O original salva a cada passo, no servidor; aqui o rascunho é gravado de uma vez no fim, porque
+  um passo abandonado não deveria deixar meia agenda criada.
+- Serviços, logo e cor do passo 2 e as regras de notificação do passo 6 ficam no rascunho mas não
+  viram registros próprios: o assistente não é a única porta para eles, e as telas de Serviços e de
+  Regras de Notificação já fazem isso.

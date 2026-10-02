@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { CheckboxMark, ChevronLeftIcon, ClockSolidIcon, DangerCircleIcon, PlusCircleIcon, ShieldEyeIcon, TrashIcon } from "../shared/icons";
 import { AskScreen, BackButton, ForwardButton, delay } from "./parts";
 import type { StepProps } from "./types";
@@ -118,6 +118,17 @@ export function Step4Schedule({ phase, setPhase, onNext, onBack }: StepProps) {
           onNext();
         }}
       >
+        {/* The wizard reads the week from these, the way the original posts it. */}
+        {DAYS.map((day, i) => {
+          const weekday = (i + 1) % 7;
+          const slot = schedule[day].active ? schedule[day].slots[0] : undefined;
+          return (
+            <Fragment key={day}>
+              <input type="hidden" name={`day_${weekday}_start`} value={slot?.start ?? ""} readOnly />
+              <input type="hidden" name={`day_${weekday}_end`} value={slot?.end ?? ""} readOnly />
+            </Fragment>
+          );
+        })}
         {sub === 0 && (
           <div>
             <div className="text-center">

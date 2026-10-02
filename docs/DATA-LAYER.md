@@ -33,6 +33,10 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
 
+## Onboarding
+O assistente não guarda nada próprio: ele junta os campos dos sete passos e, ao terminar, escreve
+na agenda, nos horários, na tela de agendamento e nas integrações.
+
 ## Formulários
 `data.surveys` guarda os formulários: tipo, agendas vinculadas, data limite, login obrigatório e o
 modelo importado, com a contagem de perguntas e de respostas que a tabela mostra.
