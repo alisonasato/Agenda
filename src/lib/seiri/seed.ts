@@ -177,6 +177,7 @@ export function seed(): Data {
     accessLists: [],
     supportVisits: [],
     supportCode: null,
+    integrations: {},
     members: [
       {
         id: "mb1",
@@ -297,4 +298,5 @@ export const EMPTY: Data = {
     accessLists: [],
     supportVisits: [],
     supportCode: null,
+    integrations: {},
 };

@@ -78,6 +78,10 @@ o motivo que aparece no horário fechado é o nome do feriado.
 configurações: um mapa de nome de campo para valor. O original posta os seis passos num formulário
 só, e o clone grava do mesmo jeito.
 
+## Integrações
+`data.integrations` guarda quais integrações a conta conectou, pelo nome que o card mostra. Como as
+páginas de cada integração não foram clonadas, é o próprio card que liga e desliga.
+
 ## Acesso do suporte
 `data.supportCode` guarda o código de acesso em vigor, para ele sobreviver a um recarregamento, e
 `data.supportVisits` o histórico de visitas da equipe de suporte.

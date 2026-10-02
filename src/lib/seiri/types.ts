@@ -449,6 +449,9 @@ export type SupportVisit = {
 /** The access code in force, if any. */
 export type SupportCode = { token: string; expires: string } | null;
 
+/** Which integrations are connected, by the name the card shows. */
+export type Integrations = Record<string, boolean>;
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -644,6 +647,7 @@ export type Data = {
   accessLists: AccessList[];
   supportVisits: SupportVisit[];
   supportCode: SupportCode;
+  integrations: Integrations;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

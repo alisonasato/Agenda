@@ -11,10 +11,13 @@ import {
   InfoIcon,
   PlugCircleIcon,
   SearchEmptyIcon,
+  CheckReadIcon,
   SearchSolidIcon,
   UsersDuoIcon,
   UsersIcon,
 } from "../shared/icons";
+import { update, useData } from "@/lib/seiri/store";
+import { MEMBER_PROFILES } from "@/lib/seiri/types";
 
 const ASSETS = withBase("/sites/eagenda-com-br-a1f95f96/integracoes-526c97c5");
 
@@ -28,18 +31,66 @@ type Integration = {
   needsPlan?: boolean;
 };
 
-// None is connected on the live account. The detail pages behind the buttons aren't cloned yet.
+// The pages behind each button are not cloned, so connecting happens here on the card.
 const INTEGRATIONS: Integration[] = [
-  { name: "Google Calendar", logo: "google-calendar", desc: "Sincronize seus agendamentos com o Google Calendar", keywords: "google calendar calendario sincronizar meet", action: "Conectar" },
-  { name: "Microsoft Outlook/Teams", logo: "microsoft-teams", desc: "Integre com Outlook e Teams para agenda e reuniões", keywords: "microsoft teams outlook skype reuniao video calendario", action: "Conectar" },
+  {
+    name: "Google Calendar",
+    logo: "google-calendar",
+    desc: "Sincronize seus agendamentos com o Google Calendar",
+    keywords: "google calendar calendario sincronizar meet",
+    action: "Conectar",
+  },
+  {
+    name: "Microsoft Outlook/Teams",
+    logo: "microsoft-teams",
+    desc: "Integre com Outlook e Teams para agenda e reuniões",
+    keywords: "microsoft teams outlook skype reuniao video calendario",
+    action: "Conectar",
+  },
   { name: "Zoom", logo: "zoom", desc: "Videoconferências via Zoom para reuniões online", keywords: "zoom video videoconferencia reuniao", action: "Conectar" },
-  { name: "Atendimento Presencial", logo: "siga", desc: "Totem/senha para atendimentos presenciais", keywords: "atendimento presencial totem senha fila", action: "Conectar" },
+  {
+    name: "Atendimento Presencial",
+    logo: "siga",
+    desc: "Totem/senha para atendimentos presenciais",
+    keywords: "atendimento presencial totem senha fila",
+    action: "Conectar",
+  },
   { name: "RD Station", logo: "rd-station", desc: "Integração com RD Station Marketing e CRM", keywords: "rd station marketing crm leads", action: "Conectar" },
-  { name: "WideChat", desc: "Envie as notificações de WhatsApp pela sua conta WideChat", keywords: "widechat whatsapp mensagem notificacao canal chat", action: "Configurar" },
-  { name: "Mercado Pago", logo: "mercado-pago", desc: "Cobrar pelo agendamento com Mercado Pago", keywords: "mercado pago pagamento cobranca cartao pix", action: "Conectar" },
-  { name: "Sites (Embed)", logo: "embed", desc: "Incorpore o agendamento em seu site ou aplicativo", keywords: "sites embed incorporar widget iframe", action: "Configurar" },
-  { name: "Emails", logo: "email", desc: "Envie emails de notificação usando seu próprio domínio", keywords: "emails email envio dominio personalizado", action: "Configurar", needsPlan: true },
-  { name: "API & Webhooks", logo: "api-webhooks", desc: "Integração via API REST e eventos em tempo real", keywords: "api rest webhook eventos tempo real desenvolvedor token", action: "Configurar" },
+  {
+    name: "WideChat",
+    desc: "Envie as notificações de WhatsApp pela sua conta WideChat",
+    keywords: "widechat whatsapp mensagem notificacao canal chat",
+    action: "Configurar",
+  },
+  {
+    name: "Mercado Pago",
+    logo: "mercado-pago",
+    desc: "Cobrar pelo agendamento com Mercado Pago",
+    keywords: "mercado pago pagamento cobranca cartao pix",
+    action: "Conectar",
+  },
+  {
+    name: "Sites (Embed)",
+    logo: "embed",
+    desc: "Incorpore o agendamento em seu site ou aplicativo",
+    keywords: "sites embed incorporar widget iframe",
+    action: "Configurar",
+  },
+  {
+    name: "Emails",
+    logo: "email",
+    desc: "Envie emails de notificação usando seu próprio domínio",
+    keywords: "emails email envio dominio personalizado",
+    action: "Configurar",
+    needsPlan: true,
+  },
+  {
+    name: "API & Webhooks",
+    logo: "api-webhooks",
+    desc: "Integração via API REST e eventos em tempo real",
+    keywords: "api rest webhook eventos tempo real desenvolvedor token",
+    action: "Configurar",
+  },
 ];
 
 const TABS = [
@@ -49,12 +100,20 @@ const TABS = [
 type Tab = (typeof TABS)[number]["id"];
 
 // Accent-insensitive, like the original's norm().
-const norm = (t: string) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const norm = (t: string) =>
+  t
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
 const TEAM_SLOTS = 10;
 
-/** "Integrações da Equipe": the members' integrations. Only the owner (mock) on this account. */
+/** "Integrações da Equipe": one row per member, with what the account has connected. */
 function TeamTable() {
+  const data = useData();
+  const connected = Object.entries(data.integrations)
+    .filter(([, on]) => on)
+    .map(([name]) => name);
   return (
     <div className="htable">
       <div className="htable-scroll">
@@ -69,30 +128,44 @@ function TeamTable() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="htable-cell">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 inter-semibold truncate">Maria Souza</p>
-                  <p className="text-xs text-gray-500 inter-regular truncate">contato@exemplo.com.br</p>
-                </div>
-              </td>
-              <td className="htable-cell">
-                <div className="flex flex-wrap gap-1.5">
-                  <span className="hchip hchip--accent hchip--primary hchip--sm">Proprietário</span>
-                </div>
-              </td>
-              <td className="htable-cell">
-                <span className="text-sm text-gray-400 inter-regular">—</span>
-              </td>
-              <td className="htable-cell htable-cell--num">
-                <span className="text-sm text-gray-900 inter-semibold">0</span>
-              </td>
-              <td className="htable-cell htable-cell--end">
-                <div className="flex items-center justify-end gap-1.5">
-                  <span className="text-sm text-gray-400 inter-regular">—</span>
-                </div>
-              </td>
-            </tr>
+            {data.members.map((member) => (
+              <tr key={member.id}>
+                <td className="htable-cell">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 inter-semibold truncate">{member.name}</p>
+                    <p className="text-xs text-gray-500 inter-regular truncate">{member.email}</p>
+                  </div>
+                </td>
+                <td className="htable-cell">
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="hchip hchip--accent hchip--primary hchip--sm">
+                      {MEMBER_PROFILES.find((x) => x.value === member.profile)?.label ?? member.profile}
+                    </span>
+                  </div>
+                </td>
+                <td className="htable-cell">
+                  {connected.length ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {connected.map((name) => (
+                        <span key={name} className="hchip hchip--default hchip--soft hchip--sm">
+                          {name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400 inter-regular">—</span>
+                  )}
+                </td>
+                <td className="htable-cell htable-cell--num">
+                  <span className="text-sm text-gray-900 inter-semibold">{member.agendaIds.length || data.agendas.length}</span>
+                </td>
+                <td className="htable-cell htable-cell--end">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span className="text-sm text-gray-400 inter-regular">—</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
             {Array.from({ length: TEAM_SLOTS - 1 }, (_, i) => (
               <tr key={i} className="htable-row--empty" aria-hidden="true">
                 {Array.from({ length: 5 }, (_, j) => (
@@ -118,6 +191,10 @@ function TeamTable() {
 }
 
 export function Integrations() {
+  const data = useData();
+  const isOn = (name: string) => Boolean(data.integrations[name]);
+  // The pages behind "Conectar" are not cloned, so the card itself keeps the connection.
+  const toggle = (name: string) => update((d) => ({ ...d, integrations: { ...d.integrations, [name]: !d.integrations[name] } }));
   const [tab, setTab] = useState<Tab>("integracoes");
   const [search, setSearch] = useState("");
   const tabIndex = TABS.findIndex((t) => t.id === tab);
@@ -133,7 +210,14 @@ export function Integrations() {
           <div className="htabs" role="tablist" aria-label="Seções da página" style={{ "--htabs-count": TABS.length } as CSSProperties}>
             <span className="htabs-indicator" aria-hidden="true" style={{ transform: `translateX(calc(${tabIndex} * 100%))` }} />
             {TABS.map(({ id, label, Icon }) => (
-              <button key={id} type="button" className={`htabs-tab${id === tab ? " is-active" : ""}`} role="tab" aria-selected={id === tab} onClick={() => setTab(id)}>
+              <button
+                key={id}
+                type="button"
+                className={`htabs-tab${id === tab ? " is-active" : ""}`}
+                role="tab"
+                aria-selected={id === tab}
+                onClick={() => setTab(id)}
+              >
                 <span className="htabs-tab-icon">
                   <Icon className="w-4 h-4" />
                 </span>
@@ -180,17 +264,23 @@ export function Integrations() {
                     <h3 className="text-base md:text-lg text-gray-900 nunito-bold leading-tight break-words min-w-0">{i.name}</h3>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5 mt-3">
-                    <span className="hchip hchip--default hchip--soft hchip--sm">
-                      <CloseCircleIcon className="w-4 h-4" /> Não conectado
-                    </span>
+                    {isOn(i.name) ? (
+                      <span className="hchip hchip--success hchip--soft hchip--sm">
+                        <CheckReadIcon className="w-4 h-4" /> Conectado
+                      </span>
+                    ) : (
+                      <span className="hchip hchip--default hchip--soft hchip--sm">
+                        <CloseCircleIcon className="w-4 h-4" /> Não conectado
+                      </span>
+                    )}
                     {i.needsPlan && <span className="hchip hchip--warning hchip--soft hchip--sm">Requer plano</span>}
                   </div>
                   <p className="text-sm text-gray-500 inter-regular mt-3 mb-4">{i.desc}</p>
                   <div className="mt-auto pt-3 border-t border-gray-100 flex flex-wrap items-center gap-2">
-                    <a href="#" className="hbtn hbtn--primary hbtn--sm">
+                    <button type="button" className={`hbtn hbtn--sm ${isOn(i.name) ? "hbtn--secondary" : "hbtn--primary"}`} onClick={() => toggle(i.name)}>
                       <ConnectIcon />
-                      {i.action}
-                    </a>
+                      {isOn(i.name) ? "Desconectar" : i.action}
+                    </button>
                   </div>
                 </div>
               </div>
