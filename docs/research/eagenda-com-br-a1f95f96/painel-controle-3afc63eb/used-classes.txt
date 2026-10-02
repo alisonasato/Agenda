@@ -1,4 +1,4 @@
-ctrl-tool
+ctrl-tool hchip hchip--sm hchip--primary hchip--success hchip--default btn-icon btn-icon-sm btn-icon-flat btn-icon-danger htable-cell--num
 ctrl-tool--danger
 ctrl-tool-arrow
 ctrl-tool-desc

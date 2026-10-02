@@ -33,6 +33,11 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
 
+## Ações em lote
+"Administrar Agendas" não guarda nada próprio além de `data.manualHours`, as linhas que a ação
+Incluir Horários cria. As outras cinco ações escrevem nas coleções que já existiam: bloqueios,
+agendamentos, agendas, regras e horários.
+
 ## Horários e bloqueios
 `data.hours` guarda os intervalos de trabalho de cada agenda por dia da semana ("Configurar
 Horários"); `data.blocks` guarda os períodos bloqueados ("Bloquear Horários"). `src/lib/seiri/slots.ts`

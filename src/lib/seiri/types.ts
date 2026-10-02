@@ -452,6 +452,20 @@ export type SupportCode = { token: string; expires: string } | null;
 /** Which integrations are connected, by the name the card shows. */
 export type Integrations = Record<string, boolean>;
 
+/** A row of "Horários Manuais", from the "Incluir Horários" batch action. */
+export type ManualHours = {
+  id: string;
+  agendaIds: string[];
+  /** "aaaa-mm-dd". */
+  from: string;
+  to: string;
+  startTime: string;
+  endTime: string;
+  /** Minutes between slots. */
+  interval: number;
+  maxPeople: number;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -648,6 +662,7 @@ export type Data = {
   supportVisits: SupportVisit[];
   supportCode: SupportCode;
   integrations: Integrations;
+  manualHours: ManualHours[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {
