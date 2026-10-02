@@ -7,9 +7,11 @@ import { SaveBar } from "../shared/SaveBar";
 import { ROUTES } from "../shared/Sidebar";
 import { COUNTRY_OPTIONS, lookupCep, useGeoCascade } from "../shared/useGeoCascade";
 import { PenIcon, SaveIcon, SearchSolidIcon } from "../shared/icons";
+import { nextId, update, useData } from "@/lib/seiri/store";
+import { withBase } from "@/lib/basePath";
+import type { Member, SubAccount } from "@/lib/seiri/types";
 
 // Mock of the only existing user the live page offers (the account owner).
-const USERS = [{ value: "1", label: "contato@exemplo.com.br – Maria Souza" }];
 const ADMIN_TABS = [
   ["existing", "Selecionar Existente"],
   ["new", "Criar Novo"],
@@ -35,6 +37,7 @@ function TextField({
   type = "text",
   required,
   desc,
+  value,
 }: {
   id: string;
   name: string;
@@ -43,6 +46,7 @@ function TextField({
   type?: string;
   required?: boolean;
   desc?: ReactNode;
+  value?: string;
 }) {
   return (
     <div className="hinput-field hinput-field--block">
@@ -50,21 +54,90 @@ function TextField({
         {label} {required && <span className="hinput-req">*</span>}
       </label>
       <div className="hinput-wrap">
-        <input id={id} className="hinput" type={type} name={name} placeholder={placeholder} required={required} />
+        <input id={id} className="hinput" type={type} name={name} placeholder={placeholder} required={required} defaultValue={value} />
       </div>
       {desc}
     </div>
   );
 }
 
-/** "Nova Conta" (/users/organizacao/contas/nova). Nothing is saved. */
+/** "Nova Conta" (/users/organizacao/contas/nova), and the same form with `?id=` for an existing one. */
 export function AccountForm() {
+  const data = useData();
+  const id = typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get("id") ?? "");
+  const account = data.accounts.find((a) => a.id === id);
+  const [loaded, setLoaded] = useState("");
+  const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
   const markDirty = () => setDirty(true);
   const [adminMode, setAdminMode] = useState<AdminMode>("existing");
   const [user, setUser] = useState("");
   const geo = useGeoCascade();
   const formRef = useRef<HTMLFormElement>(null);
+
+  // The browser's data arrives after the first render, so fill the form once it does.
+  if (account && loaded !== account.id) {
+    setLoaded(account.id);
+    setUser(data.members.find((m) => m.accountId === account.id)?.id ?? "");
+    void geo.setByNames(account.address.state, account.address.city);
+  }
+
+  // No server here: saving writes the sub-account into the browser's own data.
+  const save = () => {
+    const form = formRef.current;
+    if (!form) return;
+    const field = new FormData(form);
+    const text = (name: string) => String(field.get(name) ?? "").trim();
+    if (!text("name")) return;
+    update((d) => {
+      const accountId = account?.id ?? nextId("ac", d.accounts);
+      const row: SubAccount = {
+        id: accountId,
+        name: text("name"),
+        slug: text("label"),
+        email: text("email_branch"),
+        phone: text("phone_branch"),
+        address: {
+          cep: text("cep"),
+          street: text("street_f"),
+          number: text("number"),
+          complement: text("complement"),
+          neighborhood: text("neighbourhood_f"),
+          district: text("district"),
+          country: geo.country,
+          state: geo.state,
+          city: geo.city,
+        },
+        plan: account?.plan ?? "active",
+      };
+      // The admin tab either points at a member the account already has, or adds a new one.
+      let members = d.members.map((m) => (m.accountId === accountId ? { ...m, accountId: undefined } : m));
+      if (adminMode === "existing" && user) {
+        members = members.map((m) => (m.id === user ? { ...m, accountId } : m));
+      } else if (adminMode !== "existing" && text("email")) {
+        const admin: Member = {
+          id: nextId("mb", members),
+          name: text("full_name") || text("email"),
+          email: text("email"),
+          phone: "",
+          profile: "manager",
+          active: true,
+          agendaIds: [],
+          serviceIds: [],
+          tagIds: [],
+          permissions: [],
+          lastLogin: "",
+          accountId,
+        };
+        members = [...members, admin];
+      }
+      return { ...d, accounts: account ? d.accounts.map((a) => (a.id === accountId ? row : a)) : [...d.accounts, row], members };
+    });
+    setSaved(true);
+    window.setTimeout(() => {
+      window.location.href = withBase("/users/organizacao/contas");
+    }, 900);
+  };
 
   // This form's CEP field has a search button (the original's lookupCep; ViaCEP here).
   const [cep, setCep] = useState("");
@@ -85,11 +158,21 @@ export function AccountForm() {
   };
 
   return (
-    <form ref={formRef} id="form" noValidate onSubmit={(e) => e.preventDefault()} onInput={markDirty} onChange={markDirty}>
+    <form
+      ref={formRef}
+      id="form"
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        save();
+      }}
+      onInput={markDirty}
+      onChange={markDirty}
+    >
       <div className="cfg-content">
         <Group title="Dados Gerais">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextField id="id_name" name="name" label="Nome da empresa ou negócio" placeholder="Nome da conta" required />
+            <TextField id="id_name" name="name" label="Nome da empresa ou negócio" placeholder="Nome da conta" required value={account?.name} />
             <TextField
               id="id_label"
               name="label"
@@ -97,9 +180,10 @@ export function AccountForm() {
               placeholder="Sigla para link de agendamento"
               required
               desc={<p className="hinput-desc">Sem espaços ou caracteres especiais</p>}
+              value={account?.slug}
             />
-            <TextField id="id_email_branch" name="email_branch" type="email" label="E-mail" placeholder="E-mail da conta" />
-            <TextField id="id_phone_branch" name="phone_branch" label="Telefone" placeholder="Telefone da conta" />
+            <TextField id="id_email_branch" name="email_branch" type="email" label="E-mail" placeholder="E-mail da conta" value={account?.email} />
+            <TextField id="id_phone_branch" name="phone_branch" label="Telefone" placeholder="Telefone da conta" value={account?.phone} />
           </div>
         </Group>
 
@@ -182,12 +266,12 @@ export function AccountForm() {
               />
             </div>
             <div className="sm:col-span-2">
-              <TextField id="id_street" name="street_f" label="Logradouro" />
+              <TextField id="id_street" name="street_f" label="Logradouro" value={account?.address.street} />
             </div>
-            <TextField id="id_number" name="number" label="Número" />
-            <TextField id="id_neighbourhood" name="neighbourhood_f" label="Bairro" />
-            <TextField id="id_complement" name="complement" label="Complemento" />
-            <TextField id="id_district" name="district" label="Distrito" />
+            <TextField id="id_number" name="number" label="Número" value={account?.address.number} />
+            <TextField id="id_neighbourhood" name="neighbourhood_f" label="Bairro" value={account?.address.neighborhood} />
+            <TextField id="id_complement" name="complement" label="Complemento" value={account?.address.complement} />
+            <TextField id="id_district" name="district" label="Distrito" value={account?.address.district} />
           </div>
         </Group>
 
@@ -217,7 +301,7 @@ export function AccountForm() {
             <Combobox
               id="existing_user"
               label="Usuário existente"
-              options={USERS}
+              options={data.members.map((m) => ({ value: m.id, label: `${m.name} (${m.email})` }))}
               value={user}
               onChange={(v) => {
                 setUser(v);
@@ -257,12 +341,13 @@ export function AccountForm() {
       </div>
       <SaveBar
         backHref={ROUTES.adminContas}
-        saveLabel="Criar Conta"
+        saveLabel={account ? "Salvar Conta" : "Criar Conta"}
         saveIcon={<SaveIcon />}
         dirty={dirty}
         toastIcon={<PenIcon className="w-4 h-4" />}
-        toastTitle="Alterações não salvas"
-        toastSub="Salve para aplicar as mudanças."
+        toastTitle={saved ? "Conta salva" : "Alterações não salvas"}
+        toastSub={saved ? "Voltando para as contas…" : "Salve para aplicar as mudanças."}
+        forceToast={saved}
       />
     </form>
   );

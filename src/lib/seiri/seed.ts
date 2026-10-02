@@ -168,6 +168,7 @@ export function seed(): Data {
     suppressions: [],
     statusRules: [],
     units: [],
+    accounts: [],
     members: [
       {
         id: "mb1",
@@ -279,4 +280,5 @@ export const EMPTY: Data = {
   whatsappTemplates: [],
   units: [],
   members: [],
+  accounts: [],
 };

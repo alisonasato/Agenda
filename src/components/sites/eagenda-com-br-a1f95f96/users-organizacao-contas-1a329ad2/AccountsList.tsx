@@ -4,7 +4,11 @@ import { useState, type CSSProperties } from "react";
 import { emptyFilters, FilterPopover, type FilterField } from "../shared/FilterPopover";
 import { ScrollRail } from "../shared/ScrollRail";
 import { ROUTES } from "../shared/Sidebar";
-import { AddAppointmentIcon, CloseCircleIcon, InboxIcon, RefreshIcon, SearchSolidIcon } from "../shared/icons";
+import { AddAppointmentIcon, CloseCircleIcon, DangerCircleIcon, InboxIcon, PenIcon, RefreshIcon, SearchSolidIcon, TrashIcon } from "../shared/icons";
+import { AlertDialog } from "../shared/AlertDialog";
+import { update, useData } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
+import type { SubAccount } from "@/lib/seiri/types";
 
 const KPIS = ["Sub-contas", "Usuários ativos", "Total agendas", "Próximos 30 dias"];
 /** [label, numeric column]. */
@@ -56,11 +60,10 @@ function TagGroup<T extends string>({ items, value, onChange }: { items: readonl
   );
 }
 
-/**
- * Sub-accounts of the organization. The account has none, so every filter ends on the default
- * empty state (as the live page does); active filters show as removable "Mostrando:" chips.
- */
+/** Sub-accounts of the organization; active filters show as removable "Mostrando:" chips. */
 export function AccountsList() {
+  const data = useData();
+  const [removing, setRemoving] = useState<SubAccount | null>(null);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState(() => emptyFilters(FILTERS));
   const [status, setStatus] = useState<Status>("");
@@ -72,6 +75,51 @@ export function AccountsList() {
     setStatus("");
     setActivity("");
   };
+
+  const term = fold(query.trim());
+  const hit = (value: string, wanted: string) => (wanted.trim() ? fold(value).includes(fold(wanted.trim())) : true);
+  // An agenda or member with this account's id belongs to it; the rest belong to the main account.
+  const [now] = useState(() => new Date());
+  const today = now.toISOString().slice(0, 10);
+  const soon = new Date(now.getTime() + 30 * 86400000).toISOString().slice(0, 10);
+  const rows = data.accounts
+    .map((account) => {
+      const agendas = data.agendas.filter((a) => a.accountId === account.id);
+      const ids = agendas.map((a) => a.id);
+      return {
+        account,
+        users: data.members.filter((m) => m.accountId === account.id && m.active).length,
+        agendas: agendas.length,
+        upcoming: data.appointments.filter(
+          (a) => ids.includes(a.agendaId) && a.status !== "CANCELED" && a.start.slice(0, 10) >= today && a.start.slice(0, 10) <= soon,
+        ).length,
+        place: [account.address.city, account.address.state].filter(Boolean).join(", "),
+        contact: [account.email, account.phone].filter(Boolean).join(" · "),
+      };
+    })
+    .filter((row) => (term ? fold(`${row.account.name} ${row.account.slug} ${row.contact}`).includes(term) : true))
+    .filter(
+      (row) =>
+        hit(`${row.account.address.street} ${row.account.address.neighborhood} ${row.place}`, filters["accounts-filter-address"]) &&
+        hit(row.account.name, filters["accounts-filter-name"]) &&
+        hit(row.account.slug, filters["accounts-filter-label"]) &&
+        hit(row.account.email, filters["accounts-filter-email"]) &&
+        hit(row.account.phone, filters["accounts-filter-phone"]) &&
+        hit(row.account.address.city, filters["accounts-filter-city"]) &&
+        hit(row.account.address.state, filters["accounts-filter-state"]),
+    )
+    .filter((row) => (status ? row.account.plan === status : true));
+
+  const counts = [rows.length, rows.reduce((n, r) => n + r.users, 0), rows.reduce((n, r) => n + r.agendas, 0), rows.reduce((n, r) => n + r.upcoming, 0)];
+
+  // Removing a sub-account hands its agendas and members back to the main account.
+  const remove = (id: string) =>
+    update((d) => ({
+      ...d,
+      accounts: d.accounts.filter((a) => a.id !== id),
+      agendas: d.agendas.map((a) => (a.accountId === id ? { ...a, accountId: undefined } : a)),
+      members: d.members.map((m) => (m.accountId === id ? { ...m, accountId: undefined } : m)),
+    }));
 
   const chips: { key: string; label: string; remove: () => void }[] = [];
   if (query.trim()) chips.push({ key: "search", label: `Busca global: ${query.trim()}`, remove: () => setQuery("") });
@@ -85,12 +133,12 @@ export function AccountsList() {
   return (
     <>
       <div className="hkpi-group">
-        {KPIS.map((label) => (
+        {KPIS.map((label, i) => (
           <div key={label} className="hui-card hui-card--flush hkpi">
             <div className="hkpi-body">
               <p className="hkpi-label">{label}</p>
               <div className="hkpi-value-row">
-                <span className="hkpi-value">0</span>
+                <span className="hkpi-value">{counts[i]}</span>
               </div>
             </div>
           </div>
@@ -171,7 +219,7 @@ export function AccountsList() {
 
       <div className="mt-4 hui-reveal" style={{ animationDelay: ".08s" }}>
         <div id="accounts-table-container">
-          <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
+          <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
             <div className="htable-scroll">
               <table className="htable-table w-full htable-fixed">
                 <thead>
@@ -185,7 +233,42 @@ export function AccountsList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: SLOTS }, (_, i) => (
+                  {rows.map((row) => (
+                    <tr key={row.account.id}>
+                      <td className="htable-cell">
+                        <p className="text-sm text-gray-900 font-semibold inter-semibold">{row.account.name}</p>
+                        {row.place && <p className="text-xs text-gray-500 inter-regular">{row.place}</p>}
+                      </td>
+                      <td className="htable-cell htable-cell--num htable-cell--end">{row.users}</td>
+                      <td className="htable-cell htable-cell--num htable-cell--end">{row.agendas}</td>
+                      <td className="htable-cell htable-cell--num htable-cell--end">{row.upcoming}</td>
+                      <td className="htable-cell whitespace-nowrap">
+                        <span
+                          className={`hchip ${row.account.plan === "active" ? "hchip--success" : row.account.plan === "expired" ? "hchip--warning" : "hchip--default"} hchip--primary hchip--sm`}
+                        >
+                          {STATUS.find(([v]) => v === row.account.plan)?.[1] ?? "Sem plano"}
+                        </span>
+                      </td>
+                      <td className="htable-cell">
+                        {row.contact ? (
+                          <span className="text-sm text-gray-600 inter-regular">{row.contact}</span>
+                        ) : (
+                          <span className="text-sm text-gray-400">—</span>
+                        )}
+                      </td>
+                      <td className="htable-cell htable-cell--end whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <a href={`${ROUTES.novaConta}/?id=${row.account.id}`} className="btn-icon btn-icon-sm btn-icon-flat" title="Editar Conta">
+                            <PenIcon className="w-4 h-4" />
+                          </a>
+                          <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir Conta" onClick={() => setRemoving(row.account)}>
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                     <tr key={i} className="htable-row--empty" aria-hidden="true">
                       {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                         <td key={j} className="htable-cell" />
@@ -195,17 +278,46 @@ export function AccountsList() {
                 </tbody>
               </table>
             </div>
-            <div className="htable-empty" role="status" aria-live="polite">
-              <div className="hempty hempty--inline hui-reveal">
-                <InboxIcon className="hempty-icon" />
-                <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
-                <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+            {!rows.length && (
+              <div className="htable-empty" role="status" aria-live="polite">
+                <div className="hempty hempty--inline hui-reveal">
+                  <InboxIcon className="hempty-icon" />
+                  <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
+                  <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+                </div>
               </div>
-            </div>
+            )}
             <div className="htable-footer" />
           </div>
         </div>
       </div>
+      {removing && (
+        <AlertDialog
+          id="account-delete-dialog"
+          heading="Excluir conta"
+          icon={<DangerCircleIcon className="w-6 h-6" />}
+          onClose={() => setRemoving(null)}
+          footer={
+            <>
+              <button type="button" className="hbtn hbtn--tertiary" onClick={() => setRemoving(null)}>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="hbtn hbtn--danger"
+                onClick={() => {
+                  remove(removing.id);
+                  setRemoving(null);
+                }}
+              >
+                Excluir
+              </button>
+            </>
+          }
+        >
+          As agendas e os usuários dela voltam para a conta principal.
+        </AlertDialog>
+      )}
     </>
   );
 }

@@ -3,7 +3,8 @@
 export type Status = "PENDING" | "CONFIRMED" | "ATTENDED" | "NO_SHOW" | "CANCELED";
 
 /** `slug` is the "Identificador da Agenda"; without it the agenda has no friendly link. */
-export type Agenda = { id: string; name: string; color: string; active: boolean; slug?: string; unitId?: string };
+/** `accountId` is the sub-account the agenda belongs to; unset means the main account. */
+export type Agenda = { id: string; name: string; color: string; active: boolean; slug?: string; unitId?: string; accountId?: string };
 
 export type Service = {
   id: string;
@@ -325,6 +326,8 @@ export type Member = {
   permissions: string[];
   /** "dd/mm/aaaa hh:mm", empty for someone who never signed in. */
   lastLogin: string;
+  /** The sub-account this member belongs to; unset means the main account. */
+  accountId?: string;
 };
 
 export const MEMBER_PROFILES: { value: string; label: string }[] = [
@@ -333,6 +336,19 @@ export const MEMBER_PROFILES: { value: string; label: string }[] = [
   { value: "oper", label: "Colaborador" },
   { value: "read", label: "Visualização" },
 ];
+
+/** A sub-account from "Administrar Contas". Agendas and members point at one through `accountId`. */
+export type SubAccount = {
+  id: string;
+  name: string;
+  /** "Sigla para link de agendamento". */
+  slug: string;
+  email: string;
+  phone: string;
+  address: Address;
+  /** "Ativo", "Expirado" or "" for a sub-account with no plan. */
+  plan: string;
+};
 
 export type WaitingEntry = {
   id: string;
@@ -520,6 +536,7 @@ export type Data = {
   whatsappTemplates: WhatsappTemplate[];
   units: Unit[];
   members: Member[];
+  accounts: SubAccount[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

@@ -73,6 +73,11 @@ nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas q
 nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
 o motivo que aparece no horário fechado é o nome do feriado.
 
+## Sub-contas
+`data.accounts` guarda as contas da organização. A ligação fica do lado de quem pertence a elas:
+`Agenda.accountId` e `Member.accountId`, vazios para a conta principal. Apagar uma sub-conta limpa
+esses campos, devolvendo tudo para a conta principal.
+
 ## Equipe
 `data.members` guarda quem tem acesso à conta: perfil, permissões, e as agendas, serviços e tags a
 que o membro está vinculado. Um membro sem agendas tem acesso a todas.
