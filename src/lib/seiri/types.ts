@@ -353,6 +353,20 @@ export type SubAccount = {
 /** Every field of "Configurações Gerais", by the name the form gives it. */
 export type OrgSettings = Record<string, string | boolean>;
 
+/** The credit balances the Comunicação pages show, and what "Pacotes de Envio" lists. */
+export type Credits = { general: number; sms: number; email: number; whatsapp: number };
+
+export type CreditPurchase = {
+  id: string;
+  /** "dd/mm/aaaa". */
+  date: string;
+  /** "SMS", "Email" or "WhatsApp". */
+  kind: string;
+  bought: number;
+  used: number;
+  status: string;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -541,6 +555,8 @@ export type Data = {
   members: Member[];
   accounts: SubAccount[];
   orgSettings: OrgSettings;
+  credits: Credits;
+  creditPurchases: CreditPurchase[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

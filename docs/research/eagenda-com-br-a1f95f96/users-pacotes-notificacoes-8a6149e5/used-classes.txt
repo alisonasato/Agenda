@@ -1,4 +1,4 @@
-flex
+flex hchip hchip--sm hchip--primary hchip--success hchip--default htable-cell--num text-gray-400
 flex-wrap
 gap-3
 grid

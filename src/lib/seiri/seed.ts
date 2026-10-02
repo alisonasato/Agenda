@@ -170,6 +170,8 @@ export function seed(): Data {
     units: [],
     accounts: [],
     orgSettings: {},
+    credits: { general: 0, sms: 0, email: 0, whatsapp: 0 },
+    creditPurchases: [],
     members: [
       {
         id: "mb1",
@@ -283,4 +285,6 @@ export const EMPTY: Data = {
   members: [],
   accounts: [],
   orgSettings: {},
+  credits: { general: 0, sms: 0, email: 0, whatsapp: 0 },
+  creditPurchases: [],
 };

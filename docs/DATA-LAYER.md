@@ -73,6 +73,11 @@ nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas q
 nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
 o motivo que aparece no horário fechado é o nome do feriado.
 
+## Créditos
+`data.credits` guarda os quatro saldos (geral, SMS, email e WhatsApp) e `data.creditPurchases` o
+histórico de compras. Os cartões do topo das telas de Comunicação e os saldos de "Pacotes de
+Notificações" leem daí.
+
 ## Configurações gerais
 `data.orgSettings` guarda os oito passos de "Configurações Gerais" como um mapa de nome de campo
 para valor — texto ou booleano. Salvar um passo mescla os campos daquele passo no mapa, e cada

@@ -1,13 +1,15 @@
+"use client";
+
 import type { CSSProperties } from "react";
 import { AddAppointmentIcon, InboxIcon, ReceiptIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
+import { useData } from "@/lib/seiri/store";
 
-// The live account has no credits and no purchases.
 const BALANCES = [
-  { label: "Saldo SMS", caption: "Créditos disponíveis para envio de SMS" },
-  { label: "Saldo Email", caption: "Créditos disponíveis para envio de emails" },
-  { label: "Saldo Whatsapp", caption: "Créditos disponíveis para envio de WhatsApp" },
-];
+  { key: "sms", label: "Saldo SMS", caption: "Créditos disponíveis para envio de SMS" },
+  { key: "email", label: "Saldo Email", caption: "Créditos disponíveis para envio de emails" },
+  { key: "whatsapp", label: "Saldo Whatsapp", caption: "Créditos disponíveis para envio de WhatsApp" },
+] as const;
 const COLUMNS: [string, boolean][] = [
   ["Id da Compra", false],
   ["Data da Compra", false],
@@ -20,6 +22,8 @@ const COLUMNS: [string, boolean][] = [
 const SLOTS = 10;
 
 export function NotificationPackages() {
+  const { credits, creditPurchases } = useData();
+  const rows = [...creditPurchases].sort((a, b) => b.id.localeCompare(a.id));
   return (
     <>
       <div className="flex flex-wrap items-center gap-3 mb-6 hui-reveal">
@@ -39,7 +43,7 @@ export function NotificationPackages() {
             <div className="hkpi-body hkpi-body--trend">
               <p className="hkpi-label">{b.label}</p>
               <div className="hkpi-value-row">
-                <span className="hkpi-value">0</span>
+                <span className="hkpi-value">{credits[b.key]}</span>
               </div>
               <p className="hkpi-caption">{b.caption}</p>
             </div>
@@ -62,7 +66,7 @@ export function NotificationPackages() {
             </a>
           </div>
         </div>
-        <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
+        <div className={`htable${rows.length ? "" : " htable-is-empty"}`} style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
           <div className="htable-scroll">
             <table className="htable-table w-full htable-fixed">
               <thead>
@@ -76,7 +80,23 @@ export function NotificationPackages() {
                 </tr>
               </thead>
               <tbody>
-                {Array.from({ length: SLOTS }, (_, i) => (
+                {rows.map((row) => (
+                  <tr key={row.id}>
+                    <td className="htable-cell whitespace-nowrap">{row.id}</td>
+                    <td className="htable-cell whitespace-nowrap">{row.date}</td>
+                    <td className="htable-cell whitespace-nowrap">{row.kind}</td>
+                    <td className="htable-cell htable-cell--num">{row.bought}</td>
+                    <td className="htable-cell htable-cell--num">{row.used}</td>
+                    <td className="htable-cell htable-cell--num">{Math.max(0, row.bought - row.used)}</td>
+                    <td className="htable-cell whitespace-nowrap">
+                      <span className={`hchip ${row.status === "Ativo" ? "hchip--success" : "hchip--default"} hchip--primary hchip--sm`}>{row.status}</span>
+                    </td>
+                    <td className="htable-cell htable-cell--end">
+                      <span className="text-xs text-gray-400 inter-regular">-</span>
+                    </td>
+                  </tr>
+                ))}
+                {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                   <tr key={i} className="htable-row--empty" aria-hidden="true">
                     {Array.from({ length: COLUMNS.length + 1 }, (_, j) => (
                       <td key={j} className="htable-cell" />
@@ -86,13 +106,15 @@ export function NotificationPackages() {
               </tbody>
             </table>
           </div>
-          <div className="htable-empty" role="status" aria-live="polite">
-            <div className="hempty hempty--inline hui-reveal">
-              <InboxIcon className="hempty-icon" />
-              <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
-              <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+          {!rows.length && (
+            <div className="htable-empty" role="status" aria-live="polite">
+              <div className="hempty hempty--inline hui-reveal">
+                <InboxIcon className="hempty-icon" />
+                <h3 className="hempty-title nunito-bold">Nada por aqui ainda</h3>
+                <p className="hempty-desc inter-regular">Assim que houver registros, eles aparecerão nesta tabela.</p>
+              </div>
             </div>
-          </div>
+          )}
           <div className="htable-footer" />
         </div>
       </div>
