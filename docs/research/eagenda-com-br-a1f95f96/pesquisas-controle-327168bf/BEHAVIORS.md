@@ -33,3 +33,25 @@ disponível" and "0 selecionados". Kept as-is rather than inventing the agenda.
 ## Data Limite para Responder
 Rendered by the original but shown only when Tipo is empty (`x-show="surveyStage === ''"`),
 which cannot happen because the Tipo combobox is not clearable. Not cloned.
+
+## Data (fase de lógica)
+- Os formulários vivem em `data.surveys`. **Novo Formulário** grava nome, descrição, tipo, agendas
+  vinculadas, data limite, login obrigatório e o modelo importado; o lápis reabre o modal e a
+  lixeira pede confirmação.
+- Como no original, o modal troca dois campos pelo tipo escolhido: com um tipo, aparece **Vincular
+  às Agendas**; sem tipo, aparece **Data Limite para Responder**. Esse campo faltava no clone e foi
+  acrescentado.
+- O seletor de agendas passa a oferecer as agendas da conta.
+- A tabela mostra o formulário com a descrição embaixo, o tipo em chip (só a primeira parte do
+  rótulo, como o original), as agendas, perguntas, respostas e a validade ("Sem prazo" quando não
+  há data).
+
+## Verificação
+No build estático: criar "Pesquisa de Satisfação" põe a linha com o chip Agendamento, agendas "—",
+0 perguntas, 0 respostas e "Sem prazo".
+
+## Diferenças em relação ao original
+- O editor de perguntas não foi clonado: importar o modelo padronizado conta as perguntas dele, e
+  criar do zero começa em zero, mas não há como editá-las.
+- As respostas ficam em zero, porque o clone não tem a página pública onde o formulário seria
+  respondido; por isso "Exportar CSV" também não existe aqui.

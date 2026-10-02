@@ -466,6 +466,24 @@ export type ManualHours = {
   maxPeople: number;
 };
 
+/** A form from "Formulários". */
+export type Survey = {
+  id: string;
+  name: string;
+  description: string;
+  /** One of the survey stages the form offers. */
+  stage: string;
+  /** Empty means the form is not tied to an agenda yet. */
+  agendaIds: string[];
+  /** "dd/mm/aaaa", empty when it never expires. */
+  expiresAt: string;
+  loginRequired: boolean;
+  /** The imported template, empty when the form was created from scratch. */
+  template: string;
+  questions: number;
+  responses: number;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -663,6 +681,7 @@ export type Data = {
   supportCode: SupportCode;
   integrations: Integrations;
   manualHours: ManualHours[];
+  surveys: Survey[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

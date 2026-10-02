@@ -1,4 +1,4 @@
-#activity-drawer-body
+#activity-drawer-body hchip hchip--sm hchip--soft hchip--default btn-icon btn-icon-sm btn-icon-flat btn-icon-danger halertdialog-backdrop halertdialog-container halertdialog-dialog halertdialog-dialog--sm halertdialog-close halertdialog-header halertdialog-icon halertdialog-icon--danger halertdialog-heading hbtn--danger hbtn--tertiary hdatepicker hdatepicker-field hdatepicker-input hdatepicker-cal hdatepicker-popover htable-cell--num
 #activity-drawer-title
 #closeSidebarMobile
 #confirm_backdrop
