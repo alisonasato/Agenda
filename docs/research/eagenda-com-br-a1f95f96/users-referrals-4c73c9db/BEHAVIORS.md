@@ -24,3 +24,18 @@
 ## Verification
 Medido contra o ao vivo em 1440×900: cartão do link (1062×150), campo de cópia (1022×54), botão
 Copiar, KPIs, cabeçalho, filtros, tabela e estado vazio batem, e a altura total é a mesma (1239).
+
+## Data (fase de lógica)
+- As indicações vivem em `data.referrals`. A tabela mostra organização, status, as duas
+  recompensas, os pagamentos e a data.
+- Os quatro KPIs saem das mesmas linhas: total de indicações (com quantas estão pendentes), a soma
+  das duas recompensas em reais, quantas já renderam o 1º pagamento e quantas fidelizaram.
+- A busca filtra pela organização e as tags filtram pelo status.
+
+## Verificação
+No build estático: com duas indicações — uma fidelizada de R$ 49,90 + R$ 49,90 e uma pendente — os
+KPIs saem 2 / R$ 99,80 / 1 / 1 com "1 pendentes", e a tag **Pendente** deixa só a Clínica Vida.
+
+## Diferenças em relação ao original
+- Não há como indicar de verdade: o link é um mock e nada se cadastra por ele, então as indicações
+  só existem nos dados.

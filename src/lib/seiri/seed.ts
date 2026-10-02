@@ -173,6 +173,7 @@ export function seed(): Data {
     bookingScreen: {},
     credits: { general: 0, sms: 0, email: 0, whatsapp: 0 },
     creditPurchases: [],
+    referrals: [],
     members: [
       {
         id: "mb1",
@@ -289,4 +290,5 @@ export const EMPTY: Data = {
   bookingScreen: {},
   credits: { general: 0, sms: 0, email: 0, whatsapp: 0 },
   creditPurchases: [],
+    referrals: [],
 };

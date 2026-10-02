@@ -78,6 +78,10 @@ o motivo que aparece no horário fechado é o nome do feriado.
 configurações: um mapa de nome de campo para valor. O original posta os seis passos num formulário
 só, e o clone grava do mesmo jeito.
 
+## Indicações
+`data.referrals` guarda quem se cadastrou pelo link de indicação, com o status, as duas recompensas
+e os pagamentos. Os quatro KPIs do Programa de Indicações são contados dessas linhas.
+
 ## Créditos
 `data.credits` guarda os quatro saldos (geral, SMS, email e WhatsApp) e `data.creditPurchases` o
 histórico de compras. Os cartões do topo das telas de Comunicação e os saldos de "Pacotes de

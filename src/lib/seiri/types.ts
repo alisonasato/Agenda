@@ -370,6 +370,21 @@ export type CreditPurchase = {
   status: string;
 };
 
+/** A company that signed up through the account's referral link. */
+export type Referral = {
+  id: string;
+  organization: string;
+  /** "pending", "first_payment", "loyalty_rewarded" or "cancelled". */
+  status: string;
+  /** Reward in reais for the referred company's first payment. */
+  firstPayment: number;
+  /** Reward in reais for six months of payments. */
+  loyalty: number;
+  payments: number;
+  /** "dd/mm/aaaa". */
+  date: string;
+};
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -561,6 +576,7 @@ export type Data = {
   bookingScreen: BookingScreen;
   credits: Credits;
   creditPurchases: CreditPurchase[];
+  referrals: Referral[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

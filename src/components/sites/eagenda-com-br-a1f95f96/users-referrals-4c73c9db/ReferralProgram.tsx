@@ -2,15 +2,17 @@
 
 import { useState, type CSSProperties } from "react";
 import { CheckReadIcon, CloseCircleIcon, CopySolidIcon, GiftIcon, SearchEmptyIcon, SearchSolidIcon } from "../shared/icons";
+import { useData } from "@/lib/seiri/store";
+import { fold } from "@/lib/seiri/select";
 
 /** Mock of the account's referral link; the original carries a code of its own. */
 const LINK = "https://seiri.com.br/users/create_user/?ref=A1B2C3D4E5F6";
 
-const KPIS: [string, string, string][] = [
-  ["Total de indicações", "0", "0 pendentes"],
-  ["Total em créditos", "R$ 0,00", "creditados na sua conta"],
-  ["1º pagamento", "0", "indicações recompensadas"],
-  ["Bônus fidelidade", "0", "6 meses pagando"],
+const KPI_LABELS: [string, string][] = [
+  ["Total de indicações", "pendentes"],
+  ["Total em créditos", "creditados na sua conta"],
+  ["1º pagamento", "indicações recompensadas"],
+  ["Bônus fidelidade", "6 meses pagando"],
 ];
 const STATUSES: [string, string][] = [
   ["", "Todos"],
@@ -31,10 +33,23 @@ const SLOTS = 10;
 
 /** Conta › Programa de Indicações: the referral link, its counters and the referral history. */
 export function ReferralProgram() {
+  const data = useData();
   const [copied, setCopied] = useState(false);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
   const filtered = !!query || status !== "";
+
+  const term = fold(query.trim());
+  const rows = data.referrals.filter((r) => (term ? fold(r.organization).includes(term) : true)).filter((r) => (status ? r.status === status : true));
+
+  const money = (value: number) => value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const credits = data.referrals.reduce((total, r) => total + r.firstPayment + r.loyalty, 0);
+  const KPIS: [string, string, string][] = [
+    [KPI_LABELS[0][0], String(data.referrals.length), `${data.referrals.filter((r) => r.status === "pending").length} ${KPI_LABELS[0][1]}`],
+    [KPI_LABELS[1][0], `R$ ${money(credits)}`, KPI_LABELS[1][1]],
+    [KPI_LABELS[2][0], String(data.referrals.filter((r) => r.firstPayment > 0).length), KPI_LABELS[2][1]],
+    [KPI_LABELS[3][0], String(data.referrals.filter((r) => r.status === "loyalty_rewarded").length), KPI_LABELS[3][1]],
+  ];
 
   return (
     <div className="mx-auto w-full max-w-[1550px] px-4 py-8 sm:px-6 lg:px-10 min-w-0">
@@ -155,7 +170,10 @@ export function ReferralProgram() {
 
         <div className="mt-4">
           <div id="referral-table">
-            <div className="htable htable-is-empty" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
+            <div
+              className={`htable${rows.length ? "" : " htable-is-empty"}`}
+              style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}
+            >
               <div className="htable-scroll">
                 <table className="htable-table w-full htable-fixed">
                   <thead>
@@ -168,7 +186,25 @@ export function ReferralProgram() {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from({ length: SLOTS }, (_, i) => (
+                    {rows.map((row) => (
+                      <tr key={row.id}>
+                        <td className="htable-cell">
+                          <span className="text-sm text-gray-900 font-semibold inter-semibold">{row.organization}</span>
+                        </td>
+                        <td className="htable-cell whitespace-nowrap">
+                          <span
+                            className={`hchip ${row.status === "loyalty_rewarded" ? "hchip--success" : row.status === "cancelled" ? "hchip--danger" : row.status === "first_payment" ? "hchip--accent" : "hchip--warning"} hchip--primary hchip--sm`}
+                          >
+                            {STATUSES.find(([v]) => v === row.status)?.[1] ?? row.status}
+                          </span>
+                        </td>
+                        <td className="htable-cell htable-cell--num htable-cell--end whitespace-nowrap">R$ {money(row.firstPayment)}</td>
+                        <td className="htable-cell htable-cell--num htable-cell--end whitespace-nowrap">R$ {money(row.loyalty)}</td>
+                        <td className="htable-cell htable-cell--num htable-cell--center">{row.payments}</td>
+                        <td className="htable-cell whitespace-nowrap">{row.date}</td>
+                      </tr>
+                    ))}
+                    {Array.from({ length: Math.max(0, SLOTS - rows.length) }, (_, i) => (
                       <tr key={i} className="htable-row--empty" aria-hidden="true">
                         {Array.from({ length: COLUMNS.length }, (_, j) => (
                           <td key={j} className="htable-cell" />
@@ -178,21 +214,23 @@ export function ReferralProgram() {
                   </tbody>
                 </table>
               </div>
-              <div className="htable-empty" role="status" aria-live="polite">
-                {filtered ? (
-                  <div className="hempty hempty--inline hui-reveal">
-                    <SearchEmptyIcon className="hempty-icon" />
-                    <h3 className="hempty-title nunito-bold">Nenhuma indicação encontrada</h3>
-                    <p className="hempty-desc inter-regular">Nenhuma indicação corresponde à busca ou ao status selecionado. Ajuste ou limpe os filtros.</p>
-                  </div>
-                ) : (
-                  <div className="hempty hempty--inline hui-reveal">
-                    <GiftIcon className="hempty-icon" />
-                    <h3 className="hempty-title nunito-bold">Nenhuma indicação ainda</h3>
-                    <p className="hempty-desc inter-regular">Compartilhe seu link e as empresas que se cadastrarem por ele aparecerão aqui.</p>
-                  </div>
-                )}
-              </div>
+              {!rows.length && (
+                <div className="htable-empty" role="status" aria-live="polite">
+                  {filtered ? (
+                    <div className="hempty hempty--inline hui-reveal">
+                      <SearchEmptyIcon className="hempty-icon" />
+                      <h3 className="hempty-title nunito-bold">Nenhuma indicação encontrada</h3>
+                      <p className="hempty-desc inter-regular">Nenhuma indicação corresponde à busca ou ao status selecionado. Ajuste ou limpe os filtros.</p>
+                    </div>
+                  ) : (
+                    <div className="hempty hempty--inline hui-reveal">
+                      <GiftIcon className="hempty-icon" />
+                      <h3 className="hempty-title nunito-bold">Nenhuma indicação ainda</h3>
+                      <p className="hempty-desc inter-regular">Compartilhe seu link e as empresas que se cadastrarem por ele aparecerão aqui.</p>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="htable-footer" />
             </div>
           </div>

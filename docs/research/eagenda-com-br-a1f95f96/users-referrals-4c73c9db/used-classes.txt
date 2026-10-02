@@ -1,4 +1,4 @@
-flex flex-col gap-2 gap-3 h-4 h-[18px] hbtn hbtn--tertiary hcopyfield hcopyfield--mono hcopyfield-btn
+flex flex-col gap-2 gap-3 h-4 h-[18px] hbtn hbtn--tertiary hcopyfield hcopyfield--mono hcopyfield-btn hchip hchip--sm hchip--primary hchip--success hchip--danger hchip--accent hchip--warning htable-cell--num htable-cell--center
 hcopyfield-btn-state hcopyfield-btn-state--done hcopyfield-field hcopyfield-value hempty hempty--inline
 hempty-desc hempty-icon hempty-title hkpi hkpi-body hkpi-body--trend hkpi-caption hkpi-group hkpi-label
 hkpi-prefix hkpi-spark hkpi-spark-empty hkpi-value hkpi-value-row hrail hrail-arrow hrail-arrow--next
