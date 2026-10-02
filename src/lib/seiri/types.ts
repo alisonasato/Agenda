@@ -385,6 +385,54 @@ export type Referral = {
   date: string;
 };
 
+/** A list from "Listas de Controle de Acesso": who may book, and under what limits. */
+export type AccessList = {
+  id: string;
+  title: string;
+  /** One of ACCESS_KEY_TYPES below. */
+  keyType: string;
+  maxAppointments: number;
+  /** One of ACCESS_INTERVALS below. */
+  interval: string;
+  /** Only used when the interval is NDAYS. */
+  days: number;
+  /** "dd/mm/aaaa", empty when it never expires. */
+  expiresAt: string;
+  /** "dd/mm/aaaa", the last day the list may book. */
+  maxDate: string;
+  /** Empty means "acessar todas as agendas". */
+  agendaIds: string[];
+  /** Empty means "acessar todos os serviços". */
+  serviceIds: string[];
+  loginRequired: boolean;
+  helpText: string;
+  useExternalList: boolean;
+  externalApiUrl: string;
+  unauthorizedMessage: string;
+  /** The clients the list lets in. */
+  clientIds: string[];
+  active: boolean;
+};
+
+export const ACCESS_KEY_TYPES: { value: string; label: string }[] = [
+  { value: "EMAIL", label: "Email" },
+  { value: "PHONE", label: "Telefone" },
+  { value: "PIN", label: "CPF" },
+  { value: "PASSPORT", label: "Passaporte" },
+  { value: "CONTRACT", label: "Número de Contrato" },
+  { value: "INVITE_CODE", label: "Código de Convite" },
+];
+
+export const ACCESS_INTERVALS: { value: string; label: string }[] = [
+  { value: "DIA", label: "Por Dia" },
+  { value: "SEMANA", label: "Por semana" },
+  { value: "MES", label: "Por Mês" },
+  { value: "15D", label: "15 Dias Corridos" },
+  { value: "30D", label: "30 Dias Corridos" },
+  { value: "NDAYS", label: "Dias Corridos" },
+  { value: "UNDEF", label: "Sem Prazo" },
+];
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -577,6 +625,7 @@ export type Data = {
   credits: Credits;
   creditPurchases: CreditPurchase[];
   referrals: Referral[];
+  accessLists: AccessList[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

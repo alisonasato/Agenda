@@ -25,3 +25,25 @@
 - **1440:** search 288px at left, buttons at right; table 1072 wide, empty message 389×130.
 - **768:** same rows, action bar starts scrolling.
 - **<768:** search full width and the button row wraps below; the table scrolls horizontally.
+
+## Data (fase de lógica)
+- **Nova Lista** abre o modal clonado de `/users/clientes_autorizados/listas_acesso/nova`, com as
+  seis seções do original: Dados Gerais, Limites de Agendamento, Permissões, Lista Externa de
+  Acesso, Convites de cadastro e Mensagem de Acesso Negado.
+- Como no original, "Período em dias" só aparece quando o período é Dias Corridos, os seletores de
+  agendas e serviços só aparecem quando as caixas "acessar todas/todos" estão desmarcadas, e a URL
+  e a chave da API só aparecem com a lista externa ligada.
+- As listas vivem em `data.accessLists`. A tabela mostra o nome, o tipo de chave em chip,
+  as permissões ("Todas · Todos" quando a lista não restringe), quantos clientes convidados, o
+  limite com o período e o status, com editar e excluir.
+- A busca filtra pelo nome; os filtros de Agenda e Serviço passam a oferecer os da conta.
+
+## Verificação
+No build estático: criar "Convênio Alfa" com chave Passaporte põe a linha com o chip do tipo,
+"Todas · Todos", 0 clientes, limite "—" e o chip Ativa.
+
+## Diferenças em relação ao original
+- A chave secreta da API não é guardada, e a lista externa não é consultada: o clone não chama
+  serviços de fora.
+- A lista ainda não barra ninguém: o clone não tem a página pública onde o acesso seria checado.
+- "Gestão Individual" continua sem destino, porque essa tela não foi clonada.
