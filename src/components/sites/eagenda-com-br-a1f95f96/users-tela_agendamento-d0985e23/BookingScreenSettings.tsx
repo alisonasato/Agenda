@@ -10,11 +10,11 @@ import { SaveBar } from "../shared/SaveBar";
 import { CepField, fillFromCep, type CepAddress } from "../shared/CepField";
 import { COUNTRY_OPTIONS, useGeoCascade } from "../shared/useGeoCascade";
 import { ROUTES } from "../shared/Sidebar";
+import { update, useData } from "@/lib/seiri/store";
 import { AddAppointmentIcon, CaretDownIcon, CheckboxMark, ExternalLinkIcon, FlowIcon, InfoIcon, PenIcon, RefreshIcon, SaveIcon } from "../shared/icons";
 
 // CKEditor touches `window` on import, so it only loads in the browser.
 const RichTextEditor = dynamic(() => import("../shared/RichTextEditor").then((m) => m.RichTextEditor), { ssr: false });
-
 
 // Mock account (the live page shows the real business name and public slug here).
 const ACCOUNT = { name: "Minha Empresa", slug: "minhaempresa" };
@@ -23,6 +23,30 @@ type Tab = "identity" | "contact" | "appearance" | "address" | "display" | "grou
 type Flow = "auto" | "legacy" | "modern" | "new";
 // "Automático" resolves on the server by the account's creation date; this account gets the new screen.
 const RESOLVED_FLOW = "new";
+
+/** The value "Tela de Agendamento" has stored for a field, by the name the form gives it. */
+function useSaved() {
+  const { bookingScreen } = useData();
+  return {
+    text: (name: string, fallback = "") => (typeof bookingScreen[name] === "string" ? (bookingScreen[name] as string) : fallback),
+    bool: (name: string, fallback = false) => (typeof bookingScreen[name] === "boolean" ? (bookingScreen[name] as boolean) : fallback),
+  };
+}
+
+/** The original posts every step in one form, so saving keeps the whole thing at once. */
+function saveForm(form: HTMLFormElement) {
+  const kept: Record<string, string | boolean> = {};
+  for (const el of Array.from(form.elements)) {
+    const field = el as HTMLInputElement;
+    if (!field.name || field.disabled) continue;
+    if (field.type === "radio") {
+      if (field.checked) kept[field.name] = field.value;
+    } else {
+      kept[field.name] = field.type === "checkbox" ? field.checked : field.value;
+    }
+  }
+  update((d) => ({ ...d, bookingScreen: { ...d.bookingScreen, ...kept } }));
+}
 
 const STEPS: { id: Tab; title: string; legacyOnly?: boolean }[] = [
   { id: "identity", title: "Identidade" },
@@ -57,12 +81,52 @@ const DEFAULT_COLORS: Record<string, string> = {
 };
 /** The "Ver todas as cores" blocks; `modern` ones only show on the modern screen. */
 const ADVANCED_COLORS = [
-  { modern: true, sub: "Redes Sociais", subDesc: "Botões de redes sociais exibidos no cabeçalho e rodapé", name: "css_social_bg_color", label: "Redes Sociais — Fundo", desc: "Cor de fundo dos botões de redes sociais" },
-  { sub: "Cor Secundária", subDesc: "Botões de cancelamento e ações de retorno", name: "css_delete_button_background_color", label: "Cor Secundária — Fundo", desc: "Botões de cancelamento e ações de retorno" },
-  { sub: "Corpo da Página", subDesc: "Links clicáveis no conteúdo da página. A cor do texto é ajustada automaticamente para contraste.", name: "css_module_link_color", label: "Corpo — Links", desc: "Cor dos links e textos clicáveis" },
-  { modern: true, sub: "Atalhos de Navegação", subDesc: "Botões Painel, Login e Logout exibidos na barra superior", name: "css_button_nav_background_color", label: "Atalhos do Cabeçalho — Fundo", desc: "Botões Painel, Login e Logout na barra superior" },
-  { modern: true, sub: "Cards de Serviço e Profissional", subDesc: "Cards que exibem os serviços e profissionais disponíveis", name: "css_card_background_color", label: "Cards — Fundo", desc: "Cor de fundo dos cards de serviço e profissional" },
-  { modern: true, sub: "Card Sobreposto ao Banner", subDesc: "Card de título exibido sobre a imagem de capa", name: "banner_overlay_bg_color", label: "Card do Banner — Fundo", desc: "Cor de fundo do card sobre a imagem de capa" },
+  {
+    modern: true,
+    sub: "Redes Sociais",
+    subDesc: "Botões de redes sociais exibidos no cabeçalho e rodapé",
+    name: "css_social_bg_color",
+    label: "Redes Sociais — Fundo",
+    desc: "Cor de fundo dos botões de redes sociais",
+  },
+  {
+    sub: "Cor Secundária",
+    subDesc: "Botões de cancelamento e ações de retorno",
+    name: "css_delete_button_background_color",
+    label: "Cor Secundária — Fundo",
+    desc: "Botões de cancelamento e ações de retorno",
+  },
+  {
+    sub: "Corpo da Página",
+    subDesc: "Links clicáveis no conteúdo da página. A cor do texto é ajustada automaticamente para contraste.",
+    name: "css_module_link_color",
+    label: "Corpo — Links",
+    desc: "Cor dos links e textos clicáveis",
+  },
+  {
+    modern: true,
+    sub: "Atalhos de Navegação",
+    subDesc: "Botões Painel, Login e Logout exibidos na barra superior",
+    name: "css_button_nav_background_color",
+    label: "Atalhos do Cabeçalho — Fundo",
+    desc: "Botões Painel, Login e Logout na barra superior",
+  },
+  {
+    modern: true,
+    sub: "Cards de Serviço e Profissional",
+    subDesc: "Cards que exibem os serviços e profissionais disponíveis",
+    name: "css_card_background_color",
+    label: "Cards — Fundo",
+    desc: "Cor de fundo dos cards de serviço e profissional",
+  },
+  {
+    modern: true,
+    sub: "Card Sobreposto ao Banner",
+    subDesc: "Card de título exibido sobre a imagem de capa",
+    name: "banner_overlay_bg_color",
+    label: "Card do Banner — Fundo",
+    desc: "Cor de fundo do card sobre a imagem de capa",
+  },
 ];
 
 /** Radio tiles of "Bordas Arredondadas" (modern screen): [value, label, preview classes]. */
@@ -132,7 +196,16 @@ function Group({ title, desc, style, children }: { title: ReactNode; desc?: Reac
   );
 }
 
-function TextField({ id, name, label, required, type = "text", defaultValue, placeholder, onKeyDown }: {
+function TextField({
+  id,
+  name,
+  label,
+  required,
+  type = "text",
+  defaultValue,
+  placeholder,
+  onKeyDown,
+}: {
   id: string;
   name: string;
   label: string;
@@ -142,19 +215,36 @@ function TextField({ id, name, label, required, type = "text", defaultValue, pla
   placeholder?: string;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }) {
+  defaultValue = useSaved().text(name, defaultValue ?? "") || defaultValue;
   return (
     <div className="hinput-field hinput-field--block">
       <label className="hinput-label" htmlFor={id}>
         {label} {required && <span className="hinput-req">*</span>}
       </label>
       <div className="hinput-wrap">
-        <input id={id} className="hinput" type={type} name={name} defaultValue={defaultValue} placeholder={placeholder ?? ""} required={required} onKeyDown={onKeyDown} />
+        <input
+          id={id}
+          className="hinput"
+          type={type}
+          name={name}
+          defaultValue={defaultValue}
+          placeholder={placeholder ?? ""}
+          required={required}
+          onKeyDown={onKeyDown}
+        />
       </div>
     </div>
   );
 }
 
-function Option({ name, label, help, defaultChecked, className, style }: {
+function Option({
+  name,
+  label,
+  help,
+  defaultChecked,
+  className,
+  style,
+}: {
   name: string;
   label: string;
   help?: string;
@@ -162,6 +252,7 @@ function Option({ name, label, help, defaultChecked, className, style }: {
   className?: string;
   style?: CSSProperties;
 }) {
+  defaultChecked = useSaved().bool(name, defaultChecked);
   return (
     <div className={`cfg-opt${className ? ` ${className}` : ""}`} style={style}>
       <div>
@@ -180,8 +271,11 @@ function Option({ name, label, help, defaultChecked, className, style }: {
 }
 
 export function BookingScreenSettings() {
+  const saved = useSaved();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [stored, setStored] = useState(false);
   const [tab, setTab] = useState<Tab>("identity");
-  const [flow, setFlow] = useState<Flow>("auto");
+  const [flow, setFlow] = useState<Flow>(() => saved.text("booking_flow", "auto") as Flow);
   const effective = flow === "auto" ? RESOLVED_FLOW : flow;
   const isNew = effective === "new";
   const isLegacy = effective === "legacy";
@@ -192,8 +286,10 @@ export function BookingScreenSettings() {
   const [dirty, setDirty] = useState(false);
   const markDirty = () => setDirty(true);
 
-  const [preset, setPreset] = useState("custom");
-  const [colors, setColors] = useState(DEFAULT_COLORS);
+  const [preset, setPreset] = useState(() => saved.text("themePresetSelect", "custom"));
+  const [colors, setColors] = useState(
+    () => Object.fromEntries(Object.entries(DEFAULT_COLORS).map(([k, v]) => [k, saved.text(k, v as string)])) as typeof DEFAULT_COLORS,
+  );
   const [showAdvanced, setShowAdvanced] = useState(false);
   const setColor = (name: string, hex: string) => {
     setColors((c) => ({ ...c, [name]: hex }));
@@ -211,7 +307,8 @@ export function BookingScreenSettings() {
   const flowText =
     flow === "auto" ? (
       <span>
-        Automático — o sistema decide pela data de criação da conta. Atualmente: <strong className="text-gray-900">{RESOLVED_FLOW === "new" ? "Tela nova" : "Tela clássica"}</strong>
+        Automático — o sistema decide pela data de criação da conta. Atualmente:{" "}
+        <strong className="text-gray-900">{RESOLVED_FLOW === "new" ? "Tela nova" : "Tela clássica"}</strong>
       </span>
     ) : flow === "new" ? (
       <span>Tela nova — personalização enxuta: banner, logotipo, descrição e cor de destaque.</span>
@@ -227,7 +324,13 @@ export function BookingScreenSettings() {
         <nav className="cfg-nav--stepper">
           <ol className="hstepper hstepper--lg hstepper--responsive hstepper--nav" role="list" aria-label="Seções da tela de agendamento">
             {STEPS.map((s, i) => (
-              <li key={s.id} className="hstepper__step" data-status={current === s.id ? "active" : "inactive"} data-clickable="true" style={shown(!s.legacyOnly || !isNew)}>
+              <li
+                key={s.id}
+                className="hstepper__step"
+                data-status={current === s.id ? "active" : "inactive"}
+                data-clickable="true"
+                style={shown(!s.legacyOnly || !isNew)}
+              >
                 <button type="button" className="hstepper__step-button" aria-current={current === s.id ? "step" : undefined} onClick={() => setTab(s.id)}>
                   <span className="hstepper__indicator">
                     <span className="hstepper__icon">
@@ -274,7 +377,9 @@ export function BookingScreenSettings() {
                           <FlowIcon className="w-5 h-5" />
                         </span>
                         <h3 className="text-base font-bold text-gray-900 nunito-bold">Nenhum grupo configurado</h3>
-                        <p className="mt-1 text-sm text-gray-500 inter-regular">Adicione uma etapa inicial para organizar o fluxo da sua tela de agendamento.</p>
+                        <p className="mt-1 text-sm text-gray-500 inter-regular">
+                          Adicione uma etapa inicial para organizar o fluxo da sua tela de agendamento.
+                        </p>
                         <div className="mt-4">
                           {/* The group editor isn't cloned yet. */}
                           <a href="#" className="hbtn hbtn--primary hbtn--sm">
@@ -292,7 +397,24 @@ export function BookingScreenSettings() {
           </div>
         </div>
 
-        <form id="booking-screen-form" method="POST" encType="multipart/form-data" className="cfg-form" onSubmit={(e) => e.preventDefault()} onChange={markDirty}>
+        <form
+          ref={formRef}
+          id="booking-screen-form"
+          method="POST"
+          encType="multipart/form-data"
+          className="cfg-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!formRef.current) return;
+            saveForm(formRef.current);
+            setDirty(false);
+            setStored(true);
+          }}
+          onChange={() => {
+            markDirty();
+            setStored(false);
+          }}
+        >
           <input type="hidden" name="active_tab" value={current} />
 
           {/* Identidade */}
@@ -373,7 +495,11 @@ export function BookingScreenSettings() {
             <div className="cfg-content">
               <Group
                 title="Modelo da Página de Agendamento"
-                desc={<p className="cfg-group-desc">Define qual tela pública seus clientes verão. As opções de personalização abaixo se adaptam ao modelo escolhido.</p>}
+                desc={
+                  <p className="cfg-group-desc">
+                    Define qual tela pública seus clientes verão. As opções de personalização abaixo se adaptam ao modelo escolhido.
+                  </p>
+                }
               >
                 <div className="w-full max-w-sm">
                   <Combobox
@@ -402,9 +528,13 @@ export function BookingScreenSettings() {
                 }
                 desc={
                   <p className="cfg-group-desc">
-                    <span style={shown(isNew)}>A cor principal de botões, seleção e destaques. O texto sobre ela e os demais tons são calculados automaticamente.</span>
+                    <span style={shown(isNew)}>
+                      A cor principal de botões, seleção e destaques. O texto sobre ela e os demais tons são calculados automaticamente.
+                    </span>
                     <span style={shown(isLegacy)}>Escolha um preset inicial ou personalize manualmente cada cor da sua tela de agendamento.</span>
-                    <span style={shown(isModern)}>Personalize as cores da sua tela. Os tons de texto são calculados automaticamente para garantir contraste.</span>
+                    <span style={shown(isModern)}>
+                      Personalize as cores da sua tela. Os tons de texto são calculados automaticamente para garantir contraste.
+                    </span>
                   </p>
                 }
               >
@@ -519,11 +649,19 @@ export function BookingScreenSettings() {
                     />
                   </div>
                   <div>
-                    <FilePicker name="background_img" label="Imagem de Fundo" desc="Recomendamos imagem com tamanho até 500kb para melhor velocidade de carregamento da página" />
+                    <FilePicker
+                      name="background_img"
+                      label="Imagem de Fundo"
+                      desc="Recomendamos imagem com tamanho até 500kb para melhor velocidade de carregamento da página"
+                    />
                   </div>
                   <div style={shown(!isNew)}>
                     <div>
-                      <FilePicker name="background_img_mobile" label="Imagem - Otimizada para Dispositivos Móveis" desc="Recomendamos imagem 1350x1080 pixels" />
+                      <FilePicker
+                        name="background_img_mobile"
+                        label="Imagem - Otimizada para Dispositivos Móveis"
+                        desc="Recomendamos imagem 1350x1080 pixels"
+                      />
                     </div>
                   </div>
                   <div>
@@ -540,7 +678,10 @@ export function BookingScreenSettings() {
           {/* Exibição (classic and modern screens only) */}
           <div style={shown(current === "display")}>
             <div className="cfg-content">
-              <Group title="Opções de Exibição" desc={<p className="cfg-group-desc">Controle o que é exibido ou ocultado na sua tela pública de agendamento.</p>}>
+              <Group
+                title="Opções de Exibição"
+                desc={<p className="cfg-group-desc">Controle o que é exibido ou ocultado na sua tela pública de agendamento.</p>}
+              >
                 <div style={shown(isNew)}>
                   <div className="halert halert--accent" role="alert">
                     <span className="halert-indicator">
@@ -553,7 +694,11 @@ export function BookingScreenSettings() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3" style={shown(!isNew)}>
-                  <Option name="pagina_completa" label="Mostrar na página inicial detalhes extras sobre agendamento para todas as agendas disponíveis" defaultChecked />
+                  <Option
+                    name="pagina_completa"
+                    label="Mostrar na página inicial detalhes extras sobre agendamento para todas as agendas disponíveis"
+                    defaultChecked
+                  />
                   <Option name="services_show" label="Mostrar serviços nas agendas" />
                   <Option
                     name="img_autofit"
@@ -565,11 +710,27 @@ export function BookingScreenSettings() {
                   <Option name="show_footer_logo" label="Exibir logotipo no rodapé" style={shown(isModern)} />
                 </div>
               </Group>
-              <Group title="Card Sobreposto ao Banner" desc={<p className="cfg-group-desc">Controle o que é exibido no card sobre a imagem de capa.</p>} style={shown(isModern)}>
+              <Group
+                title="Card Sobreposto ao Banner"
+                desc={<p className="cfg-group-desc">Controle o que é exibido no card sobre a imagem de capa.</p>}
+                style={shown(isModern)}
+              >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-3">
-                  <Option name="banner_overlay_title" label="Exibir título no banner" help="Exibe o título da organização/fluxo/unidade em um card sobreposto ao banner." />
-                  <Option name="banner_overlay_description" label="Exibir descrição no banner" help="Exibe a descrição da organização/fluxo/unidade no card sobreposto ao banner." />
-                  <Option name="banner_overlay_use_blur" label="Usar efeito blur (vidro fosco)" help="Efeito glassmorphism — a cor de fundo é aplicada com baixa opacidade sobre o blur." />
+                  <Option
+                    name="banner_overlay_title"
+                    label="Exibir título no banner"
+                    help="Exibe o título da organização/fluxo/unidade em um card sobreposto ao banner."
+                  />
+                  <Option
+                    name="banner_overlay_description"
+                    label="Exibir descrição no banner"
+                    help="Exibe a descrição da organização/fluxo/unidade no card sobreposto ao banner."
+                  />
+                  <Option
+                    name="banner_overlay_use_blur"
+                    label="Usar efeito blur (vidro fosco)"
+                    help="Efeito glassmorphism — a cor de fundo é aplicada com baixa opacidade sobre o blur."
+                  />
                 </div>
               </Group>
             </div>
@@ -652,8 +813,9 @@ export function BookingScreenSettings() {
               saveIcon={<SaveIcon />}
               dirty={dirty}
               toastIcon={<PenIcon className="w-4 h-4" />}
-              toastTitle="Alterações não salvas"
-              toastSub="Salve para aplicar as mudanças."
+              toastTitle={stored ? "Tela de agendamento salva" : "Alterações não salvas"}
+              toastSub={stored ? "As mudanças já valem para a página pública." : "Salve para aplicar as mudanças."}
+              forceToast={stored}
             />
           </div>
         </form>

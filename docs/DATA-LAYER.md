@@ -73,6 +73,11 @@ nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas q
 nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
 o motivo que aparece no horário fechado é o nome do feriado.
 
+## Tela de agendamento
+`data.bookingScreen` guarda a tela pública do mesmo jeito que `orgSettings` guarda as
+configurações: um mapa de nome de campo para valor. O original posta os seis passos num formulário
+só, e o clone grava do mesmo jeito.
+
 ## Créditos
 `data.credits` guarda os quatro saldos (geral, SMS, email e WhatsApp) e `data.creditPurchases` o
 histórico de compras. Os cartões do topo das telas de Comunicação e os saldos de "Pacotes de

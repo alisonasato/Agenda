@@ -67,3 +67,21 @@
 - The rich-text editor UI uses CKEditor's pt-BR bundle. The original shows English.
 - The phone country list shows pt-BR names (`Intl.DisplayNames`), sorted in Portuguese. The
   original shows intl-tel-input's English names, e.g. "Brazil (Brasil)".
+
+## Data (fase de lógica)
+- Como no original, os seis passos são um formulário só: **Salvar** guarda tudo de uma vez em
+  `data.bookingScreen`, um mapa por nome de campo, com textos, caixas e os grupos de rádio das
+  bordas arredondadas.
+- Cada campo reabre no que foi salvo: os textos pelo `TextField`, as caixas pelo `Option`, e o
+  fluxo, o preset de cores e as sete cores pelo estado inicial deles.
+- O toast passa a "Tela de agendamento salva".
+
+## Verificação
+No build estático: digitar "Seiri Agendamentos" no nome e salvar grava 51 campos — inclusive
+`pagina_completa: true` e `border_radius_preset: "full"`; recarregar traz o nome e as caixas como
+foram salvos.
+
+## Diferenças em relação ao original
+- Nada disso muda outra tela do clone: o original usa esses campos na página pública de
+  agendamento, que não faz parte deste clone — por isso o botão "Abrir tela pública" segue inerte.
+- As imagens (logotipo, banner) são escolhidas mas não guardadas: o clone não tem onde pôr arquivos.
