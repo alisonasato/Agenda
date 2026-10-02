@@ -6,19 +6,9 @@ import { DatePicker } from "../shared/DatePicker";
 import { PhoneInput } from "../shared/PhoneInput";
 import { SaveBar } from "../shared/SaveBar";
 import { Select } from "../shared/Select";
+import { update, useData } from "@/lib/seiri/store";
 import { ROUTES } from "../shared/Sidebar";
-import {
-  CaretDownIcon,
-  CaretUpIcon,
-  CheckboxMark,
-  DangerCircleIcon,
-  InfoIcon,
-  PenIcon,
-  PlaneIcon,
-  SaveIcon,
-  TrashIcon,
-  UndoIcon,
-} from "../shared/icons";
+import { CaretDownIcon, CaretUpIcon, CheckboxMark, DangerCircleIcon, InfoIcon, PenIcon, PlaneIcon, SaveIcon, TrashIcon, UndoIcon } from "../shared/icons";
 
 const toOptions = (rows: [string, string][]) => rows.map(([value, label]) => ({ value, label }));
 
@@ -90,16 +80,57 @@ const FLOWS = toOptions([
 // The original's country list (ISO codes, in its order). Names come from the browser's pt-BR
 // region names, except where the original words them differently.
 const COUNTRY_CODES =
-  "AF,ZA,AL,DE,AD,AO,AI,AQ,AG,SA,DZ,AR,AM,AW,AU,AT,AZ,BS,BH,BD,BB,BE,BZ,BJ,BM,BY,BO,BQ,BA,BW,BR,BN,BG,BF,BI,BT,CV,CM,KH,CA,QA,KZ,TD,CL,CN,CY,SG,CO,KM,CG,KP,KR,CR,CI,HR,CU,CW,DK,DJ,DM,EG,SV,AE,EC,ER,SK,SI,ES,SZ,PS,US,UM,EE,SJ,ET,FJ,PH,FI,FR,GA,GM,GH,GE,GS,GI,GD,GR,GL,GP,GU,GT,GG,GY,GF,GN,GQ,GW,HT,NL,HN,HK,HU,YE,BV,HM,NF,IM,CX,AX,KY,CC,CK,FK,FO,MP,MH,PN,SB,TC,VG,VI,IN,ID,IR,IQ,IE,IS,IL,IT,JM,JP,JE,JO,KW,LA,LS,LV,LB,LR,LY,LI,LT,LU,MO,MK,MG,MY,MW,MV,ML,MT,MA,MQ,MU,MR,YT,MX,MM,FM,MZ,MD,MC,MN,ME,MS,NA,NR,NP,NI,NE,NG,NU,NO,NC,NZ,OM,PW,PA,PG,PK,PY,PE,PF,PL,PR,PT,KE,KG,KI,GB,CF,CD,DO,RE,RO,RW,RU,EH,WS,AS,SM,SH,LC,VA,BL,KN,SX,MF,PM,ST,VC,SN,SL,RS,SC,SY,SO,LK,SD,SS,SE,CH,SR,TH,TW,TJ,TZ,CZ,IO,TF,TL,TG,TK,TO,TT,TN,TM,TR,TV,UA,UG,UY,UZ,VU,VE,VN,WF,ZM,ZW".split(",");
+  "AF,ZA,AL,DE,AD,AO,AI,AQ,AG,SA,DZ,AR,AM,AW,AU,AT,AZ,BS,BH,BD,BB,BE,BZ,BJ,BM,BY,BO,BQ,BA,BW,BR,BN,BG,BF,BI,BT,CV,CM,KH,CA,QA,KZ,TD,CL,CN,CY,SG,CO,KM,CG,KP,KR,CR,CI,HR,CU,CW,DK,DJ,DM,EG,SV,AE,EC,ER,SK,SI,ES,SZ,PS,US,UM,EE,SJ,ET,FJ,PH,FI,FR,GA,GM,GH,GE,GS,GI,GD,GR,GL,GP,GU,GT,GG,GY,GF,GN,GQ,GW,HT,NL,HN,HK,HU,YE,BV,HM,NF,IM,CX,AX,KY,CC,CK,FK,FO,MP,MH,PN,SB,TC,VG,VI,IN,ID,IR,IQ,IE,IS,IL,IT,JM,JP,JE,JO,KW,LA,LS,LV,LB,LR,LY,LI,LT,LU,MO,MK,MG,MY,MW,MV,ML,MT,MA,MQ,MU,MR,YT,MX,MM,FM,MZ,MD,MC,MN,ME,MS,NA,NR,NP,NI,NE,NG,NU,NO,NC,NZ,OM,PW,PA,PG,PK,PY,PE,PF,PL,PR,PT,KE,KG,KI,GB,CF,CD,DO,RE,RO,RW,RU,EH,WS,AS,SM,SH,LC,VA,BL,KN,SX,MF,PM,ST,VC,SN,SL,RS,SC,SY,SO,LK,SD,SS,SE,CH,SR,TH,TW,TJ,TZ,CZ,IO,TF,TL,TG,TK,TO,TT,TN,TM,TR,TV,UA,UG,UY,UZ,VU,VE,VN,WF,ZM,ZW".split(
+    ",",
+  );
 const COUNTRY_NAMES: Record<string, string> = {
-  AI: "Anguilla", AQ: "Antártica", BH: "Bahrain", BQ: "Bonaire, Saba e Santo Eustáquio", BF: "Burkina Faso", SG: "Cingapura",
-  CG: "Congo, República do Congo", KP: "Coréia do Norte", KR: "Coréia do Sul", CW: "Curação", DM: "Dominicana", SI: "Eslovénia",
-  PS: "Estado da Palestina", UM: "Estados Unidos Ilhas Menores Distantes", SJ: "Esvalbarda", GS: "Geórgia do Sul e Sanduíche do Sul",
-  GU: "Guão", GG: "Guernesei", NL: "Holanda", YE: "Iémen", HM: "Ilha Heard e Ilhas McDonald", CX: "Ilha do Natal", AX: "Ilhas Alanda",
-  FK: "Ilhas Falkland (Malvinas)", FO: "Ilhas Faroe", TC: "Ilhas Turks e Caicos", VI: "Ilhas Virgens dos Estados Unidos", JE: "Jérsia",
-  KW: "Kuweit", LV: "Letónia", LI: "Listenstaina", MG: "Madagáscar", MW: "Malavi", MM: "Mianmar", MD: "Moldova", MC: "Monaco",
-  NG: "Nigeria", OM: "Oman", PG: "Papua Nova Guiné", CD: "República Democrática do Congo", VA: "Santa Sé", KN: "São Cristóvão e Neves",
-  SX: "São Martinho (Países Baixos)", MF: "São Martinho (Parte Francesa)", SC: "Seychelles", TJ: "Tajiquistão", TL: "Timor-leste",
+  AI: "Anguilla",
+  AQ: "Antártica",
+  BH: "Bahrain",
+  BQ: "Bonaire, Saba e Santo Eustáquio",
+  BF: "Burkina Faso",
+  SG: "Cingapura",
+  CG: "Congo, República do Congo",
+  KP: "Coréia do Norte",
+  KR: "Coréia do Sul",
+  CW: "Curação",
+  DM: "Dominicana",
+  SI: "Eslovénia",
+  PS: "Estado da Palestina",
+  UM: "Estados Unidos Ilhas Menores Distantes",
+  SJ: "Esvalbarda",
+  GS: "Geórgia do Sul e Sanduíche do Sul",
+  GU: "Guão",
+  GG: "Guernesei",
+  NL: "Holanda",
+  YE: "Iémen",
+  HM: "Ilha Heard e Ilhas McDonald",
+  CX: "Ilha do Natal",
+  AX: "Ilhas Alanda",
+  FK: "Ilhas Falkland (Malvinas)",
+  FO: "Ilhas Faroe",
+  TC: "Ilhas Turks e Caicos",
+  VI: "Ilhas Virgens dos Estados Unidos",
+  JE: "Jérsia",
+  KW: "Kuweit",
+  LV: "Letónia",
+  LI: "Listenstaina",
+  MG: "Madagáscar",
+  MW: "Malavi",
+  MM: "Mianmar",
+  MD: "Moldova",
+  MC: "Monaco",
+  NG: "Nigeria",
+  OM: "Oman",
+  PG: "Papua Nova Guiné",
+  CD: "República Democrática do Congo",
+  VA: "Santa Sé",
+  KN: "São Cristóvão e Neves",
+  SX: "São Martinho (Países Baixos)",
+  MF: "São Martinho (Parte Francesa)",
+  SC: "Seychelles",
+  TJ: "Tajiquistão",
+  TL: "Timor-leste",
 };
 function countryOptions() {
   const names = new Intl.DisplayNames(["pt-BR"], { type: "region" });
@@ -108,6 +139,26 @@ function countryOptions() {
 // The original offers no time zone list (only the saved value shows); the clone lists the IANA zones.
 function timeZoneOptions() {
   return Intl.supportedValuesOf("timeZone").map((z) => ({ value: z, label: z }));
+}
+
+/** The value "Configurações Gerais" has stored for a field, by the name the form gives it. */
+function useSetting() {
+  const { orgSettings } = useData();
+  return {
+    text: (name: string, fallback = "") => (typeof orgSettings[name] === "string" ? (orgSettings[name] as string) : fallback),
+    bool: (name: string, fallback = false) => (typeof orgSettings[name] === "boolean" ? (orgSettings[name] as boolean) : fallback),
+  };
+}
+
+/** Saving a step keeps every named field of its form, checkboxes included. */
+function saveForm(form: HTMLFormElement) {
+  const kept: Record<string, string | boolean> = {};
+  for (const el of Array.from(form.elements)) {
+    const field = el as HTMLInputElement;
+    if (!field.name || field.disabled) continue;
+    kept[field.name] = field.type === "checkbox" ? field.checked : field.value;
+  }
+  update((d) => ({ ...d, orgSettings: { ...d.orgSettings, ...kept } }));
 }
 
 const STEPS = [
@@ -134,10 +185,30 @@ function Group({ title, desc, bodyClass, children }: { title: string; desc?: str
   );
 }
 
-function Check({ name, label, defaultChecked, disabled, className }: { name: string; label: string; defaultChecked?: boolean; disabled?: boolean; className?: string }) {
+function Check({
+  name,
+  label,
+  defaultChecked,
+  disabled,
+  className,
+}: {
+  name: string;
+  label: string;
+  defaultChecked?: boolean;
+  disabled?: boolean;
+  className?: string;
+}) {
+  defaultChecked = useSetting().bool(name, defaultChecked);
   return (
     <label className={`hcheckbox${disabled ? " is-disabled" : ""}`}>
-      <input type="checkbox" name={name} id={`id_${name}`} className={`${className ? `${className} ` : ""}hcheckbox-input`} defaultChecked={defaultChecked} disabled={disabled} />
+      <input
+        type="checkbox"
+        name={name}
+        id={`id_${name}`}
+        className={`${className ? `${className} ` : ""}hcheckbox-input`}
+        defaultChecked={defaultChecked}
+        disabled={disabled}
+      />
       <span className="hcheckbox-box" aria-hidden="true">
         <CheckboxMark />
         <span className="hcheckbox-dash" aria-hidden="true" />
@@ -158,7 +229,17 @@ function Opt(props: { name: string; label: string; help?: string; defaultChecked
   );
 }
 
-function Field({ name, label, required, type = "text", desc, defaultValue, placeholder, className, mask }: {
+function Field({
+  name,
+  label,
+  required,
+  type = "text",
+  desc,
+  defaultValue,
+  placeholder,
+  className,
+  mask,
+}: {
   name: string;
   label: string;
   required?: boolean;
@@ -170,6 +251,7 @@ function Field({ name, label, required, type = "text", desc, defaultValue, place
   /** "000.000.000-00"-style mask, applied as the user types (the original uses jQuery Mask). */
   mask?: string;
 }) {
+  defaultValue = useSetting().text(name, defaultValue ?? "") || defaultValue;
   const applyMask = (v: string) => {
     if (!mask) return v;
     const d = v.replace(/\D/g, "");
@@ -204,7 +286,16 @@ function Field({ name, label, required, type = "text", desc, defaultValue, place
 }
 
 /** Number input with the original's up/down stepper (native stepUp/stepDown, so min/step apply). */
-function NumberField({ name, label, desc, required, defaultValue, step, min, className }: {
+function NumberField({
+  name,
+  label,
+  desc,
+  required,
+  defaultValue,
+  step,
+  min,
+  className,
+}: {
   name: string;
   label: string;
   desc?: string;
@@ -214,6 +305,7 @@ function NumberField({ name, label, desc, required, defaultValue, step, min, cla
   min?: string;
   className?: string;
 }) {
+  defaultValue = useSetting().text(name, defaultValue ?? "") || defaultValue;
   const ref = useRef<HTMLInputElement>(null);
   const bump = (up: boolean) => {
     const el = ref.current;
@@ -257,7 +349,9 @@ function NumberField({ name, label, desc, required, defaultValue, step, min, cla
 function Alert({ tone, children }: { tone: "accent" | "danger"; children: ReactNode }) {
   return (
     <div className={`halert halert--${tone}`} role="alert">
-      <span className="halert-indicator">{tone === "danger" ? <DangerCircleIcon className="w-[18px] h-[18px]" /> : <InfoIcon className="w-[18px] h-[18px]" />}</span>
+      <span className="halert-indicator">
+        {tone === "danger" ? <DangerCircleIcon className="w-[18px] h-[18px]" /> : <InfoIcon className="w-[18px] h-[18px]" />}
+      </span>
       <div className="halert-content">{children}</div>
       <div className="halert-actions" />
     </div>
@@ -267,8 +361,25 @@ function Alert({ tone, children }: { tone: "accent" | "danger"; children: ReactN
 /** One step's form: alerts slot, the white cfg-content card and a save bar (the original's partial). */
 function StepForm({ alerts, saveBar, children }: { alerts?: ReactNode; saveBar?: ReactNode; children: ReactNode }) {
   const [dirty, setDirty] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   return (
-    <form method="POST" className="cfg-form" onSubmit={(e) => e.preventDefault()} onChange={() => setDirty(true)}>
+    <form
+      ref={formRef}
+      method="POST"
+      className="cfg-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!formRef.current) return;
+        saveForm(formRef.current);
+        setDirty(false);
+        setSaved(true);
+      }}
+      onChange={() => {
+        setDirty(true);
+        setSaved(false);
+      }}
+    >
       <div className="hform-alerts mb-4">{alerts}</div>
       <div className="cfg-content">{children}</div>
       {saveBar ?? (
@@ -278,8 +389,9 @@ function StepForm({ alerts, saveBar, children }: { alerts?: ReactNode; saveBar?:
           saveIcon={<SaveIcon />}
           dirty={dirty}
           toastIcon={<PenIcon className="w-4 h-4" />}
-          toastTitle="Alterações não salvas"
-          toastSub="Salve para aplicar as mudanças."
+          toastTitle={saved ? "Configurações salvas" : "Alterações não salvas"}
+          toastSub={saved ? "As mudanças já valem para a conta." : "Salve para aplicar as mudanças."}
+          forceToast={saved}
         />
       )}
     </form>
@@ -287,14 +399,23 @@ function StepForm({ alerts, saveBar, children }: { alerts?: ReactNode; saveBar?:
 }
 
 function BusinessStep() {
-  const [segment, setSegment] = useState("");
-  const [term, setTerm] = useState("cliente");
-  const [mode, setMode] = useState("auto");
+  const saved = useSetting();
+  const [segment, setSegment] = useState(() => saved.text("segment_key"));
+  const [term, setTerm] = useState(() => saved.text("client_term", "cliente"));
+  const [mode, setMode] = useState(() => saved.text("usage_mode", "auto"));
   return (
     <StepForm>
       <Group title="Segmento do Negócio" desc="Define as sugestões de serviços e o preset de cores/imagem da sua página.">
         <div className="w-full max-w-sm">
-          <Combobox id="segment_key" label="Segmento do negócio" options={SEGMENTS} value={segment} onChange={setSegment} placeholder="Selecione o segmento" clearable={false} />
+          <Combobox
+            id="segment_key"
+            label="Segmento do negócio"
+            options={SEGMENTS}
+            value={segment}
+            onChange={setSegment}
+            placeholder="Selecione o segmento"
+            clearable={false}
+          />
         </div>
         <div className="mt-3">
           <Check name="apply_preset" label="Aplicar as cores e a imagem sugeridas para este segmento" />
@@ -316,9 +437,10 @@ function BusinessStep() {
 }
 
 function ConfigStep() {
-  const [country, setCountry] = useState("BR");
-  const [zone, setZone] = useState("America/Sao_Paulo");
-  const [language, setLanguage] = useState("pt-br");
+  const saved = useSetting();
+  const [country, setCountry] = useState(() => saved.text("country", "BR"));
+  const [zone, setZone] = useState(() => saved.text("fuso_horario", "America/Sao_Paulo"));
+  const [language, setLanguage] = useState(() => saved.text("default_language", "pt-br"));
   const [countries] = useState(countryOptions);
   const [zones] = useState(timeZoneOptions);
   return (
@@ -326,10 +448,28 @@ function ConfigStep() {
       <Group title="Local e Idioma">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <Combobox id="country" label="País" options={countries} value={country} onChange={setCountry} placeholder="Selecione o país" required clearable={false} />
+            <Combobox
+              id="country"
+              label="País"
+              options={countries}
+              value={country}
+              onChange={setCountry}
+              placeholder="Selecione o país"
+              required
+              clearable={false}
+            />
           </div>
           <div>
-            <Combobox id="fuso_horario" label="Fuso Horário da Agenda" options={zones} value={zone} onChange={setZone} placeholder="Selecione o fuso horário" required clearable={false} />
+            <Combobox
+              id="fuso_horario"
+              label="Fuso Horário da Agenda"
+              options={zones}
+              value={zone}
+              onChange={setZone}
+              placeholder="Selecione o fuso horário"
+              required
+              clearable={false}
+            />
           </div>
           <div>
             <Combobox id="default_language" label="Idioma" options={LANGUAGES} value={language} onChange={setLanguage} placeholder="Selecione o idioma" />
@@ -345,7 +485,9 @@ function PrivacyStep() {
     <StepForm
       alerts={
         <Alert tone="accent">
-          <p className="halert-description">É necessário verificar o e-mail do seu usuário para habilitar o duplo fator de organização para todos os membros da organização.</p>
+          <p className="halert-description">
+            É necessário verificar o e-mail do seu usuário para habilitar o duplo fator de organização para todos os membros da organização.
+          </p>
           {/* The profile page isn't cloned yet. */}
           <a className="text-primary underline" href="#">
             Clique aqui
@@ -355,15 +497,36 @@ function PrivacyStep() {
     >
       <Group title="Privacidade e Segurança">
         <div className="cfg-opt-list">
-          <Opt name="is_public" label="Página pública (indexação)" help="Sua página será incluída no mapa do site para indexação por mecanismos de buscas, permitindo um maior alcance de sua página de agendamento. Disponível a partir do plano básico" />
-          <Opt name="is_login_req" label="Exigir login para agendar" help="Obrigar os usuários a fazerem login na plataforma para conseguir fazer um agendamento. Disponível a partir do plano avançado" />
-          <Opt name="is_restricted" label="Acesso restrito" help="Permite que você configure quais usuários podem fazer agendamentos na sua agenda. Disponível a partir do plano avançado" />
+          <Opt
+            name="is_public"
+            label="Página pública (indexação)"
+            help="Sua página será incluída no mapa do site para indexação por mecanismos de buscas, permitindo um maior alcance de sua página de agendamento. Disponível a partir do plano básico"
+          />
+          <Opt
+            name="is_login_req"
+            label="Exigir login para agendar"
+            help="Obrigar os usuários a fazerem login na plataforma para conseguir fazer um agendamento. Disponível a partir do plano avançado"
+          />
+          <Opt
+            name="is_restricted"
+            label="Acesso restrito"
+            help="Permite que você configure quais usuários podem fazer agendamentos na sua agenda. Disponível a partir do plano avançado"
+          />
           <Opt name="is_use_captcha" label="Usar Captcha" help="Proteger sua tela de agendamento com um desafio captcha" />
-          <Opt name="hide_nav_login_link" label="Ocultar link para login" help="Marque essa opção se, no seu caso, não há necessidade do cliente efetuar login ou criar uma conta para acompanhar os agendamentos" />
+          <Opt
+            name="hide_nav_login_link"
+            label="Ocultar link para login"
+            help="Marque essa opção se, no seu caso, não há necessidade do cliente efetuar login ou criar uma conta para acompanhar os agendamentos"
+          />
           <Opt name="max_distance" label="Distância máxima (km)" help="Distância máxima em km para agendamento" />
           <Opt name="hide_short_name" label="Ocultar nome curto no menu" />
           <Opt name="show_footer_logo" label="Exibir logotipo no rodapé" help="Exibir o logotipo da organização também no rodapé da página" />
-          <Opt name="is_mfa_required" label="Exigir autenticação em 2 fatores" help="Tornar obrigatório o duplo fator de autenticação para todos os membros da sua equipe" disabled />
+          <Opt
+            name="is_mfa_required"
+            label="Exigir autenticação em 2 fatores"
+            help="Tornar obrigatório o duplo fator de autenticação para todos os membros da sua equipe"
+            disabled
+          />
           <Opt
             name="coordinates"
             label="Coordenadas"
@@ -493,14 +656,18 @@ function OperationStep() {
             <NumberField
               name="cancel_minimum_time_h"
               label="Prazo para cancelamento (em horas)"
-              desc={'Esse é o número mínimo de horas antes do horário marcado para que um cliente possa cancelar um agendamento. Por exemplo, se aqui estiver "24", você só pode cancelar até 24 horas antes do horário do seu agendamento'}
+              desc={
+                'Esse é o número mínimo de horas antes do horário marcado para que um cliente possa cancelar um agendamento. Por exemplo, se aqui estiver "24", você só pode cancelar até 24 horas antes do horário do seu agendamento'
+              }
             />
           </div>
           <div>
             <NumberField
               name="att_max_time_d"
               label="Prazo máximo de agendamento (em dias)"
-              desc={'Esse campo define quantos dias antes um cliente pode marcar um agendamento. Por exemplo, se estiver definido como "30", significa o cliente pode agendar um horário com até 30 dias de antecedência.'}
+              desc={
+                'Esse campo define quantos dias antes um cliente pode marcar um agendamento. Por exemplo, se estiver definido como "30", significa o cliente pode agendar um horário com até 30 dias de antecedência.'
+              }
             />
           </div>
           <div>
@@ -537,27 +704,66 @@ function OperationStep() {
 }
 
 function TemplateStep() {
-  const [bookingFlow, setBookingFlow] = useState("auto");
-  const [template, setTemplate] = useState("default");
-  const [weekday, setWeekday] = useState("0");
+  const saved = useSetting();
+  const [bookingFlow, setBookingFlow] = useState(() => saved.text("booking_flow", "auto"));
+  const [template, setTemplate] = useState(() => saved.text("template", "default"));
+  const [weekday, setWeekday] = useState(() => saved.text("initial_weekday", "0"));
   // The live account's saved flow ("0") matches no option, so the field shows empty there.
-  const [flow, setFlow] = useState("");
+  const [flow, setFlow] = useState(() => saved.text("flow"));
   return (
     <StepForm>
       <Group title="Exibição da Tela de Agendamento">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <Combobox id="booking_flow" label="Modelo da página de agendamento" options={BOOKING_FLOWS} value={bookingFlow} onChange={setBookingFlow} placeholder="Selecione..." required clearable={false} />
-            <p className="hinput-desc">Define qual tela pública de agendamento esta organização utiliza. Em &quot;Automático&quot;, o sistema decide pela data de criação da conta.</p>
+            <Combobox
+              id="booking_flow"
+              label="Modelo da página de agendamento"
+              options={BOOKING_FLOWS}
+              value={bookingFlow}
+              onChange={setBookingFlow}
+              placeholder="Selecione..."
+              required
+              clearable={false}
+            />
+            <p className="hinput-desc">
+              Define qual tela pública de agendamento esta organização utiliza. Em &quot;Automático&quot;, o sistema decide pela data de criação da conta.
+            </p>
           </div>
           <div>
-            <Combobox id="template" label="Modelo da Tela da Agenda" options={SCREEN_TEMPLATES} value={template} onChange={setTemplate} placeholder="Selecione..." required clearable={false} />
+            <Combobox
+              id="template"
+              label="Modelo da Tela da Agenda"
+              options={SCREEN_TEMPLATES}
+              value={template}
+              onChange={setTemplate}
+              placeholder="Selecione..."
+              required
+              clearable={false}
+            />
           </div>
           <div>
-            <Combobox id="initial_weekday" label="Primeiro dia da Semana" options={WEEKDAYS} value={weekday} onChange={setWeekday} placeholder="Selecione..." required clearable={false} />
+            <Combobox
+              id="initial_weekday"
+              label="Primeiro dia da Semana"
+              options={WEEKDAYS}
+              value={weekday}
+              onChange={setWeekday}
+              placeholder="Selecione..."
+              required
+              clearable={false}
+            />
           </div>
           <div>
-            <Combobox id="flow" label="Fluxo de Agendamento" options={FLOWS} value={flow} onChange={setFlow} placeholder="Selecione..." required clearable={false} />
+            <Combobox
+              id="flow"
+              label="Fluxo de Agendamento"
+              options={FLOWS}
+              value={flow}
+              onChange={setFlow}
+              placeholder="Selecione..."
+              required
+              clearable={false}
+            />
           </div>
           <div>
             <Field name="g_tag" label="Id da Métrica - Google Analytics" />

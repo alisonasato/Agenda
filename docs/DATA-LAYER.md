@@ -73,6 +73,11 @@ nomeia nas agendas que alcança, e um feriado nacional fecha o dia nas agendas q
 nacionais e não o desmarcaram. O gerador de slots consulta isso junto com os bloqueios manuais, e
 o motivo que aparece no horário fechado é o nome do feriado.
 
+## Configurações gerais
+`data.orgSettings` guarda os oito passos de "Configurações Gerais" como um mapa de nome de campo
+para valor — texto ou booleano. Salvar um passo mescla os campos daquele passo no mapa, e cada
+campo reabre no que está lá.
+
 ## Sub-contas
 `data.accounts` guarda as contas da organização. A ligação fica do lado de quem pertence a elas:
 `Agenda.accountId` e `Member.accountId`, vazios para a conta principal. Apagar uma sub-conta limpa

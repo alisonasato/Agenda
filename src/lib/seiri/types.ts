@@ -350,6 +350,9 @@ export type SubAccount = {
   plan: string;
 };
 
+/** Every field of "Configurações Gerais", by the name the form gives it. */
+export type OrgSettings = Record<string, string | boolean>;
+
 export type WaitingEntry = {
   id: string;
   clientId: string;
@@ -537,6 +540,7 @@ export type Data = {
   units: Unit[];
   members: Member[];
   accounts: SubAccount[];
+  orgSettings: OrgSettings;
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

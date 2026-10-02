@@ -169,6 +169,7 @@ export function seed(): Data {
     statusRules: [],
     units: [],
     accounts: [],
+    orgSettings: {},
     members: [
       {
         id: "mb1",
@@ -281,4 +282,5 @@ export const EMPTY: Data = {
   units: [],
   members: [],
   accounts: [],
+  orgSettings: {},
 };

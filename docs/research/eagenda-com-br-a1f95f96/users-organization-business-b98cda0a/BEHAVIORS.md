@@ -32,3 +32,22 @@ The page's `<style>` is Tela de Agendamento's `cfg-*` block, with these differen
 - `.cfg-opt-list` separators.
 
 `inline-styles.css` scopes them to `#org-settings-panel`.
+
+## Data (fase de lógica)
+- Os oito passos gravam em `data.orgSettings`, um mapa por nome de campo — é o mesmo formato que o
+  original posta, e evita inventar um tipo para cada uma das dezenas de opções.
+- **Salvar** guarda todos os campos nomeados do passo aberto, caixas incluídas, e o toast passa a
+  "Configurações salvas".
+- Cada campo reabre no que foi salvo: os textos e números pelo próprio helper, as caixas pelo
+  `Check`, e os seletores de cada passo (segmento, termo do cliente, modo de uso, país, fuso,
+  idioma, modelo da página, modelo da agenda, primeiro dia e fluxo) pelo estado inicial deles.
+
+## Verificação
+No build estático: marcar "Usar Captcha" no passo Privacidade e salvar grava
+`is_use_captcha: true` junto com as outras caixas do passo; recarregar a página e voltar ao passo
+traz a caixa marcada.
+
+## Diferenças em relação ao original
+- O que é gravado fica guardado, mas quase nada disso muda o resto do clone: o original usa esses
+  campos na página pública de agendamento, que não faz parte deste clone.
+- SMTP, dados fiscais e o preset de cores do segmento são guardados sem efeito, pelo mesmo motivo.
