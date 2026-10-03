@@ -59,3 +59,8 @@ os cards seguem ("Unidade Centro" passou para o primeiro); Desativar deixa a age
 - **1024–1439:** still two columns (`lg:grid-cols-2`).
 - **<1024:** single column with `pl-7` so the spine tabs stay visible; card 330 wide at 390,
   no horizontal page scroll.
+
+## Links (fase de lógica)
+- O nome da agenda e o botão **Configurar** de cada linha abrem a configuração daquela agenda
+  (`?id=`), e o botão de link público do card abre o endereço da agenda, o mesmo que a tela de
+  Links de Agendamento monta.

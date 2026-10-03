@@ -40,6 +40,7 @@ function agendaRows(data: Data): Agenda[] {
     return {
       ...template,
       id: a.id,
+      slug: a.slug ?? "",
       name: a.name,
       color: a.color,
       active: a.active,
@@ -130,7 +131,7 @@ function AgendasTable({ rows }: { rows: Agenda[] }) {
                     <span className="flex items-center flex-shrink-0" style={{ color: a.color }}>
                       <CalendarIcon className="w-4 h-4" />
                     </span>
-                    <a href="#" className="text-sm text-gray-900 hover:text-primary transition-colors truncate inter-semibold">
+                    <a href={`${ROUTES.novaAgenda}/?id=${a.id}`} className="text-sm text-gray-900 hover:text-primary transition-colors truncate inter-semibold">
                       {a.name}
                     </a>
                   </div>
@@ -180,7 +181,7 @@ function AgendasTable({ rows }: { rows: Agenda[] }) {
                 </td>
                 <td className="htable-cell htable-cell--end whitespace-nowrap">
                   <div className="flex items-center justify-end gap-1">
-                    <a title="Configurar" href="#" className="btn-icon btn-icon-sm btn-icon-solid">
+                    <a title="Configurar" href={`${ROUTES.novaAgenda}/?id=${a.id}`} className="btn-icon btn-icon-sm btn-icon-solid">
                       <SettingsIcon className="w-4 h-4" />
                     </a>
                     <button type="button" title="Atualizar" className="btn-icon btn-icon-sm btn-icon-flat">

@@ -37,7 +37,13 @@ export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda;
               <span>{agenda.name}</span>
             </h5>
             <div className="hnote-quick">
-              <a href="#" className="btn-icon btn-icon-sm btn-icon-solid" title="Abrir link público de agendamento">
+              <a
+                href={`https://minhaempresa.seiri.com.br/agenda/minhaempresa/${agenda.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-icon btn-icon-sm btn-icon-solid"
+                title="Abrir link público de agendamento"
+              >
                 <LinkIcon className="w-4 h-4" />
               </a>
               <a href="#" className="btn-icon btn-icon-sm" title="Configurar Email">

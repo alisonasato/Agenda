@@ -3,6 +3,8 @@ export type Agenda = {
   name: string;
   color: string;
   active: boolean;
+  /** "Identificador da Agenda", for the public link. */
+  slug: string;
   videoconference: boolean;
   problems: boolean;
   upcoming: number;
@@ -25,6 +27,7 @@ export const AGENDAS: Agenda[] = [
   {
     id: "18078",
     name: "Agenda Principal",
+    slug: "agenda-principal",
     color: "#48CFAE",
     active: true,
     videoconference: true,

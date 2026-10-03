@@ -73,7 +73,7 @@ export function AgendasSection() {
             <p className="hwidget-desc">Gerencie suas agendas e monitore a ocupação</p>
           </div>
           <div className="hwidget-actions">
-            <a href="#" className="hbtn hbtn--secondary">
+            <a href={ROUTES.adminAgendas} className="hbtn hbtn--secondary">
               <SettingsIcon />
               <span className="hidden sm:inline">Painel Configuração</span>
               <span className="sm:hidden">Configurar</span>
@@ -126,7 +126,7 @@ export function AgendasSection() {
                       </a>
                     </td>
                     <td className="htable-cell htable-cell--num">
-                      <a href="#" className="font-semibold text-gray-900 hover:text-primary transition-colors duration-200 inter-semibold">
+                      <a href={ROUTES.agendamentos} className="font-semibold text-gray-900 hover:text-primary transition-colors duration-200 inter-semibold">
                         {a.today}
                       </a>
                     </td>

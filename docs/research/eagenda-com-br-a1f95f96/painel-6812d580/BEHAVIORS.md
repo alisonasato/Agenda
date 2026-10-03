@@ -60,3 +60,7 @@ cartões KPI e o cartão de medidor em 267×148.
 - **≥768 (md):** table replaces mobile cards; language button visible; "…" menu hidden.
 - **<768:** agenda cards; topbar shows "…", bell, account.
 - **<640 (sm):** KPI grid 1 col; "Configurar" replaces "Painel Configuração".
+
+## Links (fase de lógica)
+- **Painel Configuração** leva a Administrar Agendas, e o número de hoje de cada agenda leva à
+  lista de agendamentos — as duas telas já existem no clone.
