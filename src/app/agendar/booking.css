@@ -1,0 +1,2422 @@
+/* Captured from the eAgenda public booking page (https://eagenda.com.br/agendar/<org>/).
+   The iframe Tailwind build it links, then the three inline blocks from the page head, in load order.
+   Imported only by the booking route, so none of it reaches the dashboard pages. */
+
+/* ---- iframe.css (static/dist/css/iframe.css) ---- */
+@import"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Alatsi&family=Lato:wght@400;700&display=swap";/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */@layer properties{@supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))){*,:before,:after,::backdrop{--tw-translate-x:0;--tw-translate-y:0;--tw-translate-z:0;--tw-scale-x:1;--tw-scale-y:1;--tw-scale-z:1;--tw-rotate-x:initial;--tw-rotate-y:initial;--tw-rotate-z:initial;--tw-skew-x:initial;--tw-skew-y:initial;--tw-space-y-reverse:0;--tw-border-style:solid;--tw-font-weight:initial;--tw-shadow:0 0 #0000;--tw-shadow-color:initial;--tw-shadow-alpha:100%;--tw-inset-shadow:0 0 #0000;--tw-inset-shadow-color:initial;--tw-inset-shadow-alpha:100%;--tw-ring-color:initial;--tw-ring-shadow:0 0 #0000;--tw-inset-ring-color:initial;--tw-inset-ring-shadow:0 0 #0000;--tw-ring-inset:initial;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-offset-shadow:0 0 #0000;--tw-outline-style:solid;--tw-blur:initial;--tw-brightness:initial;--tw-contrast:initial;--tw-grayscale:initial;--tw-hue-rotate:initial;--tw-invert:initial;--tw-opacity:initial;--tw-saturate:initial;--tw-sepia:initial;--tw-drop-shadow:initial;--tw-drop-shadow-color:initial;--tw-drop-shadow-alpha:100%;--tw-drop-shadow-size:initial;--tw-backdrop-blur:initial;--tw-backdrop-brightness:initial;--tw-backdrop-contrast:initial;--tw-backdrop-grayscale:initial;--tw-backdrop-hue-rotate:initial;--tw-backdrop-invert:initial;--tw-backdrop-opacity:initial;--tw-backdrop-saturate:initial;--tw-backdrop-sepia:initial;--tw-duration:initial;--tw-ease:initial;--tw-tracking:initial}}}@layer theme{:root,:host{--font-sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;--color-red-50:oklch(97.1% .013 17.38);--color-red-200:oklch(88.5% .062 18.334);--color-red-500:oklch(63.7% .237 25.331);--color-red-600:oklch(57.7% .245 27.325);--color-red-800:oklch(44.4% .177 26.899);--color-amber-50:oklch(98.7% .022 95.277);--color-amber-200:oklch(92.4% .12 95.746);--color-amber-800:oklch(47.3% .137 46.201);--color-emerald-50:oklch(97.9% .021 166.113);--color-emerald-200:oklch(90.5% .093 164.15);--color-emerald-800:oklch(43.2% .095 166.913);--color-slate-50:oklch(98.4% .003 247.858);--color-slate-100:oklch(96.8% .007 247.896);--color-slate-200:oklch(92.9% .013 255.508);--color-slate-300:oklch(86.9% .022 252.894);--color-slate-400:oklch(70.4% .04 256.788);--color-slate-500:oklch(55.4% .046 257.417);--color-slate-600:oklch(44.6% .043 257.281);--color-slate-700:oklch(37.2% .044 257.287);--color-slate-800:oklch(27.9% .041 260.031);--color-gray-50:oklch(98.5% .002 247.839);--color-gray-100:oklch(96.7% .003 264.542);--color-gray-200:oklch(92.8% .006 264.531);--color-gray-300:oklch(87.2% .01 258.338);--color-gray-400:oklch(70.7% .022 261.325);--color-gray-500:oklch(55.1% .027 264.364);--color-gray-600:oklch(44.6% .03 256.802);--color-gray-700:oklch(37.3% .034 259.733);--color-gray-900:oklch(21% .034 264.665);--color-black:#000;--color-white:#fff;--spacing:.25rem;--container-sm:24rem;--container-lg:32rem;--container-3xl:48rem;--text-xs:.75rem;--text-xs--line-height:calc(1 / .75);--text-sm:.875rem;--text-sm--line-height:calc(1.25 / .875);--text-base:1rem;--text-base--line-height: 1.5 ;--text-lg:1.125rem;--text-lg--line-height:calc(1.75 / 1.125);--text-xl:1.25rem;--text-xl--line-height:calc(1.75 / 1.25);--font-weight-medium:500;--font-weight-semibold:600;--font-weight-bold:700;--tracking-wider:.05em;--radius-md:.375rem;--radius-lg:.5rem;--radius-xl:.75rem;--ease-in:cubic-bezier(.4, 0, 1, 1);--ease-out:cubic-bezier(0, 0, .2, 1);--animate-spin:spin 1s linear infinite;--animate-pulse:pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1);--default-font-family:var(--font-sans);--default-mono-font-family:var(--font-mono);--color-primary:#009da0;--color-secondary:#e8743b}}@layer base{*,:after,:before,::backdrop{box-sizing:border-box;border:0 solid;margin:0;padding:0}::file-selector-button{box-sizing:border-box;border:0 solid;margin:0;padding:0}html,:host{-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;line-height:1.5;font-family:var(--default-font-family,-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");font-feature-settings:var(--default-font-feature-settings,normal);font-variation-settings:var(--default-font-variation-settings,normal);-webkit-tap-highlight-color:transparent}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;-webkit-text-decoration:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,samp,pre{font-family:var(--default-mono-font-family,ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);font-feature-settings:var(--default-mono-font-feature-settings,normal);font-variation-settings:var(--default-mono-font-variation-settings,normal);font-size:1em}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}:-moz-focusring:where(:not(iframe)){outline:auto}progress{vertical-align:baseline}summary{display:list-item}ol,ul,menu{list-style:none}img,svg,video,canvas,audio,iframe,embed,object{vertical-align:middle;display:block}img,video{max-width:100%;height:auto}button,input,select,optgroup,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}::file-selector-button{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;letter-spacing:inherit;color:inherit;opacity:1;background-color:#0000;border-radius:0}:where(select:is([multiple],[size])) optgroup{font-weight:bolder}:where(select:is([multiple],[size])) optgroup option{padding-inline-start:20px}::file-selector-button{margin-inline-end:4px}::placeholder{opacity:1}@supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px){::placeholder{color:currentColor}@supports (color:color-mix(in lab,red,red)){::placeholder{color:color-mix(in oklab,currentcolor 50%,transparent)}}}textarea{resize:vertical}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-date-and-time-value{min-height:1lh;text-align:inherit}::-webkit-datetime-edit{display:inline-flex}::-webkit-datetime-edit-fields-wrapper{padding:0}::-webkit-datetime-edit{padding-block:0}::-webkit-datetime-edit-year-field{padding-block:0}::-webkit-datetime-edit-month-field{padding-block:0}::-webkit-datetime-edit-day-field{padding-block:0}::-webkit-datetime-edit-hour-field{padding-block:0}::-webkit-datetime-edit-minute-field{padding-block:0}::-webkit-datetime-edit-second-field{padding-block:0}::-webkit-datetime-edit-millisecond-field{padding-block:0}::-webkit-datetime-edit-meridiem-field{padding-block:0}::-webkit-calendar-picker-indicator{line-height:1}:-moz-ui-invalid{box-shadow:none}button,input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;-moz-appearance:button;appearance:button}::file-selector-button{-webkit-appearance:button;-moz-appearance:button;appearance:button}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}[hidden]:where(:not([hidden=until-found])){display:none!important}}@layer components{.iframe-spinner{height:calc(var(--spacing) * 8);width:calc(var(--spacing) * 8);animation:var(--animate-spin);border-style:var(--tw-border-style);border-width:3px;border-color:#009da033;border-radius:3.40282e38px}@supports (color:color-mix(in lab,red,red)){.iframe-spinner{border-color:color-mix(in oklab,var(--color-primary) 20%,transparent)}}.iframe-spinner{border-top-color:var(--color-primary)}}@layer utilities{.\@container{container-type:inline-size}.pointer-events-auto{pointer-events:auto}.pointer-events-none{pointer-events:none}.visible{visibility:visible}.sr-only{clip-path:inset(50%);white-space:nowrap;border-width:0;width:1px;height:1px;margin:-1px;padding:0;position:absolute;overflow:hidden}.absolute{position:absolute}.fixed{position:fixed}.relative{position:relative}.static{position:static}.sticky{position:sticky}.inset-0{top:0;right:0;bottom:0;left:0}.inset-y-0{inset-block:0}.right-0{right:0}.bottom-0{bottom:0}.left-1\/2{left:50%}.container{width:100%}@media(min-width:40rem){.container{max-width:40rem}}@media(min-width:48rem){.container{max-width:48rem}}@media(min-width:64rem){.container{max-width:64rem}}@media(min-width:80rem){.container{max-width:80rem}}@media(min-width:96rem){.container{max-width:96rem}}.m-0{margin:0}.mx-1{margin-inline:var(--spacing)}.mx-auto{margin-inline:auto}.-mt-0\.5{margin-top:calc(var(--spacing) * -.5)}.mt-0\.5{margin-top:calc(var(--spacing) * .5)}.mt-1{margin-top:var(--spacing)}.mt-1\.5{margin-top:calc(var(--spacing) * 1.5)}.mt-2{margin-top:calc(var(--spacing) * 2)}.mt-3{margin-top:calc(var(--spacing) * 3)}.mt-4{margin-top:calc(var(--spacing) * 4)}.mr-0\.5{margin-right:calc(var(--spacing) * .5)}.mr-1{margin-right:var(--spacing)}.mb-1{margin-bottom:var(--spacing)}.mb-2{margin-bottom:calc(var(--spacing) * 2)}.mb-3{margin-bottom:calc(var(--spacing) * 3)}.mb-4{margin-bottom:calc(var(--spacing) * 4)}.ml-0\.5{margin-left:calc(var(--spacing) * .5)}.ml-auto{margin-left:auto}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.inline{display:inline}.inline-block{display:inline-block}.inline-flex{display:inline-flex}.h-0\.5{height:calc(var(--spacing) * .5)}.h-1\.5{height:calc(var(--spacing) * 1.5)}.h-3{height:calc(var(--spacing) * 3)}.h-3\.5{height:calc(var(--spacing) * 3.5)}.h-4{height:calc(var(--spacing) * 4)}.h-5{height:calc(var(--spacing) * 5)}.h-6{height:calc(var(--spacing) * 6)}.h-7{height:calc(var(--spacing) * 7)}.h-8{height:calc(var(--spacing) * 8)}.h-10{height:calc(var(--spacing) * 10)}.h-14{height:calc(var(--spacing) * 14)}.h-16{height:calc(var(--spacing) * 16)}.h-\[26px\]{height:26px}.h-\[42px\]{height:42px}.h-full{height:100%}.h-screen{height:100vh}.min-h-0{min-height:0}.min-h-\[26px\]{min-height:26px}.min-h-\[42px\]{min-height:42px}.min-h-\[180px\]{min-height:180px}.min-h-screen{min-height:100vh}.w-1\.5{width:calc(var(--spacing) * 1.5)}.w-3{width:calc(var(--spacing) * 3)}.w-3\.5{width:calc(var(--spacing) * 3.5)}.w-4{width:calc(var(--spacing) * 4)}.w-5{width:calc(var(--spacing) * 5)}.w-6{width:calc(var(--spacing) * 6)}.w-7{width:calc(var(--spacing) * 7)}.w-8{width:calc(var(--spacing) * 8)}.w-10{width:calc(var(--spacing) * 10)}.w-14{width:calc(var(--spacing) * 14)}.w-16{width:calc(var(--spacing) * 16)}.w-full{width:100%}.max-w-\[160px\]{max-width:160px}.max-w-sm{max-width:var(--container-sm)}.min-w-0{min-width:0}.flex-1{flex:1}.flex-shrink{flex-shrink:1}.flex-shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}.-translate-x-1\/2{--tw-translate-x: -50% ;translate:var(--tw-translate-x) var(--tw-translate-y)}.translate-x-0{--tw-translate-x:0px;translate:var(--tw-translate-x) var(--tw-translate-y)}.translate-x-4{--tw-translate-x:calc(var(--spacing) * 4);translate:var(--tw-translate-x) var(--tw-translate-y)}.scale-95{--tw-scale-x:95%;--tw-scale-y:95%;--tw-scale-z:95%;scale:var(--tw-scale-x) var(--tw-scale-y)}.scale-100{--tw-scale-x:100%;--tw-scale-y:100%;--tw-scale-z:100%;scale:var(--tw-scale-x) var(--tw-scale-y)}.rotate-180{rotate:180deg}.transform{transform:var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,)}.animate-spin{animation:var(--animate-spin)}.cursor-default{cursor:default}.cursor-not-allowed{cursor:not-allowed}.cursor-pointer{cursor:pointer}.cursor-text{cursor:text}.list-none{list-style-type:none}.auto-rows-fr{grid-auto-rows:minmax(0,1fr)}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-7{grid-template-columns:repeat(7,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.items-start{align-items:flex-start}.items-stretch{align-items:stretch}.justify-between{justify-content:space-between}.justify-center{justify-content:center}.gap-0{gap:0}.gap-1{gap:var(--spacing)}.gap-1\.5{gap:calc(var(--spacing) * 1.5)}.gap-2{gap:calc(var(--spacing) * 2)}.gap-2\.5{gap:calc(var(--spacing) * 2.5)}.gap-3{gap:calc(var(--spacing) * 3)}.gap-6{gap:calc(var(--spacing) * 6)}:where(.space-y-0\.5>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * .5) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * .5) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-1>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(var(--spacing) * var(--tw-space-y-reverse));margin-block-end:calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-2>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-3>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)))}:where(.space-y-4>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)))}.truncate{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.rounded{border-radius:.25rem}.rounded-full{border-radius:3.40282e38px}.rounded-lg{border-radius:var(--radius-lg)}.rounded-md{border-radius:var(--radius-md)}.rounded-t-xl{border-top-left-radius:var(--radius-xl);border-top-right-radius:var(--radius-xl)}.rounded-b-lg{border-bottom-right-radius:var(--radius-lg);border-bottom-left-radius:var(--radius-lg)}.border{border-style:var(--tw-border-style);border-width:1px}.border-2{border-style:var(--tw-border-style);border-width:2px}.border-t{border-top-style:var(--tw-border-style);border-top-width:1px}.border-b{border-bottom-style:var(--tw-border-style);border-bottom-width:1px}.border-gray-100{border-color:var(--color-gray-100)}.border-gray-200{border-color:var(--color-gray-200)}.border-gray-300{border-color:var(--color-gray-300)}.border-primary{border-color:var(--color-primary)}.border-red-500{border-color:var(--color-red-500)}.border-slate-200{border-color:var(--color-slate-200)}.border-slate-300{border-color:var(--color-slate-300)}.border-white\/30{border-color:#ffffff4d}@supports (color:color-mix(in lab,red,red)){.border-white\/30{border-color:color-mix(in oklab,var(--color-white) 30%,transparent)}}.border-t-current{border-top-color:currentColor}.border-t-white{border-top-color:var(--color-white)}.bg-emerald-50{background-color:var(--color-emerald-50)}.bg-gray-50{background-color:var(--color-gray-50)}.bg-gray-100{background-color:var(--color-gray-100)}.bg-primary{background-color:var(--color-primary)}.bg-primary\/10{background-color:#009da01a}@supports (color:color-mix(in lab,red,red)){.bg-primary\/10{background-color:color-mix(in oklab,var(--color-primary) 10%,transparent)}}.bg-slate-50{background-color:var(--color-slate-50)}.bg-slate-100{background-color:var(--color-slate-100)}.bg-slate-200{background-color:var(--color-slate-200)}.bg-transparent{background-color:#0000}.bg-white{background-color:var(--color-white)}.object-contain{object-fit:contain}.p-0{padding:0}.p-0\.5{padding:calc(var(--spacing) * .5)}.p-1\.5{padding:calc(var(--spacing) * 1.5)}.p-2{padding:calc(var(--spacing) * 2)}.p-3{padding:calc(var(--spacing) * 3)}.p-4{padding:calc(var(--spacing) * 4)}.p-6{padding:calc(var(--spacing) * 6)}.px-0{padding-inline:0}.px-1{padding-inline:var(--spacing)}.px-2{padding-inline:calc(var(--spacing) * 2)}.px-2\.5{padding-inline:calc(var(--spacing) * 2.5)}.px-3{padding-inline:calc(var(--spacing) * 3)}.px-4{padding-inline:calc(var(--spacing) * 4)}.px-6{padding-inline:calc(var(--spacing) * 6)}.py-1{padding-block:var(--spacing)}.py-1\.5{padding-block:calc(var(--spacing) * 1.5)}.py-2{padding-block:calc(var(--spacing) * 2)}.py-2\.5{padding-block:calc(var(--spacing) * 2.5)}.py-3{padding-block:calc(var(--spacing) * 3)}.py-4{padding-block:calc(var(--spacing) * 4)}.py-6{padding-block:calc(var(--spacing) * 6)}.py-8{padding-block:calc(var(--spacing) * 8)}.py-10{padding-block:calc(var(--spacing) * 10)}.py-12{padding-block:calc(var(--spacing) * 12)}.pt-1{padding-top:var(--spacing)}.pt-2{padding-top:calc(var(--spacing) * 2)}.pt-3{padding-top:calc(var(--spacing) * 3)}.pr-3{padding-right:calc(var(--spacing) * 3)}.pr-10{padding-right:calc(var(--spacing) * 10)}.pr-16{padding-right:calc(var(--spacing) * 16)}.pr-20{padding-right:calc(var(--spacing) * 20)}.text-center{text-align:center}.text-left{text-align:left}.align-text-bottom{vertical-align:text-bottom}.font-mono{font-family:var(--font-mono)}.font-sans{font-family:var(--font-sans)}.text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-xl{font-size:var(--text-xl);line-height:var(--tw-leading,var(--text-xl--line-height))}.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.text-\[16px\]{font-size:16px}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.text-gray-400{color:var(--color-gray-400)}.text-gray-500{color:var(--color-gray-500)}.text-gray-700{color:var(--color-gray-700)}.text-gray-900{color:var(--color-gray-900)}.text-primary{color:var(--color-primary)}.text-red-500{color:var(--color-red-500)}.text-slate-300{color:var(--color-slate-300)}.text-slate-400{color:var(--color-slate-400)}.text-slate-500{color:var(--color-slate-500)}.text-slate-600{color:var(--color-slate-600)}.text-slate-700{color:var(--color-slate-700)}.text-slate-800{color:var(--color-slate-800)}.text-white{color:var(--color-white)}.capitalize{text-transform:capitalize}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-0{opacity:0}.opacity-25{opacity:.25}.opacity-30{opacity:.3}.opacity-40{opacity:.4}.opacity-60{opacity:.6}.opacity-75{opacity:.75}.opacity-100{opacity:1}.shadow,.shadow-sm{--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px var(--tw-shadow-color,#0000001a), 0 8px 10px -6px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-2{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.ring-primary{--tw-ring-color:var(--color-primary)}.ring-primary\/20{--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.ring-primary\/20{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.outline{outline-style:var(--tw-outline-style);outline-width:1px}.filter{filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}.backdrop-filter{-webkit-backdrop-filter:var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);backdrop-filter:var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,)}.transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to,opacity,box-shadow,transform,translate,scale,rotate,filter,-webkit-backdrop-filter,backdrop-filter,display,content-visibility,overlay,pointer-events;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-all{transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}.duration-75{--tw-duration:75ms;transition-duration:75ms}.duration-100{--tw-duration:.1s;transition-duration:.1s}.duration-150{--tw-duration:.15s;transition-duration:.15s}.duration-200{--tw-duration:.2s;transition-duration:.2s}.duration-300{--tw-duration:.3s;transition-duration:.3s}.ease-in{--tw-ease:var(--ease-in);transition-timing-function:var(--ease-in)}.ease-out{--tw-ease:var(--ease-out);transition-timing-function:var(--ease-out)}.outline-none{--tw-outline-style:none;outline-style:none}.select-none{-webkit-user-select:none;user-select:none}.focus-within\:border-primary:focus-within{border-color:var(--color-primary)}.focus-within\:ring-2:focus-within{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.focus-within\:ring-primary\/20:focus-within{--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.focus-within\:ring-primary\/20:focus-within{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}@media(hover:hover){.hover\:border-gray-400:hover{border-color:var(--color-gray-400)}.hover\:bg-black\/10:hover{background-color:#0000001a}@supports (color:color-mix(in lab,red,red)){.hover\:bg-black\/10:hover{background-color:color-mix(in oklab,var(--color-black) 10%,transparent)}}.hover\:bg-gray-50:hover{background-color:var(--color-gray-50)}.hover\:bg-gray-100:hover{background-color:var(--color-gray-100)}.hover\:bg-slate-100:hover{background-color:var(--color-slate-100)}.hover\:text-gray-600:hover{color:var(--color-gray-600)}.hover\:text-primary\/80:hover{color:#009da0cc}@supports (color:color-mix(in lab,red,red)){.hover\:text-primary\/80:hover{color:color-mix(in oklab,var(--color-primary) 80%,transparent)}}.hover\:underline:hover{text-decoration-line:underline}}.focus\:border-\[var\(--iframe-primary\)\]:focus{border-color:var(--iframe-primary)}.focus\:border-primary:focus{border-color:var(--color-primary)}.focus\:bg-gray-50:focus{background-color:var(--color-gray-50)}.focus\:ring-1:focus{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.focus\:ring-2:focus{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.focus\:ring-\[var\(--iframe-primary\)\]\/20:focus{--tw-ring-color:var(--iframe-primary)}@supports (color:color-mix(in lab,red,red)){.focus\:ring-\[var\(--iframe-primary\)\]\/20:focus{--tw-ring-color:color-mix(in oklab, var(--iframe-primary) 20%, transparent)}}.focus\:ring-primary\/20:focus{--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.focus\:ring-primary\/20:focus{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.focus\:ring-primary\/30:focus{--tw-ring-color:#009da04d}@supports (color:color-mix(in lab,red,red)){.focus\:ring-primary\/30:focus{--tw-ring-color:color-mix(in oklab, var(--color-primary) 30%, transparent)}}.focus\:outline-none:focus{--tw-outline-style:none;outline-style:none}.disabled\:opacity-50:disabled{opacity:.5}@media(min-width:40rem){.sm\:flex{display:flex}.sm\:w-12{width:calc(var(--spacing) * 12)}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:px-4{padding-inline:calc(var(--spacing) * 4)}.sm\:py-4{padding-block:calc(var(--spacing) * 4)}}@media(min-width:48rem){.md\:w-1\/2{width:50%}.md\:flex-row{flex-direction:row}.md\:border-r{border-right-style:var(--tw-border-style);border-right-width:1px}.md\:border-b-0{border-bottom-style:var(--tw-border-style);border-bottom-width:0}}@container (min-width:42rem){.\@2xl\:w-1\/2{width:50%}.\@2xl\:flex-row{flex-direction:row}.\@2xl\:border-r{border-right-style:var(--tw-border-style);border-right-width:1px}.\@2xl\:border-b-0{border-bottom-style:var(--tw-border-style);border-bottom-width:0}}}.font-inter{font-family:Inter,sans-serif}.alatsi-regular{font-family:Alatsi,sans-serif}.lato-regular{font-family:Lato,sans-serif;font-weight:400}.lato-bold{font-family:Lato,sans-serif;font-weight:700}:root{--iframe-primary:var(--color-primary,#009da0);--iframe-secondary:var(--color-secondary,#e8743b);--iframe-radius:.75rem}.iframe-form-control{border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-gray-300);background-color:var(--color-white);width:100%;padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 2.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));color:var(--color-gray-700);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s}.iframe-form-control:focus{border-color:var(--color-primary);--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da04d}@supports (color:color-mix(in lab,red,red)){.iframe-form-control:focus{--tw-ring-color:color-mix(in oklab, var(--color-primary) 30%, transparent)}}.iframe-form-control:focus{--tw-outline-style:none;outline-style:none}.iframe-form-control{font-family:Lato,sans-serif}.iframe-form-control:disabled{cursor:not-allowed;background-color:var(--color-gray-100);color:var(--color-gray-400)}.iframe-form-control.is-invalid,.iframe-form-control.is-invalid:focus{border-color:var(--color-red-500)}.iframe-form-control.is-invalid:focus{--tw-ring-color:#fb2c364d}@supports (color:color-mix(in lab,red,red)){.iframe-form-control.is-invalid:focus{--tw-ring-color:color-mix(in oklab, var(--color-red-500) 30%, transparent)}}.iframe-form-label{margin-bottom:calc(var(--spacing) * 1.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);color:var(--color-gray-700);font-family:Lato,sans-serif;display:block}.iframe-form-group{margin-bottom:calc(var(--spacing) * 4)}.iframe-form-group label{margin-bottom:calc(var(--spacing) * 1.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);color:var(--color-gray-700);font-family:Lato,sans-serif;display:block}.iframe-form-group input:not([type=radio]):not([type=checkbox]),.iframe-form-group select,.iframe-form-group textarea{border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-gray-300);background-color:var(--color-white);width:100%;padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 2.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));color:var(--color-gray-700);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s}:is(.iframe-form-group input:not([type=radio]):not([type=checkbox]),.iframe-form-group select,.iframe-form-group textarea):focus{border-color:var(--color-primary);--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da04d}@supports (color:color-mix(in lab,red,red)){:is(.iframe-form-group input:not([type=radio]):not([type=checkbox]),.iframe-form-group select,.iframe-form-group textarea):focus{--tw-ring-color:color-mix(in oklab, var(--color-primary) 30%, transparent)}}:is(.iframe-form-group input:not([type=radio]):not([type=checkbox]),.iframe-form-group select,.iframe-form-group textarea):focus{--tw-outline-style:none;outline-style:none}.iframe-form-group input:not([type=radio]):not([type=checkbox]),.iframe-form-group select,.iframe-form-group textarea{font-family:Lato,sans-serif}.iframe-form-error{margin-top:var(--spacing);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--color-red-600);font-family:Lato,sans-serif}.iframe-btn{cursor:pointer;justify-content:center;align-items:center;gap:calc(var(--spacing) * 2);border-radius:var(--radius-xl);padding-inline:calc(var(--spacing) * 5);padding-block:calc(var(--spacing) * 2.5);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s;display:inline-flex}.iframe-btn:focus{--tw-outline-style:none;outline-style:none}.iframe-btn{font-family:Inter,sans-serif}.iframe-btn-primary{background-color:var(--color-primary);color:var(--color-white)}@media(hover:hover){.iframe-btn-primary:hover{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-btn-primary:hover{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iframe-btn-primary:hover{--tw-brightness:brightness(110%);filter:var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,)}}.iframe-btn-primary:focus-visible{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da080}@supports (color:color-mix(in lab,red,red)){.iframe-btn-primary:focus-visible{--tw-ring-color:color-mix(in oklab, var(--color-primary) 50%, transparent)}}.iframe-btn-secondary{background-color:var(--color-secondary);color:var(--color-white)}@media(hover:hover){.iframe-btn-secondary:hover{background-color:#e8743be6}@supports (color:color-mix(in lab,red,red)){.iframe-btn-secondary:hover{background-color:color-mix(in oklab,var(--color-secondary) 90%,transparent)}}.iframe-btn-secondary:hover{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#e8743b33}@supports (color:color-mix(in lab,red,red)){.iframe-btn-secondary:hover{--tw-ring-color:color-mix(in oklab, var(--color-secondary) 20%, transparent)}}}.iframe-btn-outline{border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-gray-300);background-color:var(--color-white);color:var(--color-gray-700)}@media(hover:hover){.iframe-btn-outline:hover{border-color:var(--color-gray-400);background-color:var(--color-gray-50)}}.iframe-btn-outline:focus-visible{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-btn-outline:focus-visible{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iframe-btn-ghost{color:var(--color-primary);background-color:#0000}@media(hover:hover){.iframe-btn-ghost:hover{background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-btn-ghost:hover{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}}.iframe-btn-ghost:focus-visible{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-btn-ghost:focus-visible{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iframe-btn-lg{padding-inline:calc(var(--spacing) * 6);padding-block:calc(var(--spacing) * 3);font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.iframe-btn-sm{padding-inline:calc(var(--spacing) * 3);padding-block:calc(var(--spacing) * 1.5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.iframe-btn-full{justify-content:center;width:100%}.iframe-card{border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-slate-200);background-color:var(--color-white)}.iframe-card-hover{border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-slate-200);background-color:var(--color-white);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s}@media(hover:hover){.iframe-card-hover:hover{border-color:var(--color-slate-300);--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}}.iframe-steps{justify-content:center;align-items:center;gap:calc(var(--spacing) * 2);display:flex}.iframe-step-dot{height:calc(var(--spacing) * 2.5);width:calc(var(--spacing) * 2.5);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.3s;border-radius:3.40282e38px;transition-duration:.3s}.iframe-step-dot.active{width:calc(var(--spacing) * 8);background-color:var(--color-primary);border-radius:3.40282e38px}.iframe-step-dot.completed{background-color:var(--color-primary)}.iframe-step-dot.pending{background-color:var(--color-gray-300)}.iframe-step-bar{align-items:center;width:100%;display:flex}.iframe-step-item{align-items:center;gap:calc(var(--spacing) * 2);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));display:flex}.iframe-step-number{height:calc(var(--spacing) * 8);width:calc(var(--spacing) * 8);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.3s;border-radius:3.40282e38px;flex-shrink:0;justify-content:center;align-items:center;transition-duration:.3s;display:flex}.iframe-step-number.active{background-color:var(--color-primary);color:var(--color-white);--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-step-number.active{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iframe-step-number.completed{background-color:var(--color-primary);color:var(--color-white)}.iframe-step-number.pending{background-color:var(--color-gray-200);color:var(--color-gray-500)}.iframe-step-label{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;font-family:Lato,sans-serif;transition-duration:.2s}.iframe-step-label.active{color:var(--color-gray-900)}.iframe-step-label.completed{color:var(--color-primary)}.iframe-step-label.pending{color:var(--color-gray-400)}.iframe-step-connector{margin-inline:calc(var(--spacing) * 2);height:calc(var(--spacing) * .5);transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.3s;flex:1;transition-duration:.3s}.iframe-step-connector.completed{background-color:var(--color-primary)}.iframe-step-connector.pending{background-color:var(--color-gray-200)}.iframe-calendar{-webkit-user-select:none;user-select:none;font-family:Inter,sans-serif}.iframe-calendar-header{margin-bottom:calc(var(--spacing) * 4);padding-inline:var(--spacing);justify-content:space-between;align-items:center;display:flex}.iframe-calendar-title{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height));--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold);color:var(--color-gray-900);font-family:Alatsi,sans-serif}.iframe-calendar-nav{height:calc(var(--spacing) * 8);width:calc(var(--spacing) * 8);cursor:pointer;border-radius:var(--radius-lg);color:var(--color-gray-600);transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;justify-content:center;align-items:center;transition-duration:.2s;display:flex}@media(hover:hover){.iframe-calendar-nav:hover{background-color:var(--color-gray-100);color:var(--color-gray-900)}}.iframe-calendar-nav:focus{--tw-outline-style:none;outline-style:none}.iframe-calendar-nav:focus-visible{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-calendar-nav:focus-visible{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iframe-calendar-weekdays{margin-bottom:var(--spacing);grid-template-columns:repeat(7,minmax(0,1fr));display:grid}.iframe-calendar-weekday{padding-block:calc(var(--spacing) * 2);text-align:center;font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold);--tw-tracking:var(--tracking-wider);letter-spacing:var(--tracking-wider);color:var(--color-gray-500);text-transform:uppercase;font-family:Inter,sans-serif}.iframe-calendar-grid{gap:calc(var(--spacing) * .5);grid-template-columns:repeat(7,minmax(0,1fr));display:grid}.iframe-day{aspect-ratio:1;cursor:pointer;border-radius:var(--radius-lg);width:100%;font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;justify-content:center;align-items:center;transition-duration:.2s;display:flex}.iframe-day.available{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium);color:var(--color-gray-700)}@media(hover:hover){.iframe-day.available:hover{background-color:#009da01a}@supports (color:color-mix(in lab,red,red)){.iframe-day.available:hover{background-color:color-mix(in oklab,var(--color-primary) 10%,transparent)}}.iframe-day.available:hover{color:var(--color-primary)}}.iframe-day.selected{background-color:var(--color-primary);--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold);color:var(--color-white);--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.iframe-day.unavailable{cursor:not-allowed;color:var(--color-gray-300)}.iframe-day.today{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold);--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da04d}@supports (color:color-mix(in lab,red,red)){.iframe-day.today{--tw-ring-color:color-mix(in oklab, var(--color-primary) 30%, transparent)}}.iframe-day.other-month{color:var(--color-gray-300)}:where(.iframe-slots-container>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)))}.iframe-slot{cursor:pointer;border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-slate-200);padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 3);text-align:center;transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s}@media(hover:hover){.iframe-slot:hover{border-color:#009da066}@supports (color:color-mix(in lab,red,red)){.iframe-slot:hover{border-color:color-mix(in oklab,var(--color-primary) 40%,transparent)}}.iframe-slot:hover{background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-slot:hover{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}.iframe-slot:hover{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da01a}@supports (color:color-mix(in lab,red,red)){.iframe-slot:hover{--tw-ring-color:color-mix(in oklab, var(--color-primary) 10%, transparent)}}}.iframe-slot{font-family:Lato,sans-serif}.iframe-slot.selected{border-color:var(--color-primary);background-color:var(--color-primary);color:var(--color-white);--tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}.iframe-slot:disabled,.iframe-slot.disabled{cursor:not-allowed;opacity:.4}@media(hover:hover){:is(.iframe-slot:disabled,.iframe-slot.disabled):hover{border-color:var(--color-slate-200);background-color:var(--color-white);--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow)}}.iframe-slot-time{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.iframe-slot-info{margin-top:calc(var(--spacing) * .5);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));opacity:.75}.iframe-agenda-card{cursor:pointer;border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-slate-200);padding:calc(var(--spacing) * 4);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s}@media(hover:hover){.iframe-agenda-card:hover{border-color:#009da066}@supports (color:color-mix(in lab,red,red)){.iframe-agenda-card:hover{border-color:color-mix(in oklab,var(--color-primary) 40%,transparent)}}.iframe-agenda-card:hover{background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-agenda-card:hover{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}}.iframe-agenda-card.selected{border-color:var(--color-primary);background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-agenda-card.selected{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}.iframe-agenda-card.selected{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-agenda-card.selected{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iframe-agenda-name{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold);color:var(--color-gray-900);font-family:Lato,sans-serif}.iframe-agenda-info{margin-top:var(--spacing);font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height));color:var(--color-gray-500);font-family:Lato,sans-serif}.iframe-alert{border-radius:var(--radius-xl);padding:calc(var(--spacing) * 4);font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height));font-family:Lato,sans-serif}.iframe-alert-error{border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-red-200);background-color:var(--color-red-50);color:var(--color-red-800)}.iframe-alert-success{border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-emerald-200);background-color:var(--color-emerald-50);color:var(--color-emerald-800)}.iframe-alert-info{border-style:var(--tw-border-style);border-width:1px;border-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-alert-info{border-color:color-mix(in oklab,var(--color-primary) 20%,transparent)}}.iframe-alert-info{background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-alert-info{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}.iframe-alert-info{color:var(--color-primary)}.iframe-alert-warning{border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-amber-200);background-color:var(--color-amber-50);color:var(--color-amber-800)}.iframe-container{min-height:100vh;max-width:var(--container-lg);padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 6);margin-inline:auto;font-family:Inter,sans-serif}.iframe-container-wide{min-height:100vh;max-width:var(--container-3xl);padding-inline:calc(var(--spacing) * 4);padding-block:calc(var(--spacing) * 6);margin-inline:auto;font-family:Inter,sans-serif}.iframe-skeleton{animation:var(--animate-pulse);border-radius:var(--radius-lg);background-color:var(--color-gray-200)}:where(.iframe-radio-group>:not(:last-child)){--tw-space-y-reverse:0;margin-block-start:calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));margin-block-end:calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)))}.iframe-radio-item{cursor:pointer;align-items:center;gap:calc(var(--spacing) * 3);border-radius:var(--radius-xl);border-style:var(--tw-border-style);border-width:1px;border-color:var(--color-slate-200);padding:calc(var(--spacing) * 3);transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));--tw-duration:.2s;transition-duration:.2s;display:flex}@media(hover:hover){.iframe-radio-item:hover{border-color:#009da04d}@supports (color:color-mix(in lab,red,red)){.iframe-radio-item:hover{border-color:color-mix(in oklab,var(--color-primary) 30%,transparent)}}.iframe-radio-item:hover{background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-radio-item:hover{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}}.iframe-radio-item.selected{border-color:var(--color-primary);background-color:#009da00d}@supports (color:color-mix(in lab,red,red)){.iframe-radio-item.selected{background-color:color-mix(in oklab,var(--color-primary) 5%,transparent)}}.iframe-radio-item.selected{--tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);box-shadow:var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);--tw-ring-color:#009da033}@supports (color:color-mix(in lab,red,red)){.iframe-radio-item.selected{--tw-ring-color:color-mix(in oklab, var(--color-primary) 20%, transparent)}}.iti{width:100%}@property --tw-translate-x{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-y{syntax:"*";inherits:false;initial-value:0}@property --tw-translate-z{syntax:"*";inherits:false;initial-value:0}@property --tw-scale-x{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-y{syntax:"*";inherits:false;initial-value:1}@property --tw-scale-z{syntax:"*";inherits:false;initial-value:1}@property --tw-rotate-x{syntax:"*";inherits:false}@property --tw-rotate-y{syntax:"*";inherits:false}@property --tw-rotate-z{syntax:"*";inherits:false}@property --tw-skew-x{syntax:"*";inherits:false}@property --tw-skew-y{syntax:"*";inherits:false}@property --tw-space-y-reverse{syntax:"*";inherits:false;initial-value:0}@property --tw-border-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-font-weight{syntax:"*";inherits:false}@property --tw-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-shadow-color{syntax:"*";inherits:false}@property --tw-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-inset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-shadow-color{syntax:"*";inherits:false}@property --tw-inset-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-ring-color{syntax:"*";inherits:false}@property --tw-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-inset-ring-color{syntax:"*";inherits:false}@property --tw-inset-ring-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-ring-inset{syntax:"*";inherits:false}@property --tw-ring-offset-width{syntax:"<length>";inherits:false;initial-value:0}@property --tw-ring-offset-color{syntax:"*";inherits:false;initial-value:#fff}@property --tw-ring-offset-shadow{syntax:"*";inherits:false;initial-value:0 0 #0000}@property --tw-outline-style{syntax:"*";inherits:false;initial-value:solid}@property --tw-blur{syntax:"*";inherits:false}@property --tw-brightness{syntax:"*";inherits:false}@property --tw-contrast{syntax:"*";inherits:false}@property --tw-grayscale{syntax:"*";inherits:false}@property --tw-hue-rotate{syntax:"*";inherits:false}@property --tw-invert{syntax:"*";inherits:false}@property --tw-opacity{syntax:"*";inherits:false}@property --tw-saturate{syntax:"*";inherits:false}@property --tw-sepia{syntax:"*";inherits:false}@property --tw-drop-shadow{syntax:"*";inherits:false}@property --tw-drop-shadow-color{syntax:"*";inherits:false}@property --tw-drop-shadow-alpha{syntax:"<percentage>";inherits:false;initial-value:100%}@property --tw-drop-shadow-size{syntax:"*";inherits:false}@property --tw-backdrop-blur{syntax:"*";inherits:false}@property --tw-backdrop-brightness{syntax:"*";inherits:false}@property --tw-backdrop-contrast{syntax:"*";inherits:false}@property --tw-backdrop-grayscale{syntax:"*";inherits:false}@property --tw-backdrop-hue-rotate{syntax:"*";inherits:false}@property --tw-backdrop-invert{syntax:"*";inherits:false}@property --tw-backdrop-opacity{syntax:"*";inherits:false}@property --tw-backdrop-saturate{syntax:"*";inherits:false}@property --tw-backdrop-sepia{syntax:"*";inherits:false}@property --tw-duration{syntax:"*";inherits:false}@property --tw-ease{syntax:"*";inherits:false}@property --tw-tracking{syntax:"*";inherits:false}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{opacity:.5}}
+
+/* ---- head block 1: theme colors from OrgConf ---- */
+
+  :root {
+    --iframe-primary: #584cb1;
+    --iframe-secondary: #584cb1;
+    --iframe-primary-light: #584cb11a;
+    --iframe-primary-hover: #584cb1e6;
+    --iframe-secondary-light: #584cb122;
+    --iframe-secondary-hover: #584cb1dd;
+    --iframe-bg: #f8fafc;
+    --iframe-card-bg: #ffffff;
+    --iframe-text: #334155;
+    --iframe-radius: 12px;
+    /* Derived */
+    --iframe-border: color-mix(in srgb, var(--iframe-text) 20%, transparent);
+    --iframe-muted: color-mix(in srgb, var(--iframe-text) 55%, transparent);
+    --iframe-surface: color-mix(in srgb, var(--iframe-text) 6%, var(--iframe-bg));
+    --iframe-input-bg: color-mix(in srgb, var(--iframe-text) 5%, var(--iframe-card-bg));
+    --iframe-hover: color-mix(in srgb, var(--iframe-text) 10%, var(--iframe-card-bg));
+    --iframe-primary-text: color-mix(in srgb, var(--iframe-primary) 70%, #000);
+    --iframe-secondary-text: color-mix(in srgb, var(--iframe-secondary) 70%, #000);
+    --iframe-header-bg: #201e1f;
+  }
+
+  /* ── Base ── */
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+  body {
+    background-color: var(--iframe-card-bg) !important;
+    color: var(--iframe-text) !important;
+    display: flex;
+    flex-direction: column;
+  }
+  body > main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .iframe-card {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  /* ── Global text overrides ── */
+  .text-slate-700, .text-slate-800, .text-slate-600 { color: var(--iframe-text) !important; }
+  .text-slate-500, .text-slate-400, .text-slate-300 { color: var(--iframe-muted) !important; }
+
+  /* ── Global background overrides ── */
+  .bg-white { background-color: var(--iframe-card-bg) !important; }
+  .bg-slate-50, .bg-slate-100 { background-color: var(--iframe-surface) !important; }
+  .bg-slate-200 { background-color: var(--iframe-border) !important; }
+
+  /* ── Global border overrides ── */
+  .border-slate-200, .border-slate-100, .border-slate-300 { border-color: var(--iframe-border) !important; }
+
+  /* ── Hover overrides ── */
+  .hover\:bg-slate-100:hover, .hover\:bg-slate-50:hover { background-color: var(--iframe-hover) !important; }
+  .hover\:text-slate-600:hover { color: var(--iframe-text) !important; }
+  .hover\:border-slate-400:hover { border-color: var(--iframe-muted) !important; }
+
+  /* ── Form elements ── */
+  select,
+  input[type="text"], input[type="email"], input[type="tel"],
+  input[type="number"], input[type="date"], textarea {
+    background-color: var(--iframe-input-bg) !important;
+    color: var(--iframe-text) !important;
+    border-color: var(--iframe-border) !important;
+  }
+  select:focus, input:not([type="checkbox"]):not([type="radio"]):focus, textarea:focus {
+    border-color: var(--iframe-primary) !important;
+    box-shadow: 0 0 0 3px var(--iframe-primary-light) !important;
+  }
+  /* ══════════════════════════════════════════════
+     Custom styled checkboxes and radios
+     ══════════════════════════════════════════════ */
+  input[type="checkbox"],
+  input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 2px solid var(--iframe-border, #cbd5e1);
+    background-color: var(--iframe-input-bg, #fff);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+  input[type="checkbox"] {
+    border-radius: 50%;
+  }
+  input[type="radio"] {
+    border-radius: 4px;
+  }
+  input[type="checkbox"]:hover,
+  input[type="radio"]:hover {
+    border-color: var(--iframe-primary);
+  }
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked {
+    background-color: var(--iframe-primary);
+    border-color: var(--iframe-primary);
+  }
+  input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+  input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  input[type="checkbox"]:focus,
+  input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--iframe-primary-light);
+  }
+  
+  /* RadioSelect/CheckboxSelectMultiple question labels */
+  ul + .iframe-label,
+  div[id^="id_"] + .iframe-label,
+  .iframe-form-group > .iframe-label:first-child {
+    display: block !important;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  /* Django 4.x RadioSelect/CheckboxSelectMultiple (uses div, not ul) */
+  div[id^="id_"]:has(input[type="radio"]),
+  div[id^="id_"]:has(input[type="checkbox"]) {
+    margin-top: 0.25rem;
+  }
+  div[id^="id_"] > div:has(input[type="radio"]),
+  div[id^="id_"] > div:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0;
+  }
+  div[id^="id_"] > div label:has(input[type="radio"]),
+  div[id^="id_"] > div label:has(input[type="checkbox"]) {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+  
+  select option {
+    background-color: var(--iframe-card-bg);
+    color: var(--iframe-text);
+  }
+  /* Placeholder */
+  ::placeholder { color: var(--iframe-muted) !important; opacity: 0.7; }
+
+  /* ── Field validation errors ── */
+  .iframe-input-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+  }
+  .iframe-field-error {
+    display: block;
+    font-size: 0.7rem;
+    color: #ef4444;
+    margin-top: 0.25rem;
+    line-height: 1.3;
+  }
+
+  /* ── Primary button ── */
+  .iframe-btn-primary,
+  [data-theme] .iframe-btn-primary {
+    background-color: var(--iframe-secondary) !important;
+    border-color: var(--iframe-secondary) !important;
+    color: #fff !important;
+  }
+  .iframe-btn-primary:hover {
+    background-color: var(--iframe-secondary-hover) !important;
+    border-color: var(--iframe-secondary-hover) !important;
+  }
+
+  /* ── Secondary / outline button ── */
+  .iframe-btn-secondary,
+  [data-theme] .iframe-btn-secondary {
+    color: var(--iframe-text) !important;
+    border-color: var(--iframe-border) !important;
+    background-color: transparent !important;
+  }
+  .iframe-btn-secondary:hover {
+    background-color: var(--iframe-hover) !important;
+    border-color: var(--iframe-muted) !important;
+  }
+
+  /* ── Step indicator ── */
+  .iframe-step-active {
+    background-color: var(--iframe-primary) !important;
+    border-color: var(--iframe-primary) !important;
+  }
+  .iframe-step-completed {
+    background-color: var(--iframe-secondary) !important;
+    border-color: var(--iframe-secondary) !important;
+  }
+
+  /* ── Calendar days ── */
+  .iframe-day.selected {
+    background-color: var(--iframe-primary) !important;
+    border-color: var(--iframe-primary) !important;
+    color: #fff !important;
+  }
+  .iframe-day.today:not(.selected) {
+    border: 2px solid var(--iframe-secondary) !important;
+    color: var(--iframe-secondary) !important;
+    font-weight: 700;
+  }
+  .iframe-day:not(.selected):not([disabled]):hover {
+    background-color: var(--iframe-hover) !important;
+  }
+
+  /* ── Time slots ── */
+  .iframe-slot {
+    border: 1px solid var(--iframe-border) !important;
+    color: var(--iframe-text) !important;
+    background-color: var(--iframe-input-bg) !important;
+    transition: all 0.15s ease !important;
+  }
+  .iframe-slot:hover:not(.selected) {
+    border-color: var(--iframe-secondary) !important;
+    color: var(--iframe-secondary) !important;
+    background-color: var(--iframe-secondary-light) !important;
+  }
+  .iframe-slot.selected {
+    background-color: var(--iframe-secondary) !important;
+    border-color: var(--iframe-secondary) !important;
+    color: #fff !important;
+  }
+
+  /* ── Availability dot ── */
+  .iframe-avail-dot {
+    background-color: var(--iframe-secondary) !important;
+  }
+
+  /* ── Info bar pills ── */
+  .iframe-pill {
+    background-color: var(--iframe-input-bg);
+    border: 1px solid var(--iframe-border);
+    color: var(--iframe-text);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .iframe-pill svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .iframe-pill span {
+    display: inline-flex;
+    align-items: center;
+  }
+  .iframe-pill-accent {
+    background-color: var(--iframe-secondary-light);
+    border: 1px solid var(--iframe-secondary);
+    color: var(--iframe-secondary);
+    font-weight: 600;
+  }
+
+  /* ── Confirmation success ── */
+  .iframe-card .bg-emerald-50 {
+    background-color: color-mix(in srgb, #10b981 15%, var(--iframe-card-bg)) !important;
+  }
+
+  /* ── Links / accents ── */
+  .text-iframe-primary { color: var(--iframe-primary) !important; }
+  .text-iframe-secondary { color: var(--iframe-secondary) !important; }
+  .bg-iframe-primary { background-color: var(--iframe-primary) !important; }
+  .border-iframe-primary { border-color: var(--iframe-primary) !important; }
+  .iframe-spinner { border-color: var(--iframe-border) !important; border-top-color: var(--iframe-primary) !important; }
+
+  /* ── Dividers ── */
+  hr, .border-b, .border-t, .md\:border-r {
+    border-color: var(--iframe-border) !important;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--iframe-card-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--iframe-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--iframe-muted); }
+
+/* ---- head block 2: full-page booking overrides ---- */
+
+        /* ============================================================
+           NEUTRAL / ADAPTIVE PALETTE — standard booking screen.
+           Monochrome graphite + white so the chrome sits cleanly over ANY
+           uploaded banner image (the banner provides the color). No brand
+           hue is imposed. Overrides the --iframe-* color vars set by
+           _customization.html; component CSS still comes from that include.
+           ============================================================ */
+        :root {
+            /* Neutral ramp (graphite) — texto, neutros, header/footer */
+            --ink:        #111827;   /* near-black graphite */
+            --ink-soft:   #374151;   /* gray-700 */
+            --ink-strong: #0b0f1a;   /* darkest, header (e rodapé por padrão) */
+
+            /* Accent (§4.4): cor de destaque da org (css_save_button_background_color),
+               com contraste de texto calculado no servidor (WCAG). Aplica-se SÓ aos
+               itens principais (CTA, data/horário selecionado, badge de etapa, dot de
+               disponibilidade, links de ação, focus rings). Header/footer e textos de
+               corpo permanecem neutros. Sem accent configurado → graphite neutro. */
+            --accent:          #584cb1;
+            --accent-contrast: #ffffff;
+            --accent-hover:    color-mix(in srgb, var(--accent) 85%, #000);
+            --accent-tint:     color-mix(in srgb, var(--accent) 9%, transparent);
+
+            --iframe-primary: var(--accent);          /* accent fills (selected, CTA) */
+            --iframe-secondary: var(--accent);
+            --iframe-primary-light: var(--accent-tint);
+            --iframe-primary-hover: var(--accent-hover);
+            --iframe-secondary-light: var(--accent-tint);
+            --iframe-secondary-hover: var(--accent-hover);
+            --iframe-bg: #dfdfdf;                      /* neutral page bg (no image) */
+            --iframe-card-bg: #ffffff;
+            --iframe-text: #1f2937;                    /* neutral ink */
+            --iframe-radius: 14px;
+            --iframe-header-bg: var(--ink-strong);     /* header + footer (neutral dark) */
+            /* Rodapé: ink neutro por padrão; accent quando a org liga
+               booking_footer_use_accent. O texto acompanha por contraste WCAG
+               (calculado no servidor, mesmo mecanismo dos botões). */
+            --footer-bg:   #0b0f1a;
+            --footer-text: #ffffff;
+            /* Re-derive neutrals over the fixed ink/bg so they stay crisp */
+            --iframe-border: color-mix(in srgb, var(--iframe-text) 14%, transparent);
+            --iframe-muted: color-mix(in srgb, var(--iframe-text) 50%, transparent);
+            --iframe-surface: color-mix(in srgb, var(--iframe-text) 4%, var(--iframe-bg));
+            --iframe-input-bg: #ffffff;
+            --iframe-hover: color-mix(in srgb, var(--iframe-text) 6%, var(--iframe-card-bg));
+            --iframe-primary-text: var(--ink);
+            --iframe-secondary-text: var(--ink-soft);
+
+            /* Legacy aliases used elsewhere in this file → all neutral now */
+            /* --brand-coral só alimenta a borda de foco dos inputs → vira accent.
+               --brand-navy alimenta títulos/labels → permanece neutro escuro. */
+            --brand-coral: var(--accent);
+            --brand-coral-dark: var(--accent-hover);
+            --brand-navy: var(--ink-strong);
+            --brand-navy-soft: var(--ink-soft);
+
+            /* Typography — neutral, modern (Inter) */
+            --booking-font-head: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+            --booking-font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+            --booking-radius-btn: 9999px;
+            /* Standard interactive feedback (matches the "Agendar" button):
+               no drop/elevation shadows — only a 0-blur focus ring + brightness
+               on hover, and a slight scale on press. */
+            --booking-ring: 0 0 0 3px color-mix(in srgb, var(--iframe-primary) 38%, transparent);
+            --booking-ring-soft: 0 0 0 3px color-mix(in srgb, var(--iframe-primary) 16%, transparent);
+
+            /* Select3 (Alpine combobox) → neutral graphite, same as the rest of the page */
+            --color-primary: var(--ink);          /* drives text-primary / ring-primary utilities */
+            --select3-primary: var(--ink);
+            --select3-primary-hover: var(--ink-strong);
+            --select3-border: var(--iframe-border);
+            --select3-border-radius: 11px;
+        }
+
+        /* Tailwind v4 preflight sets `cursor: default` on buttons — every clickable
+           control on this page should show the pointer cursor */
+        button:not(:disabled),
+        [role="button"]:not(:disabled) { cursor: pointer; }
+
+        /* ── Texto sobre o accent (§4.4) ──
+           Todo elemento PREENCHIDO com o accent recebe texto/ícone com contraste
+           adaptativo (escuro quando o accent é claro). As regras de seleção de
+           dia/horário e dot são tratadas nas próprias regras `.booking-container`
+           (mais específicas); aqui ficam os elementos cobertos por seletores de
+           menor especificidade que herdam `color:#fff` de _customization.html. */
+        .booking-landing-cta,
+        .booking-container .iframe-btn-primary,
+        .booking-step.active .booking-step-num,
+        .booking-step.done .booking-step-num { color: var(--accent-contrast, #fff) !important; }
+        .booking-step.active .booking-step-num svg,
+        .booking-step.done .booking-step-num svg { stroke: var(--accent-contrast, #fff); }
+        /* Avatares de card (inicial sobre fundo accent) */
+        .booking-agenda-card-avatar,
+        .booking-unit-card-avatar { color: var(--accent-contrast) !important; }
+
+        body { font-family: var(--booking-font-body); }
+        .booking-nav-name,
+        .booking-landing-title { font-family: var(--booking-font-head); letter-spacing: -0.01em; }
+
+        html, body {
+            height: auto !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            background-color: var(--iframe-bg) !important;
+        }
+        body > main {
+            overflow: visible !important;
+            height: auto !important;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 0;
+        }
+        body > main > .booking-footer {
+            margin-top: auto;
+        }
+
+        /* ── Full-page background image (blurred) ── */
+        .booking-page-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-color: #00102c; /* fallback behind the image */
+            background-image: var(--booking-bg);
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            filter: blur(7px) brightness(0.95) saturate(1.08);
+            transform: scale(1.09); /* hide blurred edges */
+        }
+        .booking-page-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            /* Navy brand wash for legibility */
+            background: linear-gradient(180deg,
+                        rgba(0, 16, 44, 0.50) 0%,
+                        rgba(0, 16, 44, 0.66) 100%);
+        }
+        @media (max-width: 600px) {
+            .booking-page-bg { background-image: var(--booking-bg-mobile, var(--booking-bg)); }
+        }
+        /* When a background image is present, keep html/body transparent so the
+           fixed .booking-page-bg (z-index:-1) is not covered by the body's own
+           background box. The page-bg itself carries the dark fallback. */
+        body.has-bg-image { background-color: transparent !important; }
+        body.has-bg-image > main { background-color: transparent; }
+
+        /* (Header / navbar removed — standalone booking screen) */
+        /* Per-agenda pre-booking instructions */
+        .booking-pre-text {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background-color: var(--iframe-secondary-light);
+            border: 1px solid color-mix(in srgb, var(--iframe-secondary) 30%, transparent);
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            line-height: 1.5;
+            color: var(--iframe-text);
+        }
+        /* Conteúdo rico (CKEditor) das instruções — reflete a formatação da org */
+        .booking-pre-text > div { min-width: 0; }
+        .booking-pre-text p { margin: 0 0 0.25rem; }
+        .booking-pre-text p:last-child { margin-bottom: 0; }
+        .booking-pre-text strong, .booking-pre-text b { font-weight: 700; }
+        .booking-pre-text em { font-style: italic; }
+        .booking-pre-text u { text-decoration: underline; }
+        .booking-pre-text a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+        .booking-pre-text a:hover { color: var(--accent-hover); }
+        .booking-pre-text ul, .booking-pre-text ol { margin: 0.15rem 0 0.35rem; padding-left: 1.25rem; }
+        .booking-pre-text ul { list-style: disc; }
+        .booking-pre-text ol { list-style: decimal; }
+        .booking-pre-text li { margin: 0.1rem 0; }
+        .booking-pre-text h2, .booking-pre-text h3 { font-weight: 700; margin: 0.2rem 0 0.25rem; line-height: 1.25; }
+        .booking-pre-text h2 { font-size: 0.95rem; }
+        .booking-pre-text h3 { font-size: 0.875rem; }
+
+        /* Descrição da agenda/unidade (CKEditor) nos cards-resumo: a formatação é
+           preservada (negrito/itálico/link), mas blocos viram inline para o
+           recorte de 2 linhas (-webkit-line-clamp) continuar funcionando. */
+        .booking-agenda-card-desc :is(p, ul, ol, h2, h3, blockquote, div),
+        .booking-unit-card-desc :is(p, ul, ol, h2, h3, blockquote, div) {
+            display: inline; margin: 0; padding: 0; list-style: none;
+        }
+        .booking-agenda-card-desc br, .booking-unit-card-desc br { display: none; }
+        .booking-agenda-card-desc strong, .booking-unit-card-desc strong { font-weight: 700; }
+        .booking-agenda-card-desc a, .booking-unit-card-desc a { color: inherit; text-decoration: underline; }
+        /* Summary header (form step) — clean white band, no avatar/pills */
+        .booking-summary-header {
+            background-color: var(--iframe-card-bg);
+            border-bottom: 1px solid var(--iframe-border);
+            padding: 1.1rem 1.35rem;
+            border-radius: var(--iframe-radius) var(--iframe-radius) 0 0;
+        }
+        .booking-summary-row {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            flex-wrap: wrap;
+        }
+        .booking-summary-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .booking-summary-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .booking-summary-name {
+            font-family: var(--booking-font-head);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--ink-strong);
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+        .booking-summary-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.25rem 1rem;
+            font-size: 0.8125rem;
+            color: var(--iframe-muted);
+        }
+        .booking-summary-meta > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .booking-summary-meta .booking-summary-time {
+            color: var(--ink-strong);
+            font-weight: 600;
+        }
+        .booking-summary-meta svg { opacity: 0.65; }
+        .booking-summary-change {
+            margin-left: auto;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            white-space: nowrap;
+            flex-shrink: 0;
+            padding: 0.5rem 1.1rem;
+            border-radius: var(--booking-radius-btn);
+            background: var(--iframe-card-bg);
+            border: 1px solid var(--iframe-border);
+            outline: none;
+            box-shadow: 0 0 0 0 transparent;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
+        }
+        .booking-summary-change:hover {
+            filter: brightness(0.98);
+            border-color: color-mix(in srgb, var(--iframe-text) 28%, transparent);
+            box-shadow: var(--booking-ring-soft);
+            text-decoration: none;
+        }
+        .booking-summary-change:focus-visible { box-shadow: var(--booking-ring); }
+        .booking-summary-change:active { transform: scale(0.95); transition-duration: 0.07s; }
+        /* Landing / welcome — clean, sober centered card over the page bg */
+        .booking-landing-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.25rem 3.5rem;
+        }
+        .booking-landing {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 3rem 2.5rem 2.75rem;
+            text-align: center;
+            background-color: var(--iframe-card-bg);
+            border: 1px solid color-mix(in srgb, var(--iframe-text) 10%, transparent);
+            border-radius: 20px;
+        }
+        .booking-landing-logo {
+            max-height: 60px;
+            max-width: 58%;
+            margin: 0 auto 1.75rem;
+            object-fit: contain;
+            display: block;
+        }
+        .booking-landing-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--ink-strong);
+            margin: 0 0 0.7rem;
+            line-height: 1.15;
+            letter-spacing: -0.025em;
+        }
+        .booking-landing-desc {
+            font-size: 0.975rem;
+            line-height: 1.6;
+            color: var(--iframe-muted);
+            margin: 0 auto 2rem;
+            max-width: 42ch;
+            text-align: center;
+        }
+        /* ── Descrição rica (§4.3) ── refletir fielmente o que a org formatou no
+           CKEditor (negrito, alinhamento, listas, headings, links). O HTML já
+           chega sanitizado do servidor (allowlist). */
+        .booking-landing-desc > :first-child { margin-top: 0; }
+        .booking-landing-desc > :last-child { margin-bottom: 0; }
+        .booking-landing-desc p { margin: 0 0 0.65rem; }
+        .booking-landing-desc strong, .booking-landing-desc b { font-weight: 700; color: var(--ink-soft); }
+        .booking-landing-desc em { font-style: italic; }
+        .booking-landing-desc u { text-decoration: underline; }
+        .booking-landing-desc a {
+            color: var(--iframe-primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            font-weight: 600;
+        }
+        .booking-landing-desc a:hover { color: var(--accent-hover, var(--iframe-primary-hover)); }
+        .booking-landing-desc h2, .booking-landing-desc h3 {
+            font-family: var(--booking-font-head);
+            color: var(--ink-strong);
+            line-height: 1.25;
+            margin: 1rem 0 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        .booking-landing-desc h2 { font-size: 1.2rem; font-weight: 700; }
+        .booking-landing-desc h3 { font-size: 1.05rem; font-weight: 600; }
+        .booking-landing-desc ul, .booking-landing-desc ol {
+            margin: 0 0 0.65rem;
+            padding-left: 1.35rem;
+            text-align: left;
+            display: inline-block;
+        }
+        .booking-landing-desc ul { list-style: disc; }
+        .booking-landing-desc ol { list-style: decimal; }
+        .booking-landing-desc li { margin: 0.2rem 0; }
+        .booking-landing-desc blockquote {
+            margin: 0.75rem 0;
+            padding: 0.25rem 0 0.25rem 0.9rem;
+            border-left: 3px solid var(--iframe-border);
+            color: var(--iframe-muted);
+            font-style: italic;
+        }
+        /* ── Descrição da org longa: colapsa o texto (preview) + "Ler mais" ──
+           Quando o texto excede a altura, é cortado com um fade; o botão abre o
+           modal com a descrição completa. A detecção de overflow é feita em JS
+           (ResizeObserver) que liga a classe via x-show no botão. */
+        .booking-landing-desc.clamped {
+            max-height: 7.8em;
+            overflow: hidden;
+            position: relative;
+        }
+        /* O fade só aparece quando o texto realmente excede o preview
+           (is-truncated é ligado em JS via ResizeObserver). */
+        .booking-landing-desc.clamped.is-truncated::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 2.2em;
+            background: linear-gradient(to bottom, transparent, var(--iframe-card-bg));
+            pointer-events: none;
+        }
+        .booking-landing-readmore {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 0.1rem auto 1.5rem;
+            padding: 0.35rem 1rem;
+            background: transparent;
+            border: 1px solid var(--iframe-border);
+            border-radius: var(--booking-radius-btn);
+            color: var(--iframe-primary);
+            font-family: var(--booking-font-body);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            transition: box-shadow 0.18s ease, border-color 0.15s ease, filter 0.15s ease, transform 0.1s ease;
+        }
+        .booking-landing-readmore:hover {
+            border-color: var(--iframe-primary);
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-landing-readmore:focus-visible { box-shadow: var(--booking-ring); }
+        .booking-landing-readmore:active { transform: scale(0.96); }
+        /* Bloco descrição + "Ler mais" dentro dos cards (mantém o fluxo vertical
+           entre título e meta). */
+        .booking-card-desc-block { display: block; min-width: 0; }
+        /* "Ler mais" dos cards de agenda/unidade — link discreto sob a descrição */
+        .booking-card-readmore {
+            display: inline-block;
+            margin-top: 0.25rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--iframe-primary);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            outline: none;
+        }
+        .booking-card-readmore:hover { color: var(--accent-hover, var(--iframe-primary-hover)); }
+        .booking-card-readmore:focus-visible {
+            text-decoration: none;
+            box-shadow: var(--booking-ring-soft);
+            border-radius: 4px;
+        }
+        /* Corpo do modal de descrição reaproveita a tipografia rica da landing,
+           mas alinhado à esquerda e sem limite de largura/centralização. */
+        .booking-desc-modal-body .booking-landing-desc {
+            text-align: left;
+            max-width: none;
+            max-height: none;
+            margin: 0;
+            color: var(--iframe-text);
+            font-size: 0.95rem;
+        }
+        .booking-desc-modal-body .booking-landing-desc ul,
+        .booking-desc-modal-body .booking-landing-desc ol { display: block; }
+        /* ── Classes de tamanho de fonte do CKEditor 5 (fontSize nomeado) ──
+           Aplicadas pela org no editor; refletidas em toda superfície rica. */
+        .booking-landing-desc .text-tiny, .booking-pre-text .text-tiny,
+        .booking-agenda-card-desc .text-tiny, .booking-unit-card-desc .text-tiny { font-size: 0.7em; }
+        .booking-landing-desc .text-small, .booking-pre-text .text-small,
+        .booking-agenda-card-desc .text-small, .booking-unit-card-desc .text-small { font-size: 0.85em; }
+        .booking-landing-desc .text-big, .booking-pre-text .text-big,
+        .booking-agenda-card-desc .text-big, .booking-unit-card-desc .text-big { font-size: 1.4em; }
+        .booking-landing-desc .text-huge, .booking-pre-text .text-huge,
+        .booking-agenda-card-desc .text-huge, .booking-unit-card-desc .text-huge { font-size: 1.8em; }
+        /* CTA button — mirrors appointment_flows .btn-cta, fixed indigo */
+        .booking-landing-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 2.25rem;
+            background-color: var(--iframe-primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--booking-radius-btn);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 0 0 0 transparent;
+            outline: none;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, filter 0.15s ease;
+        }
+        .booking-landing-cta:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--iframe-primary) 45%, transparent);
+        }
+        .booking-landing-cta:focus-visible {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--iframe-primary) 60%, transparent);
+        }
+        .booking-landing-cta:active {
+            transform: scale(0.93);
+            box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--iframe-primary) 80%, transparent);
+            transition-duration: 0.07s;
+        }
+        .booking-landing-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 1.75rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid color-mix(in srgb, var(--iframe-text) 8%, transparent);
+            font-size: 0.8125rem;
+            color: var(--iframe-muted);
+        }
+        .booking-landing-info a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--iframe-muted);
+            text-decoration: none;
+        }
+        .booking-landing-info a:hover {
+            color: var(--iframe-primary);
+        }
+        /* Stepper — pill container, centered */
+        .booking-stepper-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+        }
+        .booking-stepper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: 0.5rem 1.25rem;
+            background-color: var(--iframe-card-bg);
+            border: 1px solid var(--iframe-border);
+            border-radius: 9999px;
+        }
+        .booking-step {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--iframe-muted);
+            white-space: nowrap;
+            transition: color 0.2s;
+        }
+        .booking-step.active {
+            color: var(--iframe-primary-text);
+            font-weight: 600;
+        }
+        .booking-step.done {
+            color: var(--iframe-primary-text);
+        }
+        .booking-step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            border: 1.5px solid var(--iframe-border);
+            color: var(--iframe-muted);
+            background: var(--iframe-card-bg);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+            flex-shrink: 0;
+        }
+        .booking-step.active .booking-step-num {
+            border-color: var(--iframe-primary);
+            background-color: var(--iframe-primary);
+            color: #fff;
+        }
+        .booking-step.done .booking-step-num {
+            border-color: var(--iframe-primary);
+            background-color: var(--iframe-primary);
+            color: #fff;
+        }
+        .booking-step-check {
+            width: 12px;
+            height: 12px;
+        }
+        /* x-show toggles display; keep the hidden state truly hidden */
+        .booking-step-check[style*="display: none"],
+        .booking-step-num > span[style*="display: none"] { display: none !important; }
+        .booking-step-sep {
+            width: 24px;
+            height: 1px;
+            background-color: var(--iframe-border);
+            margin: 0 0.375rem;
+            flex-shrink: 0;
+        }
+        /* Conector entre etapas: cromo de progresso, NÃO accent. Etapa concluída
+           usa um neutro mais escuro só para indicar avanço. */
+        .booking-step-sep.done {
+            background-color: color-mix(in srgb, var(--ink) 38%, transparent);
+        }
+        @media (max-width: 480px) {
+            .booking-step-label { display: none; }
+            .booking-step-sep { width: 20px; }
+        }
+        /* Back button */
+        /* Secondary button — same pill shape & behavior as the CTA, neutral fill */
+        .booking-back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: var(--booking-radius-btn);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--iframe-text);
+            background: var(--iframe-card-bg);
+            border: 1px solid var(--iframe-border);
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 0 0 0 transparent;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
+        }
+        .booking-back-btn:hover {
+            filter: brightness(0.98);
+            border-color: color-mix(in srgb, var(--iframe-text) 28%, transparent);
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-back-btn:focus-visible { box-shadow: var(--booking-ring); }
+        .booking-back-btn:active {
+            transform: scale(0.95);
+            transition-duration: 0.07s;
+        }
+        /* Summary sticky on mobile */
+        @media (max-width: 768px) {
+            .booking-summary-header.sticky {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+                border-bottom: 1px solid var(--iframe-border);
+            }
+        }
+        .booking-hero-bg {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            /* Center the flow vertically when it's shorter than the viewport;
+               with taller content there's no free space and it scrolls normally. */
+            justify-content: center;
+        }
+        .booking-container {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            color: var(--iframe-text);
+        }
+        @media (min-width: 768px) {
+            .booking-container { padding: 2rem 1.5rem; }
+        }
+        /* Over a background image, the flow items float freely (no wrapping
+           sheet). Section headings that sit directly on the image (direct
+           children of the flow groups, not inside white cards) turn light +
+           get a soft shadow so they stay legible; headings inside cards keep
+           their dark color. */
+        .has-bg-image .booking-container {
+            margin: 1rem auto;
+        }
+        /* (Step headings now live inside each step card's header — always on
+           a white card, legible over any background image.) */
+        .booking-card {
+            background-color: var(--iframe-card-bg);
+            border-radius: var(--iframe-radius);
+            border: 1px solid var(--iframe-border);
+            overflow: hidden;
+        }
+        /* ── Step-change animations ──────────────────────────────────
+           Each step panel carries .booking-step-anim. Because x-show
+           toggles display (and x-if re-inserts the node), the CSS
+           animation replays every time a panel (re)appears — no Alpine
+           x-transition needed, and the leaving panel hides instantly so
+           the two never stack. Direction-aware: going back (stepDir)
+           flips the horizontal slide via --step-from. */
+        .booking-container { --step-from: 30px; }
+        .booking-container.step-back { --step-from: -30px; }
+        @keyframes bookingStepIn {
+            from { opacity: 0; transform: translateX(var(--step-from, 30px)); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes bookingStepItemIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .booking-step-anim,
+        .booking-container > .iframe-card {
+            animation: bookingStepIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        /* Children cascade vertically with a slight stagger (the panel
+           itself slides horizontally → layered, dynamic feel). */
+        .booking-step-anim .booking-step-card > *,
+        .booking-container > .iframe-card > * {
+            animation: bookingStepItemIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .booking-step-anim .booking-step-card > *:nth-child(2),
+        .booking-container > .iframe-card > *:nth-child(2) { animation-delay: 0.06s; }
+        .booking-step-anim .booking-step-card > *:nth-child(3),
+        .booking-container > .iframe-card > *:nth-child(3) { animation-delay: 0.12s; }
+        .booking-step-anim .booking-step-card > *:nth-child(4),
+        .booking-container > .iframe-card > *:nth-child(4) { animation-delay: 0.17s; }
+        .booking-step-anim .booking-step-card > *:nth-child(n+5),
+        .booking-container > .iframe-card > *:nth-child(n+5) { animation-delay: 0.21s; }
+        @media (prefers-reduced-motion: reduce) {
+            .booking-step-anim,
+            .booking-step-anim .booking-step-card > *,
+            .booking-container > .iframe-card,
+            .booking-container > .iframe-card > * { animation: none; }
+        }
+
+        /* Footer — sober, modern dark footer.
+           Collapsed by default: only the "Mais informações" toggle + copyright
+           bar are visible, so the booking flow owns the viewport. The full org
+           info block expands on click. */
+        .booking-footer {
+            color: color-mix(in srgb, var(--footer-text) 60%, transparent);
+            background-color: var(--footer-bg);
+            margin-top: 2rem;
+            font-size: 0.8125rem;
+        }
+        /* "Mais informações" toggle row */
+        .booking-footer-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.85rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: color-mix(in srgb, var(--footer-text) 55%, transparent);
+            font-family: var(--booking-font-body);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+        .booking-footer-toggle:hover { color: var(--footer-text); }
+        .booking-footer-toggle svg { opacity: 0.8; }
+        .booking-footer-chevron { transition: transform 0.3s ease; }
+        .booking-footer.open .booking-footer-chevron { transform: rotate(180deg); }
+        /* Collapsible wrapper — animated via grid-template-rows */
+        .booking-footer-details {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s ease;
+        }
+        .booking-footer-details-clip {
+            overflow: hidden;
+            min-height: 0;
+        }
+        .booking-footer.open .booking-footer-details { grid-template-rows: 1fr; }
+        .booking-footer a {
+            color: color-mix(in srgb, var(--footer-text) 85%, transparent);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .booking-footer a:hover { color: var(--footer-text); text-decoration: underline; }
+        .booking-footer-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem 2.25rem;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.75rem 2.5rem;
+            align-items: start;
+        }
+        /* Zonas adaptativas: esquerda à esquerda, centro centralizado, direita à
+           direita. Posição fixa por grid-column para não deslocar quando uma zona
+           não tem conteúdo. Os itens internos seguem o alinhamento da zona. */
+        .booking-footer-zone { min-width: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+        .booking-footer-zone-left   { grid-column: 1; align-items: flex-start; text-align: left;   justify-self: start; }
+        .booking-footer-zone-center { grid-column: 2; align-items: center;     text-align: center; justify-self: center; }
+        .booking-footer-zone-right  { grid-column: 3; align-items: flex-end;   text-align: right;  justify-self: end; }
+        @media (max-width: 720px) {
+            .booking-footer-inner { grid-template-columns: 1fr; gap: 1.5rem; }
+            .booking-footer-zone-left,
+            .booking-footer-zone-center,
+            .booking-footer-zone-right {
+                grid-column: 1; align-items: center; text-align: center; justify-self: center;
+            }
+        }
+        /* Column labels (Redes Sociais / Links Úteis) — quiet, modern */
+        .booking-footer-label {
+            font-family: var(--booking-font-body);
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: color-mix(in srgb, var(--footer-text) 42%, transparent);
+            margin: 0;
+        }
+        .booking-footer-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin: 0;
+            line-height: 1.4;
+            color: color-mix(in srgb, var(--footer-text) 80%, transparent);
+        }
+        .booking-footer-line i,
+        .booking-footer-line svg { flex-shrink: 0; margin-top: 1px; opacity: 0.7; }
+        .booking-footer-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+        }
+        .booking-footer-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            color: color-mix(in srgb, var(--footer-text) 80%, transparent);
+            background-color: transparent;
+            border: 1px solid color-mix(in srgb, var(--footer-text) 16%, transparent);
+            transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.15s ease;
+        }
+        .booking-footer-social a:hover {
+            background-color: color-mix(in srgb, var(--footer-text) 10%, transparent);
+            border-color: color-mix(in srgb, var(--footer-text) 40%, transparent);
+            color: var(--footer-text);
+            text-decoration: none;
+        }
+        .booking-footer-social a:active { transform: scale(0.95); }
+        .booking-footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            align-items: flex-end;
+        }
+        @media (max-width: 720px) {
+            .booking-footer-links { align-items: center; }
+        }
+        .booking-footer-links a { color: color-mix(in srgb, var(--footer-text) 80%, transparent); }
+        /* Copyright bar */
+        .booking-footer-bottom {
+            border-top: 1px solid color-mix(in srgb, var(--footer-text) 10%, transparent);
+        }
+        .booking-footer-bottom p {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: color-mix(in srgb, var(--footer-text) 45%, transparent);
+        }
+        .booking-footer-dot { margin: 0 0.5rem; opacity: 0.5; }
+        /* Agenda cards */
+        .booking-agenda-card {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            text-align: left;
+            padding: 0.75rem;
+            gap: 0.75rem;
+            background: var(--iframe-card-bg);
+            border: 1.5px solid var(--iframe-border);
+            border-radius: var(--iframe-radius);
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+        }
+        .booking-agenda-card:hover {
+            border-color: var(--iframe-primary);
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-agenda-card-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--iframe-border);
+        }
+        .booking-agenda-card-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--iframe-primary);
+        }
+        .booking-agenda-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .booking-agenda-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--iframe-text);
+            line-height: 1.3;
+        }
+        .booking-agenda-card-desc {
+            font-size: 0.75rem;
+            color: var(--iframe-muted);
+            margin-top: 0.125rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .booking-agenda-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.375rem;
+            flex-wrap: wrap;
+        }
+        .booking-agenda-card-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            font-size: 0.6875rem;
+            color: var(--iframe-muted);
+            background: var(--iframe-surface, #f8fafc);
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+        }
+        /* Unit cards */
+        .booking-unit-card {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            text-align: left;
+            padding: 0.875rem;
+            gap: 0.75rem;
+            background: var(--iframe-card-bg);
+            border: 1.5px solid var(--iframe-border);
+            border-radius: var(--iframe-radius);
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+        }
+        .booking-unit-card:hover {
+            border-color: var(--iframe-primary);
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-unit-card-img {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--iframe-radius);
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid var(--iframe-border);
+        }
+        .booking-unit-card-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--iframe-radius);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--iframe-primary);
+        }
+        .booking-unit-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .booking-unit-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--iframe-text);
+            line-height: 1.3;
+        }
+        .booking-unit-card-desc {
+            font-size: 0.75rem;
+            color: var(--iframe-muted);
+            margin-top: 0.125rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .booking-unit-card-address {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.3rem;
+            font-size: 0.6875rem;
+            color: var(--iframe-muted);
+            margin-top: 0.375rem;
+            line-height: 1.4;
+        }
+        .booking-unit-card-address svg {
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+        .booking-unit-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.375rem;
+            flex-wrap: wrap;
+        }
+        /* Service cards */
+        .booking-service-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.8rem 1rem;
+            background: var(--iframe-card-bg);
+            border: 1.5px solid var(--iframe-border);
+            border-radius: var(--iframe-radius);
+            cursor: pointer;
+            text-align: left;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .booking-service-card:hover {
+            border-color: var(--iframe-primary);
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-service-card:hover .booking-service-card-chevron {
+            color: var(--iframe-primary);
+            transform: translateX(2px);
+        }
+        .booking-service-card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: color-mix(in srgb, var(--iframe-primary) 8%, transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .booking-service-card-icon svg {
+            width: 17px;
+            height: 17px;
+            color: var(--iframe-primary);
+        }
+        .booking-service-card-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .booking-service-card-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--ink-strong);
+            line-height: 1.25;
+        }
+        .booking-service-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .booking-service-card-duration {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            background: var(--iframe-surface);
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .booking-service-card-duration svg {
+            width: 11px;
+            height: 11px;
+            opacity: 0.7;
+        }
+        .booking-service-card-agendas {
+            font-size: 0.6875rem;
+            color: var(--iframe-muted);
+        }
+        /* Preço do serviço — chip com a cor de destaque (accent) da org */
+        .booking-service-card-price {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            color: var(--accent-contrast, #fff);
+            background: var(--accent);
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .booking-service-card-chevron {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: var(--iframe-muted);
+            transition: transform 0.15s, color 0.15s;
+        }
+        /* ── Step card: one cohesive container per step ──
+           The step title and its context (chosen agenda/service/date) live
+           in the card HEADER, right above the options — no more floating
+           headings detached from the content. The back action also sits in
+           the header instead of a separate container below. */
+        .booking-step-card {
+            background: var(--iframe-card-bg);
+            border: 1px solid var(--iframe-border);
+            border-radius: var(--iframe-radius);
+            overflow: hidden;
+        }
+        .booking-step-head {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--iframe-border);
+        }
+        .booking-step-head-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .booking-step-title {
+            font-family: var(--booking-font-head);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--ink-strong);
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+            margin: 0;
+        }
+        /* Context line under the title: chosen agenda, service, unit, date… */
+        .booking-step-context {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.25rem 1rem;
+            font-size: 0.8125rem;
+            color: var(--iframe-muted);
+            margin: 0;
+        }
+        .booking-step-context > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+        .booking-step-context svg,
+        .booking-step-context i {
+            width: 13px;
+            height: 13px;
+            opacity: 0.65;
+            flex-shrink: 0;
+        }
+        /* Compact back action inside the header */
+        .booking-step-head .booking-back-btn {
+            padding: 0.45rem 1rem;
+            font-size: 0.8125rem;
+            flex-shrink: 0;
+        }
+        .booking-step-body { padding: 1.1rem 1.25rem 1.25rem; }
+        @media (max-width: 480px) {
+            .booking-step-head { padding: 0.85rem 1rem; }
+            .booking-step-body { padding: 0.9rem 1rem 1rem; }
+        }
+
+        /* Browse mode tabs */
+        .booking-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            background: var(--iframe-surface, #f1f5f9);
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+        .booking-tab {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            text-align: center;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            color: var(--iframe-muted);
+            background: transparent;
+            border: none;
+            transition: all 0.15s;
+        }
+        .booking-tab:hover:not(.active) {
+            color: var(--iframe-text);
+        }
+        .booking-tab.active {
+            background: var(--iframe-card-bg, #fff);
+            color: var(--iframe-primary);
+            font-weight: 600;
+            border: 1px solid var(--iframe-border);
+        }
+        /* Service-first: agenda picker after service */
+        .booking-agenda-mini {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.625rem 0.875rem;
+            background: var(--iframe-card-bg);
+            border: 1.5px solid var(--iframe-border);
+            border-radius: var(--iframe-radius);
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .booking-agenda-mini:hover {
+            border-color: var(--iframe-primary);
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-agenda-mini-name {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--iframe-text);
+        }
+        .booking-agenda-mini-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--iframe-primary) 10%, transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .booking-agenda-mini-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--iframe-primary);
+        }
+
+        /* Form validation errors */
+        .iframe-input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+        }
+        .iframe-field-error-js {
+            font-size: 0.75rem;
+            color: #ef4444;
+            margin-top: 0.25rem;
+        }
+
+        /* ── Etapas pós-formulário NATIVAS (acompanhantes / pagamento / recibo) ──
+           Reconstruídas no próprio SPA, com a linguagem visual da tela nova. */
+        /* Cartão de acompanhante */
+        .booking-companion-card {
+            border: 1px solid var(--iframe-border);
+            border-radius: var(--iframe-radius);
+            padding: 1rem 1.1rem;
+            background: var(--iframe-card-bg);
+            position: relative;
+            transition: opacity 0.25s ease, border-color 0.15s ease;
+        }
+        .booking-companion-card.removed { display: none; }
+        .booking-companion-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.85rem;
+        }
+        .booking-companion-num {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--ink-strong);
+        }
+        .booking-companion-num .n {
+            width: 1.55rem; height: 1.55rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 9999px;
+            border: 1.5px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.75rem; font-weight: 700;
+        }
+        .booking-companion-remove {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            font-size: 0.75rem; font-weight: 600;
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 9999px;
+            padding: 0.3rem 0.7rem;
+            cursor: pointer;
+        }
+        .booking-companion-remove:hover { background: #fee2e2; }
+
+        /* Resumo / recibo nativo — linhas label→valor */
+        .booking-receipt-rows { display: flex; flex-direction: column; gap: 0.55rem; }
+        .booking-receipt-row {
+            display: flex; align-items: flex-start; gap: 0.6rem;
+            font-size: 0.875rem; color: var(--iframe-text);
+        }
+        .booking-receipt-row svg, .booking-receipt-row i { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--iframe-muted); margin-top: 1px; }
+        .booking-receipt-row .lbl { color: var(--iframe-muted); }
+        .booking-receipt-row .val { font-weight: 600; color: var(--ink-strong); }
+
+        /* Badge de status */
+        .booking-status-badge {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            font-size: 0.75rem; font-weight: 700;
+            padding: 0.25rem 0.7rem; border-radius: 9999px;
+        }
+        .booking-status-badge.is-pending { background: #fef3c7; color: #92400e; }
+        .booking-status-badge.is-ok { background: #d1fae5; color: #065f46; }
+
+        /* Botão Mercado Pago (mantém a marca do provedor) */
+        .booking-mp-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+            width: 100%;
+            padding: 0.85rem 1.5rem;
+            background-color: #009ee3;
+            color: #fff;
+            border: none;
+            border-radius: var(--booking-radius-btn);
+            font-size: 0.95rem; font-weight: 600;
+            cursor: pointer;
+            transition: filter 0.15s ease, transform 0.12s ease;
+        }
+        .booking-mp-btn:hover { filter: brightness(1.06); }
+        .booking-mp-btn:active { transform: scale(0.97); }
+        .booking-mp-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Aviso de tempo (acompanhantes) */
+        .booking-timer {
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            font-size: 0.8125rem; font-weight: 600;
+            padding: 0.6rem 1rem;
+            border-radius: var(--iframe-radius);
+            background: var(--accent-tint);
+            color: var(--ink-soft);
+            border: 1px solid var(--iframe-border);
+        }
+        .booking-timer.is-urgent { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+
+        /* ── Impressão do recibo ── imprime SOMENTE o recibo nativo, sem o chrome
+           do SPA (banner, stepper, rodapé). Usa o truque de visibility para manter
+           o layout do recibo intacto. */
+        @media print {
+            body * { visibility: hidden !important; }
+            #booking-receipt, #booking-receipt * { visibility: visible !important; }
+            #booking-receipt { position: absolute; left: 0; top: 0; width: 100%; }
+            .booking-page-bg, .booking-footer, .booking-stepper-wrap { display: none !important; }
+            html, body { background: #fff !important; }
+            @page { margin: 12mm; }
+        }
+
+        /* Fix iframe-card for full-page mode */
+        .iframe-card {
+            background-color: var(--iframe-card-bg) !important;
+            border-radius: var(--iframe-radius) !important;
+            border: 1px solid var(--iframe-border) !important;
+        }
+
+        /* ============================================================
+           COMPONENT REDESIGN (scoped to .booking-container — no partial edits)
+           Calendar, time slots, client form: brand identity + real spacing.
+           Rules are prefixed with .booking-container so they win specificity
+           over the iframe partial styles without affecting iframe screens.
+           ============================================================ */
+
+        /* ── Selection cards: flat, ring on hover, slight press ── */
+        .booking-agenda-card,
+        .booking-unit-card,
+        .booking-service-card,
+        .booking-agenda-mini {
+            border-width: 1.5px;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+        }
+        .booking-agenda-card:active,
+        .booking-unit-card:active,
+        .booking-service-card:active,
+        .booking-agenda-mini:active {
+            transform: scale(0.985);
+            transition-duration: 0.07s;
+        }
+        .booking-agenda-card-title,
+        .booking-unit-card-title { color: var(--brand-navy); }
+
+        /* ════════════════════ CALENDAR (modern, light) ════════════════════ */
+        .booking-container .md\:w-1\/2 { padding: 1.1rem 1.15rem !important; }
+
+        /* Month navigation header */
+        .booking-container .iframe-card h3 {
+            font-family: var(--booking-font-head);
+            font-weight: 700;
+            color: var(--ink-strong);
+            font-size: 1.0625rem;
+            letter-spacing: -0.01em;
+        }
+        /* Prev / next month → soft circular buttons */
+        .booking-container .justify-between > button {
+            width: 2.25rem !important;
+            height: 2.25rem !important;
+            padding: 0 !important;
+            border-radius: 9999px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-soft) !important;
+            border: 1px solid var(--iframe-border);
+            background: var(--iframe-card-bg);
+            outline: none;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+        .booking-container .justify-between > button:active {
+            transform: scale(0.92);
+            transition-duration: 0.07s;
+        }
+        .booking-container .justify-between > button:hover {
+            box-shadow: var(--booking-ring-soft);
+            border-color: color-mix(in srgb, var(--ink) 22%, transparent);
+            color: var(--ink-strong) !important;
+        }
+        /* Weekday header row — quiet labels with a hairline separator */
+        .booking-container .grid-cols-7:has(> span) {
+            margin-bottom: 0.4rem;
+            padding-bottom: 0.45rem;
+            border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+        }
+        .booking-container .grid-cols-7 > span {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.66rem !important;
+            font-weight: 600;
+            color: color-mix(in srgb, var(--ink) 42%, transparent) !important;
+        }
+        /* Day cells — modern rounded tiles */
+        .booking-container .iframe-day {
+            width: 2.6rem !important;
+            height: 2.6rem !important;
+            border-radius: 13px !important;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            border: none !important;
+            background: transparent;
+            transition: background-color 0.13s ease, color 0.13s ease,
+                        box-shadow 0.13s ease, transform 0.08s ease;
+        }
+        /* Hover — leve tint do accent; texto neutro escuro (legível sobre tint claro) */
+        .booking-container .iframe-day:not(.selected):not([disabled]):hover {
+            background-color: color-mix(in srgb, var(--accent) 14%, transparent) !important;
+            color: var(--ink-strong) !important;
+        }
+        .booking-container .iframe-day:not(.selected):not([disabled]):active {
+            transform: scale(0.92);
+        }
+        /* Today — inset ring no accent (marca de data, não preenchida) */
+        .booking-container .iframe-day.today:not(.selected) {
+            border: none !important;
+            color: var(--ink-strong) !important;
+            font-weight: 800;
+            box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent) !important;
+        }
+        /* Selected — tile preenchido com o accent + texto de contraste adaptativo */
+        .booking-container .iframe-day.selected {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: var(--accent-contrast) !important;
+        }
+        /* Availability dot — accent (item principal §4.4); sobre dia selecionado
+           usa a cor de contraste para não sumir no preenchimento. */
+        .booking-container .iframe-avail-dot {
+            width: 4px !important;
+            height: 4px !important;
+            bottom: 2px;
+            background-color: var(--accent) !important;
+        }
+        .booking-container .iframe-day.selected .iframe-avail-dot {
+            background-color: var(--accent-contrast) !important;
+        }
+        /* Dias SEM VAGA / BLOQUEADOS / FERIADO — distintos de "dia não atendido"
+           (que fica simplesmente vazio/apagado). Mostrados apagados, riscados e
+           não-clicáveis, com um marcador inferior (vermelho=lotado, âmbar=feriado). */
+        .booking-container .iframe-day.iframe-day-blocked {
+            color: var(--iframe-muted, #94a3b8) !important;
+            text-decoration: line-through;
+            text-decoration-thickness: 1px;
+            opacity: 0.65;
+            cursor: not-allowed;
+            background-color: transparent !important;
+        }
+        .booking-container .iframe-blocked-mark {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 2px;
+            border-radius: 1px;
+            background-color: #ef4444;  /* lotado / sem vaga */
+        }
+        .booking-container .iframe-blocked-mark.is-holiday {
+            background-color: #f59e0b;  /* feriado / indisponível */
+        }
+        /* Legenda do calendário (disponível × sem vaga × feriado) */
+        .booking-container .booking-cal-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--iframe-muted, #94a3b8);
+            margin-top: 0.5rem;
+        }
+        .booking-container .booking-cal-legend .lg-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+        .booking-container .booking-cal-legend .lg-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+        .booking-container .booking-cal-legend .lg-dot.avail { background-color: var(--accent); }
+        .booking-container .booking-cal-legend .lg-bar { width: 9px; height: 2px; border-radius: 1px; display: inline-block; }
+        .booking-container .booking-cal-legend .lg-bar.full { background-color: #ef4444; }
+        .booking-container .booking-cal-legend .lg-bar.holiday { background-color: #f59e0b; }
+
+        /* ════════════ MODAIS NATIVOS — overlay de editar / pesquisa (sobre o recibo) ════════════
+           Mesma linguagem do restante da tela: card elevado e arredondado, accent
+           da org no CTA, ring de foco accent, espaçamento horizontal uniforme
+           (1.5rem) em cabeçalho/corpo/rodapé. */
+        .booking-edit-overlay { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .booking-edit-backdrop { position: absolute; inset: 0; background: rgba(11, 15, 26, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+        .booking-edit-modal {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 34rem;
+            max-height: min(90vh, 760px);
+            display: flex;
+            flex-direction: column;
+            background: var(--iframe-card-bg, #fff);
+            border: 1px solid var(--iframe-border, #e2e8f0);
+            border-radius: 18px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 1px 1px rgba(11, 15, 26, 0.04), 0 14px 34px -10px rgba(11, 15, 26, 0.30);
+            animation: bookingModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes bookingModalIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.985); }
+            to   { opacity: 1; transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) { .booking-edit-modal { animation: none; } }
+        .booking-edit-modal-head {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 1.15rem 1.5rem;
+            border-bottom: 1px solid var(--iframe-border, #e2e8f0);
+        }
+        .booking-edit-modal-head h2 {
+            margin: 0; flex: 1; min-width: 0;
+            font-family: var(--booking-font-head, inherit);
+            font-size: 1.0625rem; font-weight: 700; letter-spacing: -0.01em;
+            color: var(--ink-strong, #0b0f1a);
+        }
+        .booking-edit-close {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 2rem; height: 2rem; flex-shrink: 0;
+            border: none; background: transparent; cursor: pointer;
+            border-radius: 9999px; color: var(--iframe-muted, #94a3b8);
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .booking-edit-close:hover { background: var(--iframe-surface, #f1f5f9); color: var(--ink-strong, #0b0f1a); }
+        .booking-edit-modal-body { padding: 1.35rem 1.5rem; overflow-y: auto; }
+        .booking-edit-modal-foot {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--iframe-border, #e2e8f0);
+            background: color-mix(in srgb, var(--iframe-text, #1f2937) 2.5%, var(--iframe-card-bg, #fff));
+        }
+        /* CTA do rodapé (Salvar / Enviar) — espelha o botão "Agendar": preenchido
+           com o accent da org, pill, ring no hover/foco. (Antes usava só
+           .iframe-btn-primary, sem padding/raio → texto colado, "feio".) */
+        .booking-modal-cta {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.6rem 1.5rem;
+            background-color: var(--iframe-primary); color: var(--accent-contrast, #fff);
+            border: none; border-radius: var(--booking-radius-btn, 9999px);
+            font-size: 0.875rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 0 0 0 transparent; outline: none;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, filter 0.15s ease;
+        }
+        .booking-modal-cta:hover { filter: brightness(1.08); box-shadow: 0 0 0 3px color-mix(in srgb, var(--iframe-primary) 45%, transparent); }
+        .booking-modal-cta:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--iframe-primary) 60%, transparent); }
+        .booking-modal-cta:active { transform: scale(0.96); box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--iframe-primary) 80%, transparent); transition-duration: 0.07s; }
+        .booking-modal-cta:disabled { opacity: 0.55; cursor: default; }
+        /* Spinner sobre o accent → claro (contraste), não o ink do --color-primary */
+        .booking-modal-cta .iframe-spinner {
+            border-color: color-mix(in srgb, var(--accent-contrast, #fff) 40%, transparent);
+            border-top-color: var(--accent-contrast, #fff);
+        }
+        /* Ritmo vertical uniforme dentro do editar: o fragmento embute várias
+           .iframe-form-section (cada uma com margin-bottom próprio) dentro de
+           .booking-edit-fields. Zeramos esses margins e deixamos UM gap só
+           governar o espaçamento — sem "saltos" desiguais nem sobra antes do
+           rodapé. (Vale para o overlay de editar; a pesquisa usa .survey-fields,
+           que já tem espaçamento próprio.) */
+        #booking-edit-form .booking-edit-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+        /* Zera os margins próprios dos filhos diretos (margin-bottom das
+           .iframe-form-section e o margin-top injetado por space-y-*) para que
+           só o gap acima governe — ID-scoped p/ vencer as utilities do Tailwind. */
+        #booking-edit-form .booking-edit-fields > * {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        /* Fixed calendar height: the day grid keeps the same height whether the
+           month spans 5 or 6 week-rows, so the layout never jumps. */
+        .booking-container .md\:w-1\/2 .grid-cols-7.auto-rows-fr {
+            height: 16.8rem !important;
+            flex: 0 0 auto !important;
+        }
+        @media (max-width: 380px) {
+            .booking-container .iframe-day { width: 2.4rem !important; height: 2.4rem !important; }
+        }
+
+        /* ════════════════════ TIME SLOTS ════════════════════ */
+        /* Right panel heading ("quinta-feira, 5 de junho") */
+        .booking-container .md\:w-1\/2 > div > h3 {
+            font-family: var(--booking-font-head);
+            font-weight: 700;
+            color: var(--brand-navy);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+        .booking-container .iframe-slot {
+            padding: 0.6rem 0.5rem !important;
+            border-radius: var(--booking-radius-btn) !important;
+            border-width: 1.5px !important;
+            font-weight: 600;
+            outline: none;
+            transition: box-shadow 0.18s ease, transform 0.15s ease,
+                        filter 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease !important;
+        }
+        .booking-container .iframe-slot:hover:not(.selected) {
+            border-color: var(--accent) !important;
+            background-color: color-mix(in srgb, var(--accent) 8%, transparent) !important;
+            color: var(--ink-strong) !important;
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-container .iframe-slot:active {
+            transform: scale(0.95);
+            transition-duration: 0.07s;
+        }
+        /* Horário selecionado — preenchido com o accent + texto de contraste */
+        .booking-container .iframe-slot.selected {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: var(--accent-contrast) !important;
+        }
+        /* Scrollable slot area on tall lists */
+        .booking-container .md\:w-1\/2 .grid-cols-2,
+        .booking-container .md\:w-1\/2 .sm\:grid-cols-3 {
+            max-height: 340px;
+            overflow-y: scroll;
+            padding: 5px;
+        }
+        /* Split-card divider */
+        .booking-container .iframe-card .md\:border-r { border-color: var(--iframe-border) !important; }
+
+        /* ════════════════════ CLIENT FORM ════════════════════ */
+        /* "Seus Dados" heading */
+        .booking-container #iframe-person-form ~ * h2,
+        .booking-container .booking-summary-info { }
+        .booking-container .iframe-card h2 {
+            font-family: var(--booking-font-head);
+            font-weight: 700;
+            color: var(--brand-navy);
+            font-size: 1.05rem;
+        }
+
+        /* Layout adaptativo dos campos do formulário.
+           Flexbox com wrap + flex-grow em vez de grid fixo: assim NENHUM campo
+           deixa espaço vazio — um campo sozinho na linha (ex.: "Distrito", ou o
+           último de uma contagem ímpar, ou o que sobra antes de um campo largo)
+           CRESCE e ocupa toda a largura disponível; dois campos dividem 50/50.
+           min-width quebra para 1 coluna em telas estreitas. */
+        .booking-container .iframe-form-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 1.1rem;
+            margin-bottom: 1.75rem;
+            align-items: flex-start;
+        }
+        .booking-container .iframe-form-group {
+            margin-bottom: 0 !important;
+            flex: 1 1 calc(50% - 0.55rem);
+            min-width: min(14rem, 100%);
+        }
+        /* Campos largos sempre ocupam a linha inteira (sozinhos) */
+        .booking-container .iframe-form-group:has(textarea),
+        .booking-container .iframe-form-group:has(.iframe-radio-group),
+        .booking-container .iframe-form-group:has(.iframe-event-type-options),
+        .booking-container .iframe-form-group:has(.iframe-multi-select),
+        .booking-container .iframe-form-group:has(.iframe-checkbox-group),
+        .booking-container .iframe-form-group:has(.iframe-phone-group),
+        .booking-container .iframe-form-group[data-field="name"],
+        .booking-container .iframe-form-group[data-field="email"],
+        .booking-container .iframe-form-group[data-field="personal_identification_number"],
+        .booking-container .iframe-form-group[data-field="street"],
+        .booking-container .iframe-form-group[data-field="address"],
+        .booking-container .iframe-form-group[data-field="obs"],
+        .booking-container .iframe-form-group[data-field="message"] { flex-basis: 100%; }
+
+        /* Inputs: larger, comfortable, branded focus */
+        .booking-container .iframe-form-section input[type="text"],
+        .booking-container .iframe-form-section input[type="email"],
+        .booking-container .iframe-form-section input[type="tel"],
+        .booking-container .iframe-form-section input[type="number"],
+        .booking-container .iframe-form-section input[type="date"],
+        .booking-container .iframe-form-section input[type="url"],
+        .booking-container .iframe-form-section textarea,
+        .booking-container .iframe-form-section select,
+        .booking-container .iframe-input,
+        .booking-container .iframe-phone-country {
+            padding: 0.7rem 0.85rem !important;
+            font-size: 0.9rem !important;
+            border-radius: 11px !important;
+            border: 1.5px solid var(--iframe-border) !important;
+            background: #fff !important;
+            color: var(--iframe-text) !important;
+        }
+        .booking-container .iframe-form-section input:not([type="checkbox"]):not([type="radio"]):focus,
+        .booking-container .iframe-form-section textarea:focus,
+        .booking-container .iframe-form-section select:focus,
+        .booking-container .iframe-phone-country:focus {
+            border-color: var(--brand-coral) !important;
+            box-shadow: 0 0 0 3px var(--iframe-primary-light) !important;
+        }
+        /* Labels */
+        .booking-container .iframe-label,
+        .booking-container .iframe-checkbox-group label {
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            color: var(--brand-navy) !important;
+            margin-bottom: 0.4rem !important;
+        }
+        /* Radio / event-type (presencial × vídeo, gênero etc.) */
+        .booking-container .iframe-radio-label,
+        .booking-container .iframe-event-type-label { border-radius: 11px !important; padding: 0.65rem 0.9rem; }
+        /* Estado SELECIONADO: o template injetado (form_iframe.html) pinta o TEXTO
+           com o accent sobre um tint claro — ilegível quando o accent é claro. No
+           fluxo novo, selecionado = preenchimento accent + texto/ícone de contraste
+           (o SVG usa stroke=currentColor, então `color` resolve os dois). */
+        .booking-container .iframe-event-type-option input[type="radio"]:checked + .iframe-event-type-label,
+        .booking-container .iframe-radio-option input[type="radio"]:checked + .iframe-radio-label {
+            border-color: var(--accent) !important;
+            background: var(--accent) !important;
+            color: var(--accent-contrast) !important;
+        }
+
+        /* ── Select3 comboboxes: match the booking input skin ── */
+        .booking-container .combobox-wrapper > label {
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            color: var(--brand-navy) !important;
+            margin-bottom: 0.4rem !important;
+            font-family: var(--booking-font-body) !important;
+        }
+        .booking-container .combobox-wrapper input[type="text"],
+        .booking-container .combobox-wrapper > div.relative > div:not(.absolute) {
+            height: 46px !important;
+            padding: 0 3.5rem 0 0.85rem !important;
+            font-size: 0.9rem !important;
+            border: 1.5px solid var(--iframe-border) !important;
+            border-radius: 11px !important;
+            background: #fff !important;
+            color: var(--iframe-text) !important;
+        }
+        .booking-container .combobox-wrapper input[type="text"]:focus {
+            border-color: var(--brand-coral) !important;
+            box-shadow: 0 0 0 3px var(--iframe-primary-light) !important;
+            outline: none !important;
+        }
+        .booking-container .combobox-wrapper.select3-invalid input[type="text"],
+        .booking-container .combobox-wrapper.select3-invalid > div.relative > div:not(.absolute) {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+        }
+        /* Compact country-code combobox inside the phone group */
+        .booking-container .iframe-phone-country-wrap { width: 7.25rem; flex-shrink: 0; }
+        .booking-container .iframe-phone-country-wrap .combobox-wrapper input[type="text"],
+        .booking-container .iframe-phone-country-wrap .combobox-wrapper > div.relative > div:not(.absolute) {
+            padding-right: 2.1rem !important;
+        }
+        .booking-container .iframe-phone-group input[type="tel"],
+        .booking-container .iframe-phone-group input[name="old_phone"] { height: 46px; }
+
+        /* ── Checkboxes: project-standard animated checkmark ── */
+        .booking-container input[type="checkbox"] {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            padding: 0.1875rem !important;
+            border: 1.5px solid var(--iframe-border) !important;
+            border-radius: 6px !important;
+            background-color: #fff !important;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .booking-container input[type="checkbox"]::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            rotate: 45deg;
+            background-color: currentColor;
+            opacity: 0;
+            transition: clip-path 0.3s, opacity 0.1s, rotate 0.3s;
+            transition-delay: 0.1s;
+            clip-path: polygon(20% 100%, 20% 80%, 50% 80%, 50% 80%, 70% 80%, 70% 100%);
+        }
+        .booking-container input[type="checkbox"]:hover {
+            border-color: var(--iframe-primary) !important;
+        }
+        .booking-container input[type="checkbox"]:checked {
+            background-color: var(--iframe-primary) !important;
+            border-color: var(--iframe-primary) !important;
+            color: var(--accent-contrast) !important; /* o "check" usa currentColor */
+        }
+        .booking-container input[type="checkbox"]:checked::before {
+            clip-path: polygon(20% 100%, 20% 80%, 50% 80%, 50% 0%, 70% 0%, 70% 100%);
+            opacity: 1;
+        }
+        /* Cancel the legacy ::after dot from _customization.html */
+        .booking-container input[type="checkbox"]:checked::after { content: none !important; }
+        .booking-container input[type="checkbox"]:focus-visible {
+            outline: none;
+            box-shadow: var(--booking-ring-soft);
+        }
+        /* Radios (surveys / tipo de atendimento): o "check" é feito de bordas —
+           ajusta a cor para contrastar com o preenchimento accent. */
+        .booking-container input[type="radio"]:checked::after {
+            border-color: var(--accent-contrast) !important;
+        }
+
+        /* ── Form action buttons — same shape & behavior as the CTA ── */
+        .booking-container .iframe-btn-primary {
+            border-radius: var(--booking-radius-btn) !important;
+            padding: 0.6rem 1.6rem !important;
+            font-weight: 600 !important;
+            outline: none;
+            box-shadow: 0 0 0 0 transparent !important;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, filter 0.15s ease,
+                        background-color 0.15s ease !important;
+        }
+        .booking-container .iframe-btn-primary:hover {
+            filter: brightness(1.08);
+            box-shadow: var(--booking-ring) !important;
+        }
+        .booking-container .iframe-btn-primary:focus-visible { box-shadow: var(--booking-ring) !important; }
+        .booking-container .iframe-btn-primary:active {
+            transform: scale(0.95);
+            transition-duration: 0.07s;
+        }
+        /* Submitting spinner: small, white-on-dark — lives in this inline <style>
+           so it wins over any (possibly stale) built stylesheet */
+        .booking-container .iframe-btn-primary .iframe-spinner {
+            width: 1rem !important;
+            height: 1rem !important;
+            border-width: 2px !important;
+            border-style: solid !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+            border-top-color: #fff !important;
+        }
+
+        /* ── Confirmation screen (shared partial, styled locally) ── */
+        /* Secondary button ("Ver Recibo") → same shape/behavior as .booking-back-btn */
+        .booking-container .iframe-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            padding: 0.6rem 1.4rem !important;
+            border-radius: var(--booking-radius-btn) !important;
+            font-weight: 600 !important;
+            color: var(--iframe-text) !important;
+            background: var(--iframe-card-bg) !important;
+            border: 1px solid var(--iframe-border) !important;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 0 0 0 transparent;
+            transition: box-shadow 0.18s ease, transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
+        }
+        .booking-container .iframe-btn-secondary:hover {
+            filter: brightness(0.98);
+            border-color: color-mix(in srgb, var(--iframe-text) 28%, transparent) !important;
+            background: var(--iframe-card-bg) !important;
+            box-shadow: var(--booking-ring-soft);
+        }
+        .booking-container .iframe-btn-secondary:focus-visible { box-shadow: var(--booking-ring); }
+        .booking-container .iframe-btn-secondary:active {
+            transform: scale(0.95);
+            transition-duration: 0.07s;
+        }
+        /* Summary box (agenda / date / time / code): white card with border
+           instead of the gray --iframe-surface inline background */
+        .booking-container .iframe-card.text-center .rounded-lg.text-left {
+            background: var(--iframe-card-bg) !important;
+            border: 1.5px solid var(--iframe-border);
+            border-radius: 11px;
+            padding: 1rem 1.1rem;
+        }
+    
+/* ---- head block 3: injected form styling ---- */
+
+  .iframe-form-container input[type="text"],
+  .iframe-form-container input[type="email"],
+  .iframe-form-container input[type="tel"],
+  .iframe-form-container input[type="number"],
+  .iframe-form-container input[type="date"],
+  .iframe-form-container select,
+  .iframe-form-container textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border: 1px solid var(--iframe-border);
+    border-radius: 0.5rem;
+    background-color: var(--iframe-input-bg);
+    color: var(--iframe-text);
+    transition: border-color 0.15s ease;
+    outline: none;
+  }
+  .iframe-form-container input:not([type="checkbox"]):not([type="radio"]):focus,
+  .iframe-form-container select:focus,
+  .iframe-form-container textarea:focus {
+    border-color: var(--iframe-primary);
+    box-shadow: 0 0 0 3px var(--iframe-primary-light);
+  }
+  /* Custom styled checkboxes and radios */
+  .iframe-form-container input[type="checkbox"],
+  .iframe-form-container input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    border: 2px solid var(--iframe-border, #cbd5e1);
+    background-color: var(--iframe-input-bg, #fff);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .iframe-form-container input[type="checkbox"] {
+    border-radius: 50%;
+  }
+  .iframe-form-container input[type="radio"] {
+    border-radius: 4px;
+  }
+  .iframe-form-container input[type="checkbox"]:hover,
+  .iframe-form-container input[type="radio"]:hover {
+    border-color: var(--iframe-primary);
+  }
+  .iframe-form-container input[type="checkbox"]:checked,
+  .iframe-form-container input[type="radio"]:checked {
+    background-color: var(--iframe-primary);
+    border-color: var(--iframe-primary);
+  }
+  .iframe-form-container input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+  .iframe-form-container input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 5px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .iframe-form-container .iframe-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* RadioSelect & CheckboxSelectMultiple - Django 4.x uses div, older uses ul */
+  /* Support both formats */
+  .iframe-form-container > div[id^="id_"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0.25rem;
+  }
+  .iframe-form-container > div[id^="id_"] > div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0;
+  }
+  .iframe-form-container > div[id^="id_"] > div label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    cursor: pointer;
+    margin-bottom: 0 !important;
+    white-space: nowrap;
+  }
+  /* Legacy ul/li format */
+  .iframe-form-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.25rem 0 0 0;
+  }
+  .iframe-form-container ul li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0;
+  }
+  .iframe-form-container ul li label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    cursor: pointer;
+    margin-bottom: 0 !important;
+  }
+  .iframe-form-container label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--iframe-text);
+    margin-bottom: 0.25rem;
+  }
+  .iframe-form-container .iframe-checkbox-group label {
+    display: inline;
+    margin-bottom: 0;
+    cursor: pointer;
+  }
+  .iframe-form-container .helptext,
+  .iframe-form-container .help-block {
+    font-size: 0.7rem;
+    color: var(--iframe-muted);
+    margin-top: 0.125rem;
+  }
+  .iframe-form-container .errorlist,
+  .iframe-form-container .error {
+    font-size: 0.7rem;
+    color: #ef4444;
+    margin-top: 0.125rem;
+  }
+  .iframe-form-container p {
+    margin-bottom: 0.5rem;
+  }
+  /* Hide hidden inputs styling */
+  .iframe-form-container input[type="hidden"] {
+    display: none;
+  }
+  /* hCaptcha */
+  .iframe-captcha-container {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+  }
+  /* hCaptcha empty/not-solved indicator */
+  .iframe-hcaptcha-error {
+    border-radius: 6px;
+    box-shadow: 0 0 0 2px #ef4444, 0 0 0 5px rgba(239, 68, 68, 0.2);
+  }
+  .iframe-captcha-error-msg {
+    display: none;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #ef4444;
+    text-align: center;
+  }
+  .iframe-captcha-error-msg.is-visible {
+    display: block;
+  }
+  /* Terms acceptance */
+  .iframe-terms-accept {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--iframe-border, #e2e8f0);
+  }
+  .iframe-terms-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--iframe-muted, #64748b);
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .iframe-terms-label input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .iframe-terms-text a {
+    color: var(--iframe-primary, #009DA0);
+    text-decoration: underline;
+  }

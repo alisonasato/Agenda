@@ -190,6 +190,17 @@ quem credita: soma os coins, grava a transação e, com a recarga marcada, guard
 Como `credits` é o único objeto aninhado de formato fixo, `read()` o mescla com a semente em vez de
 substituí-lo inteiro, para que dados gravados antes de um campo existir não o deixem indefinido.
 
+## Tela pública de agendamento
+`/agendar/minhaempresa` é a única rota fora do painel: é o que o cliente vê ao abrir o link de uma
+agenda. Ela não inventa dados nenhum — lê `bookingScreen` (nome e mensagem da organização),
+`units`, `agendas`, `services`, `agendaOptions` (quais campos pedir, senha, recorrência) e
+`agendaRules` (antecedência mínima e máxima), e monta o calendário com o mesmo `slotsOf` do painel,
+de modo que horários, bloqueios e feriados valem igual dos dois lados.
+
+Confirmar grava um cliente em `clients` e um agendamento em `appointments` com status PENDING, que
+é como o original deixa um agendamento externo até a agenda aceitá-lo — ele aparece em seguida na
+lista de Agendamentos e no calendário do painel.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

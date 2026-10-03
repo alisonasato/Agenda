@@ -72,6 +72,7 @@ const PATHS = {
   passoAPasso: "/onboarding",
   aplicativo: "/users/gerar-qrcode-config",
   autorizarSuporte: "/users/suporte/autorizar",
+  telaPublica: "/agendar/minhaempresa",
 } as const;
 /** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
 export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };

@@ -56,8 +56,7 @@ export function FinishScreen({ days, notices }: { days: number; notices: number 
           <PlusCircleIcon />
           Criar meu primeiro agendamento
         </a>
-        {/* The public booking page is not part of this clone, so the link only shows what the original opens. */}
-        <a href="#" className="hbtn hbtn--ghost hbtn--lg hbtn--block">
+        <a href={ROUTES.telaPublica} target="_blank" rel="noopener noreferrer" className="hbtn hbtn--ghost hbtn--lg hbtn--block">
           <ExternalLinkIcon />
           Ver como seus clientes vão ver
         </a>

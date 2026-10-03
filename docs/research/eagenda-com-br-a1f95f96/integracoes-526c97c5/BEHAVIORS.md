@@ -48,3 +48,5 @@ passa a mostrar o chip "Google Calendar" nas duas linhas de membro.
 - Por isso a conexão não faz nada além de ficar registrada: não há serviço do outro lado.
 - O original guarda a integração por membro; aqui ela é da conta, e a aba da equipe mostra o mesmo
   conjunto para todos.
+- As páginas de detalhe de cada integração ficam fora do escopo do clone por decisão do projeto: o
+  card continua sendo o lugar onde a integração liga e desliga.

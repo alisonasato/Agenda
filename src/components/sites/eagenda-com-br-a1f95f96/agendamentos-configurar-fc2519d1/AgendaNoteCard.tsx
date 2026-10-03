@@ -38,7 +38,8 @@ export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda;
             </h5>
             <div className="hnote-quick">
               <a
-                href={`https://minhaempresa.seiri.com.br/agenda/minhaempresa/${agenda.slug}`}
+                // Without an identifier the agenda has no link of its own, so the screen opens on its picker.
+                href={agenda.slug ? `${ROUTES.telaPublica}/?agenda=${agenda.slug}` : ROUTES.telaPublica}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-icon btn-icon-sm btn-icon-solid"
