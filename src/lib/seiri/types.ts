@@ -357,7 +357,17 @@ export type OrgSettings = Record<string, string | boolean>;
 export type BookingScreen = Record<string, string | boolean>;
 
 /** The credit balances the Comunicação pages show, and what "Pacotes de Envio" lists. */
-export type Credits = { general: number; sms: number; email: number; whatsapp: number };
+/** The coin balance, the notification credits and how the coins are paid for. */
+export type Credits = {
+  general: number;
+  sms: number;
+  email: number;
+  whatsapp: number;
+  /** Coins added every month, 0 when the monthly recharge is off. */
+  autoRecharge: number;
+  /** Empty when no card is on file. */
+  paymentMethod: string;
+};
 
 export type CreditPurchase = {
   id: string;
@@ -482,6 +492,53 @@ export type Survey = {
   template: string;
   questions: number;
   responses: number;
+};
+
+/** The account's subscription, as "Planos" shows it. */
+export type Plan = {
+  name: string;
+  /** "Mensal" or "Anual". */
+  cycle: string;
+  /** In reais, per cycle. */
+  price: number;
+  appointmentsUsed: number;
+  appointmentsMax: number;
+  usersUsed: number;
+  usersMax: number;
+  /** The small print under the meters. */
+  note: string;
+  limits: string;
+};
+
+/** One AgendaCoins movement, from "Detalhes de AgendaCoins". */
+export type CoinTransaction = {
+  id: string;
+  /** "dd/mm/aaaa hh:mm". */
+  at: string;
+  kind: string;
+  amount: number;
+  description: string;
+  status: string;
+};
+
+/** A subscription invoice, from the "Pagamentos" tab. */
+export type Payment = {
+  id: string;
+  status: string;
+  /** "dd/mm/aaaa". */
+  dueDate: string;
+  barcode: string;
+};
+
+/** A line of the "Histórico" tab. */
+export type PlanChange = {
+  id: string;
+  plan: string;
+  status: string;
+  /** "dd/mm/aaaa". */
+  startedAt: string;
+  amount: number;
+  period: string;
 };
 
 export type WaitingEntry = {
@@ -682,6 +739,10 @@ export type Data = {
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
+  plan: Plan;
+  coinTransactions: CoinTransaction[];
+  payments: Payment[];
+  planHistory: PlanChange[];
 };
 
 export const STATUS_LABELS: Record<Status, string> = {

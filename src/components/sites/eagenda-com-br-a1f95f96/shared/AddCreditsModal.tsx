@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { CardIcon, CaretDownIcon, CaretUpIcon, CheckboxMark, InfoIcon } from "./icons";
 import { Modal, ModalSubmit } from "./Modal";
+import { nextId, update, useData } from "@/lib/seiri/store";
 
 const PRESETS = ["50000", "100000", "250000", "500000"];
 const BONUS = [
@@ -14,9 +15,9 @@ const BONUS = [
 ];
 // Price per coin on the live account (BRL), used for the monthly-recharge estimate.
 const RATE = 0.0011;
-// The live account has no balance and no monthly recharge yet.
-const BALANCE = 0;
-const CURRENT_MONTHLY_COINS = 0;
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const stamp = (at: Date) => `${pad(at.getDate())}/${pad(at.getMonth() + 1)}/${at.getFullYear()} ${pad(at.getHours())}:${pad(at.getMinutes())}`;
 
 function Checkbox({ id, label, checked, onChange, small }: { id?: string; label?: string; checked: boolean; onChange: (v: boolean) => void; small?: boolean }) {
   return (
@@ -33,6 +34,9 @@ function Checkbox({ id, label, checked, onChange, small }: { id?: string; label?
 
 /** "Adicionar Créditos": buy AgendaCoins, optionally as a monthly recharge. Opened from the Comunicação pages. */
 export function AddCreditsModal({ onClose }: { onClose: () => void }) {
+  const { credits } = useData();
+  const BALANCE = credits.general;
+  const CURRENT_MONTHLY_COINS = credits.autoRecharge;
   const [amount, setAmount] = useState("");
   const [recurring, setRecurring] = useState(false);
   const [accepted, setAccepted] = useState(false);
@@ -46,6 +50,26 @@ export function AddCreditsModal({ onClose }: { onClose: () => void }) {
     if (dir > 0) input.current.stepUp();
     else input.current.stepDown();
     setAmount(input.current.value);
+  };
+
+  const buy = () => {
+    if (coins <= 0) return;
+    update((d) => ({
+      ...d,
+      credits: { ...d.credits, general: d.credits.general + coins, autoRecharge: recurring ? coins : d.credits.autoRecharge },
+      coinTransactions: [
+        ...d.coinTransactions,
+        {
+          id: nextId("ct", d.coinTransactions),
+          at: stamp(new Date()),
+          kind: "Compra",
+          amount: coins,
+          description: recurring ? "Compra de AgendaCoins com recarga mensal" : "Compra de AgendaCoins",
+          status: "Concluída",
+        },
+      ],
+    }));
+    onClose();
   };
 
   return (
@@ -62,7 +86,13 @@ export function AddCreditsModal({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <form id="add-credits-form" onSubmit={(e) => e.preventDefault()}>
+      <form
+        id="add-credits-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          buy();
+        }}
+      >
         <input type="hidden" name="is_recurring" value={recurring ? "1" : "0"} />
         <div className="space-y-4">
           <p className="text-sm text-gray-500 inter-regular">
@@ -141,7 +171,11 @@ export function AddCreditsModal({ onClose }: { onClose: () => void }) {
               A partir do próximo mês: <span>{coins.toLocaleString("pt-BR")}</span> coins/mês = <span>BRL {monthlyValue}</span> incluídos na assinatura.
             </p>
             <div className="pt-1" style={CURRENT_MONTHLY_COINS > 0 ? undefined : { display: "none" }}>
-              <button type="button" className="hbtn hbtn--danger-soft hbtn--sm">
+              <button
+                type="button"
+                className="hbtn hbtn--danger-soft hbtn--sm"
+                onClick={() => update((d) => ({ ...d, credits: { ...d.credits, autoRecharge: 0 } }))}
+              >
                 Cancelar recarga mensal ativa
               </button>
             </div>

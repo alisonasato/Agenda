@@ -171,7 +171,7 @@ export function seed(): Data {
     accounts: [],
     orgSettings: {},
     bookingScreen: {},
-    credits: { general: 0, sms: 0, email: 0, whatsapp: 0 },
+    credits: { general: 0, sms: 0, email: 0, whatsapp: 0, autoRecharge: 0, paymentMethod: "" },
     creditPurchases: [],
     referrals: [],
     accessLists: [],
@@ -180,6 +180,10 @@ export function seed(): Data {
     integrations: {},
     manualHours: [],
     surveys: [],
+    plan: { name: "Plano Gratuito", cycle: "Mensal", price: 0, appointmentsUsed: 0, appointmentsMax: 300, usersUsed: 1, usersMax: 1, note: "Envio de e-mails está incluído no Plano Básico.", limits: "Agendamento até 30 dias · Histórico por 30 dias" },
+    coinTransactions: [],
+    payments: [],
+    planHistory: [],
     members: [
       {
         id: "mb1",
@@ -294,7 +298,7 @@ export const EMPTY: Data = {
   accounts: [],
   orgSettings: {},
   bookingScreen: {},
-  credits: { general: 0, sms: 0, email: 0, whatsapp: 0 },
+  credits: { general: 0, sms: 0, email: 0, whatsapp: 0, autoRecharge: 0, paymentMethod: "" },
   creditPurchases: [],
     referrals: [],
     accessLists: [],
@@ -303,4 +307,8 @@ export const EMPTY: Data = {
     integrations: {},
     manualHours: [],
     surveys: [],
+    plan: { name: "Plano Gratuito", cycle: "Mensal", price: 0, appointmentsUsed: 0, appointmentsMax: 300, usersUsed: 1, usersMax: 1, note: "Envio de e-mails está incluído no Plano Básico.", limits: "Agendamento até 30 dias · Histórico por 30 dias" },
+    coinTransactions: [],
+    payments: [],
+    planHistory: [],
 };

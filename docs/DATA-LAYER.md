@@ -175,6 +175,21 @@ mostra quantos grupos e quantos registros seriam fundidos e, ao confirmar, mant�
 de cada grupo, preenche os campos vazios dele com os dos outros e reaponta `appointments` e
 `waiting` para quem ficou.
 
+## Plano e AgendaCoins
+`data.plan` descreve a assinatura (nome, ciclo, preço, os dois medidores de uso, a nota e a linha de
+limites) e alimenta o cartão "Plano Atual" de `/users/planos`. As duas tabelas de arquivo dessa tela
+leem `data.payments` (faturas) e `data.planHistory` (mudanças de plano); nenhuma das duas é
+preenchida pelo clone, que não cobra nada.
+
+O saldo de AgendaCoins mora em `data.credits.general`, ao lado dos créditos de SMS, e-mail e
+WhatsApp, e cada movimento vira uma entrada em `data.coinTransactions`. `credits` ganhou ainda
+`autoRecharge` (coins por mês, 0 quando a recarga mensal está desligada) e `paymentMethod` (vazio
+quando não há cartão) — os dois KPIs de `/planos/transactions`. O `AddCreditsModal` compartilhado é
+quem credita: soma os coins, grava a transação e, com a recarga marcada, guarda a quantidade mensal.
+
+Como `credits` é o único objeto aninhado de formato fixo, `read()` o mescla com a semente em vez de
+substituí-lo inteiro, para que dados gravados antes de um campo existir não o deixem indefinido.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e
