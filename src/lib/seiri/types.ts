@@ -508,6 +508,20 @@ export const MEMBER_PERMISSIONS = [
   "Financeiro - Acesso a Faturamento e Pagamentos",
 ] as const;
 
+/** One step of the public booking screen: a group of agendas the visitor picks between. */
+export type AgendaGroup = {
+  id: string;
+  /** "Nome do Grupo", shown on the booking screen. */
+  label: string;
+  /** "Nome para o Link"; filled from the name when left empty. */
+  slug: string;
+  order: number;
+  /** Empty when the step chooses between other groups instead of agendas. */
+  agendaIds: string[];
+  /** "Texto da Tela do Grupo", rich text. */
+  description: string;
+};
+
 /** A row of "Grupos de Usuários". */
 export type UserGroup = {
   id: string;
@@ -843,6 +857,7 @@ export type Data = {
   profile: Profile;
   notifications: InboxNotification[];
   userGroups: UserGroup[];
+  agendaGroups: AgendaGroup[];
   agendaLogs: AgendaLog[];
   agendaEmails: AgendaEmailTemplate[];
   plan: Plan;

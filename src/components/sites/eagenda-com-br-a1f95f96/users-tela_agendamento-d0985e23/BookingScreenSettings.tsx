@@ -381,8 +381,7 @@ export function BookingScreenSettings() {
                           Adicione uma etapa inicial para organizar o fluxo da sua tela de agendamento.
                         </p>
                         <div className="mt-4">
-                          {/* The group editor isn't cloned yet. */}
-                          <a href="#" className="hbtn hbtn--primary hbtn--sm">
+                          <a href={ROUTES.novaEtapa} className="hbtn hbtn--primary hbtn--sm">
                             <AddAppointmentIcon />
                             Adicionar Etapa 1
                           </a>

@@ -246,6 +246,13 @@ A tela de Convidar equipe abre a lista por um botão da barra de ações.
 Os grupos ainda não governam nada: nenhuma tela consulta as permissões para esconder ou liberar
 alguma coisa.
 
+## Etapas da tela de agendamento
+`data.agendaGroups` guarda cada etapa da tela pública: o nome que aparece para o cliente, o nome
+para o link, a ordem entre as etapas da mesma altura, as agendas que ela oferece e o texto da tela.
+Uma etapa sem agenda nenhuma é a que escolhe entre outros grupos, como o original explica no campo.
+
+A tela de agendamento ainda não desenha essas etapas; por enquanto elas só existem nos dados.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e
