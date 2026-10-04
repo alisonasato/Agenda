@@ -253,6 +253,22 @@ Uma etapa sem agenda nenhuma é a que escolhe entre outros grupos, como o origin
 
 A tela de agendamento ainda não desenha essas etapas; por enquanto elas só existem nos dados.
 
+## Convites de cadastro
+Três coleções cobrem o fluxo de convidar clientes a se cadastrarem sozinhos:
+
+- `data.invites` — um convite por lote de e-mails: a lista de destinatários, o texto escolhido
+  (`templateId`, vazio = texto padrão do sistema), os campos pedidos no formulário (`fields` e
+  `requiredFields`, ids de `INVITE_FIELDS`), se a aprovação é automática, se o cliente cria senha,
+  a validade do link em dias, o status e a data de criação.
+- `data.submissions` — o que chegou por esses links: nome, e-mail, as respostas dos campos
+  opcionais em `answers`, o status e, numa rejeição, o motivo. Só uma linha `PENDING` ainda pode
+  ser decidida.
+- `data.inviteEmails` — os textos reutilizáveis, um `kind` por momento do fluxo
+  (`INVITE_EMAIL_KINDS`). O `isDefault` vale por momento. Excluir um texto devolve os convites que
+  o usavam ao padrão do sistema.
+
+Nada sai por e-mail e nenhum acesso é criado: aprovar um cadastro só muda o status da linha.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

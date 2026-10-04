@@ -858,6 +858,9 @@ export type Data = {
   notifications: InboxNotification[];
   userGroups: UserGroup[];
   agendaGroups: AgendaGroup[];
+  invites: RegistrationInvite[];
+  submissions: RegistrationSubmission[];
+  inviteEmails: InviteEmailTemplate[];
   agendaLogs: AgendaLog[];
   agendaEmails: AgendaEmailTemplate[];
   plan: Plan;
@@ -881,4 +884,149 @@ export const STATUS_TONES: Record<Status, string> = {
   ATTENDED: "hchip--success",
   NO_SHOW: "hchip--danger",
   CANCELED: "hchip--default",
+};
+
+/** A client-registration invite: one upload of e-mails, one form, one link per recipient. */
+export type RegistrationInvite = {
+  id: string;
+  /** "Nome do convite". */
+  name: string;
+  /** One address per line of "Lista de emails", plus whatever the spreadsheet carried. */
+  emails: string[];
+  /** An InviteEmailTemplate id; empty means "Texto padrão do sistema". */
+  templateId: string;
+  /** Ids of INVITE_FIELDS the form asks for, and which of them are required. */
+  fields: string[];
+  requiredFields: string[];
+  autoApprove: boolean;
+  /** "O cliente cria uma senha de acesso". */
+  askPassword: boolean;
+  /** "Validade do link (dias)"; 0 means no expiry. */
+  expiresInDays: number;
+  status: InviteStatus;
+  /** "dd/mm/aaaa hh:mm". */
+  createdAt: string;
+};
+
+export type InviteStatus = "DRAFT" | "SENDING" | "SENT" | "ARCHIVED";
+
+export const INVITE_STATUSES: { value: "" | InviteStatus; label: string }[] = [
+  { value: "", label: "Todos" },
+  { value: "DRAFT", label: "Rascunho" },
+  { value: "SENDING", label: "Enviando" },
+  { value: "SENT", label: "Enviado" },
+  { value: "ARCHIVED", label: "Arquivado" },
+];
+
+/** The `.hchip--<tone>` each invite status is painted with. */
+export const INVITE_STATUS_TONES: Record<InviteStatus, string> = {
+  DRAFT: "hchip--default",
+  SENDING: "hchip--warning",
+  SENT: "hchip--success",
+  ARCHIVED: "hchip--default",
+};
+
+/** "Campos pedidos no cadastro"; name and e-mail are always asked, so they are not listed. */
+export const INVITE_FIELDS: { id: string; label: string }[] = [
+  { id: "telefone", label: "Telefone" },
+  { id: "cpf", label: "Documento de identificação" },
+  { id: "data_nascimento", label: "Data de nascimento" },
+  { id: "genero", label: "Gênero" },
+  { id: "nacionalidade", label: "Nacionalidade" },
+  { id: "profissao", label: "Profissão" },
+  { id: "local_nascimento", label: "Local de nascimento" },
+  { id: "doc_id", label: "Documento de identidade" },
+  { id: "empresa", label: "Empresa / local de trabalho" },
+  { id: "matricula", label: "Matrícula" },
+  { id: "endereco", label: "Endereço" },
+];
+
+/** What someone filled in through an invite's link, waiting for a decision. */
+export type RegistrationSubmission = {
+  id: string;
+  inviteId: string;
+  name: string;
+  email: string;
+  /** Answers to the invite's optional fields, keyed by INVITE_FIELDS id. */
+  answers: Record<string, string>;
+  status: SubmissionStatus;
+  /** "dd/mm/aaaa hh:mm". */
+  receivedAt: string;
+  /** "Motivo (opcional)" of a rejection. */
+  reason?: string;
+};
+
+export type SubmissionStatus = "PENDING" | "AUTO_APPROVED" | "APPROVED" | "REJECTED";
+
+export const SUBMISSION_STATUSES: { value: "" | SubmissionStatus; label: string }[] = [
+  { value: "", label: "Todos" },
+  { value: "PENDING", label: "Pendente de aprovação" },
+  { value: "AUTO_APPROVED", label: "Aprovado automaticamente" },
+  { value: "APPROVED", label: "Aprovado" },
+  { value: "REJECTED", label: "Rejeitado" },
+];
+
+export const SUBMISSION_STATUS_TONES: Record<SubmissionStatus, string> = {
+  PENDING: "hchip--warning",
+  AUTO_APPROVED: "hchip--success",
+  APPROVED: "hchip--success",
+  REJECTED: "hchip--danger",
+};
+
+/** "Momento": which e-mail of the invite flow a text replaces. */
+export const INVITE_EMAIL_KINDS: { value: string; label: string }[] = [
+  { value: "INVITE", label: "Convite de cadastro" },
+  { value: "PRE_REGISTRATION", label: "Pré-cadastro recebido" },
+  { value: "APPROVED", label: "Cadastro aprovado" },
+  { value: "BOOKING_RELEASED", label: "Agendamento liberado" },
+];
+
+/** The suggested subject and the body placeholder each moment starts from. */
+export const INVITE_EMAIL_DEFAULTS: Record<string, { subject: string; body: string }> = {
+  INVITE: { subject: "{{nome_empresa}} te convidou para se cadastrar", body: "Qualquer dúvida, fale com a nossa recepção pelo telefone (00) 0000-0000." },
+  PRE_REGISTRATION: { subject: "{{nome_empresa}} - Recebemos seu cadastro", body: "Costumamos responder em até 2 dias úteis." },
+  APPROVED: { subject: "{{nome_empresa}} - Cadastro aprovado", body: "Na primeira visita, traga um documento com foto." },
+  BOOKING_RELEASED: { subject: "{{nome_empresa}} - Seu agendamento está liberado", body: "O atendimento é no 3º andar, sala 302." },
+};
+
+/** "Variáveis disponíveis": what each moment's text may interpolate. */
+export const INVITE_EMAIL_VARS: Record<string, { name: string; title: string }[]> = {
+  INVITE: [
+    { name: "{{email_cliente}}", title: "E-mail de quem recebe" },
+    { name: "{{link_cadastro}}", title: "Link único de cadastro (o texto padrão já o traz)" },
+    { name: "{{nome_cliente}}", title: "Nome de quem recebe o e-mail" },
+    { name: "{{nome_empresa}}", title: "Nome da sua empresa" },
+    { name: "{{validade_dias}}", title: "Validade do link, em dias" },
+  ],
+  PRE_REGISTRATION: [
+    { name: "{{email_cliente}}", title: "E-mail de quem recebe" },
+    { name: "{{nome_cliente}}", title: "Nome de quem recebe o e-mail" },
+    { name: "{{nome_empresa}}", title: "Nome da sua empresa" },
+  ],
+  APPROVED: [
+    { name: "{{email_cliente}}", title: "E-mail de quem recebe" },
+    { name: "{{link_login}}", title: "Link de acesso à plataforma" },
+    { name: "{{nome_cliente}}", title: "Nome de quem recebe o e-mail" },
+    { name: "{{nome_empresa}}", title: "Nome da sua empresa" },
+  ],
+  BOOKING_RELEASED: [
+    { name: "{{email_cliente}}", title: "E-mail de quem recebe" },
+    { name: "{{link_agendamento}}", title: "O mesmo que {{link_lista}} (nome antigo)" },
+    { name: "{{link_lista}}", title: 'Link da lista de acesso — o mesmo do botão "Copiar link" na tela de listas' },
+    { name: "{{nome_cliente}}", title: "Nome de quem recebe o e-mail" },
+    { name: "{{nome_empresa}}", title: "Nome da sua empresa" },
+    { name: "{{nome_lista}}", title: "Nome da lista de acesso que liberou o cliente" },
+  ],
+};
+
+/** A reusable text for one moment of the invite flow. */
+export type InviteEmailTemplate = {
+  id: string;
+  /** One of INVITE_EMAIL_KINDS. */
+  kind: string;
+  name: string;
+  subject: string;
+  /** "Mensagem extra": added to the system's message, never replacing it. */
+  body: string;
+  isDefault: boolean;
 };

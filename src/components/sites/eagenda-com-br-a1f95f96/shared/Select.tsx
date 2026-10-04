@@ -8,7 +8,8 @@ import type { Option } from "./Combobox";
 type SelectProps = {
   id: string;
   name: string;
-  label: string;
+  /** Omitted where the original has no label of its own above the field. */
+  label?: string;
   options: Option[];
   value: string;
   onChange: (value: string) => void;
@@ -23,12 +24,21 @@ export function Select({ id, name, label, options, value, onChange }: SelectProp
 
   return (
     <div className="hselect-field hselect-field--block">
-      <label className="hinput-label" htmlFor={id}>
-        {label}
-      </label>
+      {label && (
+        <label className="hinput-label" htmlFor={id}>
+          {label}
+        </label>
+      )}
       <div ref={ref} className="hselect hselect--block">
         <input type="hidden" name={name} value={value} />
-        <button type="button" className={`hselect-trigger${open ? " is-open" : ""}`} id={id} aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <button
+          type="button"
+          className={`hselect-trigger${open ? " is-open" : ""}`}
+          id={id}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
           <span className="hselect-value">{current?.label || "Selecione…"}</span>
           <span className={`hselect-indicator${open ? " is-open" : ""}`} aria-hidden="true">
             <CaretDownIcon className="w-4 h-4" />

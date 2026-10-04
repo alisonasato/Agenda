@@ -80,6 +80,9 @@ const PATHS = {
   acessoIndividual: "/users/clientes_autorizados",
   gruposUsuarios: "/users/listar_grupos",
   novaEtapa: "/users/grupos/novo",
+  convitesCadastro: "/users/convites-cadastro",
+  cadastrosRecebidos: "/users/convites-cadastro/cadastros",
+  textosConvite: "/users/convites-cadastro/textos-de-email",
 } as const;
 /** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
 export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };
@@ -179,6 +182,8 @@ const NAV: NavEntry[] = [
     items: [
       { label: "Listar Clientes", href: ROUTES.clientes, keywords: "Buscar Clientes" },
       { label: "Acesso de Clientes", href: ROUTES.acessoClientes, keywords: "Clientes" },
+      { label: "Convites de Cadastro", href: ROUTES.convitesCadastro, keywords: "Convite Convites Cadastro Clientes E-mail" },
+      { label: "Cadastros Recebidos", href: ROUTES.cadastrosRecebidos, keywords: "Cadastro Cadastros Aprovar Aprovação Clientes" },
       { label: "Importar Clientes", key: "importarClientes", href: ROUTES.clientes, keywords: "Importação CSV Planilha Excel Clientes", hide: "always" },
     ],
   },
