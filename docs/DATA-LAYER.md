@@ -230,6 +230,14 @@ configuração e os dois valores; na segunda, são o dia da semana e o começo e
 Nenhuma das duas é alimentada pelo resto do painel ainda: as linhas vêm da semente. Quando salvar
 uma agenda passar a registrar o que mudou, é em `agendaLogs` que a linha entra.
 
+## Acesso de clientes
+As duas telas de acesso leem a mesma coleção. `data.accessLists` guarda cada lista com as suas
+regras e o `clientIds` de quem ela deixa entrar: a tela de Gestão em Lote mostra as listas, e a de
+Gestão Individual mostra o inverso, um cliente por linha com as listas que o alcançam. Tirar um
+cliente na tela individual é tirá-lo de todos os `clientIds`.
+
+O "Cliente ID" dessa tela é o `accessKey` do cliente, que vai no link de agendamento próprio dele.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

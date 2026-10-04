@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
+import { ROUTES } from "../shared/Sidebar";
 import { CalendarIcon, CloseCircleIcon, SearchSolidIcon, UsersIcon, WidgetIcon } from "../shared/icons";
 import { InlineFilter } from "../shared/InlineFilter";
 import { AlertDialog } from "../shared/AlertDialog";
@@ -89,7 +90,7 @@ export function ClientAccessLists() {
                   onChange={setServices}
                 />
                 <span className="hactionbar-sep" aria-hidden="true" />
-                <a href="#" className="hbtn hbtn--ghost hbtn--sm">
+                <a href={ROUTES.acessoIndividual} className="hbtn hbtn--ghost hbtn--sm">
                   <UsersIcon className="w-4 h-4" />
                   <span className="hactionbar-label">Gestão Individual</span>
                 </a>

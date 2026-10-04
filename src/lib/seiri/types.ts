@@ -63,6 +63,8 @@ export type Client = {
   companyCnpj?: string;
   /** The original "desativa" a client: it leaves the lists, its appointments stay. */
   inactive?: boolean;
+  /** The "Cliente ID" of an authorized client, which its own booking link carries. */
+  accessKey?: string;
 };
 
 /** "Tipo de identidade" options, with the values the original stores. */
