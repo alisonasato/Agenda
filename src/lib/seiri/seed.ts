@@ -217,6 +217,7 @@ export function seed(): Data {
     manualHours: [],
     surveys: [],
     profile: { emailVerified: false, newsletter: false, socialAccounts: [], extraEmails: [], orgSlug: "minhaempresa", notificationSound: true },
+    userGroups: [],
     agendaLogs: [
       {
         id: "lg1",
@@ -514,6 +515,7 @@ export const EMPTY: Data = {
   manualHours: [],
   surveys: [],
   profile: { emailVerified: false, newsletter: false, socialAccounts: [], extraEmails: [], orgSlug: "minhaempresa", notificationSound: true },
+  userGroups: [],
   agendaLogs: [],
   agendaEmails: [],
   notifications: [],

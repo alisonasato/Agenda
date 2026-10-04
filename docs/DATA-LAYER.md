@@ -238,6 +238,14 @@ cliente na tela individual é tirá-lo de todos os `clientIds`.
 
 O "Cliente ID" dessa tela é o `accessKey` do cliente, que vai no link de agendamento próprio dele.
 
+## Grupos de usuários
+`data.userGroups` guarda os grupos de permissão da equipe: nome, descrição, os membros de
+`data.members` que pertencem a ele e as permissões escolhidas da lista fixa `MEMBER_PERMISSIONS`.
+A tela de Convidar equipe abre a lista por um botão da barra de ações.
+
+Os grupos ainda não governam nada: nenhuma tela consulta as permissões para esconder ou liberar
+alguma coisa.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

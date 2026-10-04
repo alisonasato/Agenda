@@ -497,6 +497,29 @@ export type Survey = {
 };
 
 /** The account's subscription, as "Planos" shows it. */
+/** The permissions a user group may hold, as /autocomplete/member_permissions lists them. */
+export const MEMBER_PERMISSIONS = [
+  "Cadastro de Clientes - Leitura",
+  "Cadastro de Clientes - Escrita",
+  "Cadastro de Clientes - Excluir Dados",
+  "Relatórios - Acesso ao Módulo",
+  "Agendamentos - Criar/Editar/Cancelar",
+  "Agendas - Criar/Editar/Excluir",
+  "Financeiro - Acesso a Faturamento e Pagamentos",
+] as const;
+
+/** A row of "Grupos de Usuários". */
+export type UserGroup = {
+  id: string;
+  name: string;
+  description: string;
+  /** Members of `members`, by id. */
+  memberIds: string[];
+  /** Entries of MEMBER_PERMISSIONS. */
+  permissions: string[];
+  active: boolean;
+};
+
 /** A row of an agenda's "Logs", in either of the two tabs. */
 export type AgendaLog = {
   id: string;
@@ -819,6 +842,7 @@ export type Data = {
   surveys: Survey[];
   profile: Profile;
   notifications: InboxNotification[];
+  userGroups: UserGroup[];
   agendaLogs: AgendaLog[];
   agendaEmails: AgendaEmailTemplate[];
   plan: Plan;

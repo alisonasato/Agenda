@@ -9,6 +9,7 @@ import { InlineFilter } from "../shared/InlineFilter";
 import { Modal, ModalSubmit } from "../shared/Modal";
 import { PhoneInput } from "../shared/PhoneInput";
 import { ScrollRail } from "../shared/ScrollRail";
+import { ROUTES } from "../shared/Sidebar";
 import { COUNTRY_OPTIONS, lookupCep, useGeoCascade } from "../shared/useGeoCascade";
 import { useDismiss } from "../shared/useDismiss";
 import { AlertDialog } from "../shared/AlertDialog";
@@ -745,8 +746,7 @@ export function TeamAdmin() {
               <InlineFilter label="Grupos" icon={<UsersIcon className="hinline-icon w-4 h-4" />} options={[]} values={groups} onChange={setGroups} searchable />
               <MoreFilters value={more} onChange={setMore} />
               <span className="hactionbar-sep" aria-hidden="true" />
-              {/* The user groups page isn't cloned yet. */}
-              <a href="#" className="hbtn hbtn--ghost hbtn--sm">
+              <a href={ROUTES.gruposUsuarios} className="hbtn hbtn--ghost hbtn--sm">
                 <UsersIcon />
                 <span className="hactionbar-label">Grupos de Usuários</span>
               </a>
