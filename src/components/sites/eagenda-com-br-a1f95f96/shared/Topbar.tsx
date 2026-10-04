@@ -86,10 +86,13 @@ function LanguageItems({ close }: { close: () => void }) {
 
 function Notifications() {
   const { open, setOpen, ref } = useToggle();
+  // The bell shows the unread ones; the inbox behind "Ver Todos" shows every notification.
+  const unread = useData().notifications.filter((n) => !n.read);
   return (
     <div ref={ref} className="relative">
       <button type="button" aria-label="Notificações" className={`relative tbtn${open ? " bg-slate-100" : ""}`} onClick={() => setOpen((o) => !o)}>
         <BellIcon className="w-5 h-5" />
+        {unread.length > 0 && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--color-danger)]" aria-hidden="true" />}
       </button>
       {open && (
         <div className="dropdown-panel absolute right-0 top-12 w-80 z-[70]">
@@ -100,17 +103,32 @@ function Notifications() {
           </div>
           <div className="max-h-80 overflow-y-auto scrollbar-thin p-2">
             <ul>
-              <li className="flex flex-col items-center justify-center py-10 text-center">
-                <span className="text-gray-300">
-                  <BellSleepIcon className="w-8 h-8" />
-                </span>
-                <p className="mt-3 text-sm font-semibold text-gray-700">Nenhuma notificação não lida</p>
-                <p className="text-xs text-gray-400 mt-1">Você está em dia!</p>
-              </li>
+              {unread.length ? (
+                unread.map((n) => (
+                  <li key={n.id}>
+                    <a href={ROUTES.notificacoesInbox} className="block rounded-xl px-3 py-2.5 hover:bg-slate-50 transition-colors">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{n.title}</p>
+                      <p className="text-xs text-gray-500 truncate">{n.text}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{n.at}</p>
+                    </a>
+                  </li>
+                ))
+              ) : (
+                <li className="flex flex-col items-center justify-center py-10 text-center">
+                  <span className="text-gray-300">
+                    <BellSleepIcon className="w-8 h-8" />
+                  </span>
+                  <p className="mt-3 text-sm font-semibold text-gray-700">Nenhuma notificação não lida</p>
+                  <p className="text-xs text-gray-400 mt-1">Você está em dia!</p>
+                </li>
+              )}
             </ul>
           </div>
           <div className="p-3 border-t border-slate-200 flex items-center justify-between gap-2">
-            <a href="#" className="flex items-center gap-2 py-1 text-sm text-primary hover:opacity-80 font-medium transition-colors ml-auto">
+            <a
+              href={ROUTES.notificacoesInbox}
+              className="flex items-center gap-2 py-1 text-sm text-primary hover:opacity-80 font-medium transition-colors ml-auto"
+            >
               Ver Todos
               <ArrowRightIcon className="w-4 h-4" />
             </a>

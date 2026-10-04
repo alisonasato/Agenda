@@ -74,6 +74,7 @@ const PATHS = {
   autorizarSuporte: "/users/suporte/autorizar",
   telaPublica: "/agendar/minhaempresa",
   minhaConta: "/accounts/profile",
+  notificacoesInbox: "/inbox/notifications/list",
 } as const;
 /** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
 export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };

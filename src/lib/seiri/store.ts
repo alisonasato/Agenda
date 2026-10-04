@@ -28,9 +28,9 @@ function read(): Data {
     parsed = null;
   }
   const base = seed();
-  // credits is the one fixed-shape nested object, so it is merged too: data stored before a field
-  // existed would otherwise replace it whole and leave that field undefined.
-  const data = parsed ? { ...base, ...parsed, credits: { ...base.credits, ...parsed.credits } } : base;
+  // credits and profile are the fixed-shape nested objects, so they are merged too: data stored
+  // before a field existed would otherwise replace them whole and leave that field undefined.
+  const data = parsed ? { ...base, ...parsed, credits: { ...base.credits, ...parsed.credits }, profile: { ...base.profile, ...parsed.profile } } : base;
   write(data);
   return data;
 }

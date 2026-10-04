@@ -211,6 +211,15 @@ modo que uma mudança aparece nos dois lugares e no menu "Conectado como" do top
 `orgSlug`, o nome da organização que a tabela "Organizações" mostra ao lado das filiais de
 `data.accounts`.
 
+## Notificações
+`data.notifications` é a caixa de entrada que o sino do topo e `/inbox/notifications/list`
+mostram: cada linha tem nível, título, texto, quando e se foi lida. O sino lista as não lidas e a
+página lista todas, com os filtros por nível e por status. A preferência de som fica em
+`profile.notificationSound`.
+
+Nada ainda cria notificações sozinho — elas vêm da semente. Quando alguma ação do painel passar a
+avisar, é nessa coleção que ela escreve.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

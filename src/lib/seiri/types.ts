@@ -495,6 +495,33 @@ export type Survey = {
 };
 
 /** The account's subscription, as "Planos" shows it. */
+/** A line of the notifications inbox. */
+export type InboxNotification = {
+  id: string;
+  level: NotificationLevel;
+  title: string;
+  text: string;
+  /** "dd/mm/aaaa hh:mm". */
+  at: string;
+  read: boolean;
+};
+
+export type NotificationLevel = "info" | "warning" | "success" | "error";
+
+export const NOTIFICATION_LEVELS: { value: "" | NotificationLevel; label: string }[] = [
+  { value: "", label: "Todos" },
+  { value: "info", label: "Informação" },
+  { value: "warning", label: "Alerta" },
+  { value: "success", label: "Sucesso" },
+  { value: "error", label: "Erro" },
+];
+
+export const NOTIFICATION_STATUSES: { value: "" | "unread" | "read"; label: string }[] = [
+  { value: "", label: "Todas" },
+  { value: "unread", label: "Não lidas" },
+  { value: "read", label: "Lidas" },
+];
+
 /** "Sua Conta": what the signed-in user's own account page keeps, beside their member record. */
 export type Profile = {
   emailVerified: boolean;
@@ -505,6 +532,8 @@ export type Profile = {
   extraEmails: string[];
   /** The organisation the user owns, as the Organizações table names it. */
   orgSlug: string;
+  /** The "Som ativado" toggle at the top of the notifications inbox. */
+  notificationSound: boolean;
 };
 
 export const SOCIAL_PROVIDERS = ["Facebook", "Google", "Microsoft Graph"] as const;
@@ -754,6 +783,7 @@ export type Data = {
   manualHours: ManualHours[];
   surveys: Survey[];
   profile: Profile;
+  notifications: InboxNotification[];
   plan: Plan;
   coinTransactions: CoinTransaction[];
   payments: Payment[];

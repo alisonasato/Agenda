@@ -180,7 +180,19 @@ export function seed(): Data {
     integrations: {},
     manualHours: [],
     surveys: [],
-    profile: { emailVerified: false, newsletter: false, socialAccounts: [], extraEmails: [], orgSlug: "minhaempresa" },
+    profile: { emailVerified: false, newsletter: false, socialAccounts: [], extraEmails: [], orgSlug: "minhaempresa", notificationSound: true },
+    notifications: [
+      { id: "nt1", level: "info", title: "Novo agendamento", text: "Fábio Nogueira agendou Retorno na Unidade Centro.", at: "02/10/2026 09:12", read: false },
+      { id: "nt2", level: "warning", title: "Saldo de SMS baixo", text: "Restam poucos créditos para o envio de SMS.", at: "30/09/2026 16:40", read: false },
+      {
+        id: "nt3",
+        level: "success",
+        title: "Agenda publicada",
+        text: "A Agenda Principal já aceita agendamentos pelo link público.",
+        at: "28/09/2026 11:05",
+        read: true,
+      },
+    ],
     plan: {
       name: "Plano Gratuito",
       cycle: "Mensal",
@@ -318,7 +330,8 @@ export const EMPTY: Data = {
   integrations: {},
   manualHours: [],
   surveys: [],
-  profile: { emailVerified: false, newsletter: false, socialAccounts: [], extraEmails: [], orgSlug: "minhaempresa" },
+  profile: { emailVerified: false, newsletter: false, socialAccounts: [], extraEmails: [], orgSlug: "minhaempresa", notificationSound: true },
+  notifications: [],
   plan: {
     name: "Plano Gratuito",
     cycle: "Mensal",
