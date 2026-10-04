@@ -495,6 +495,39 @@ export type Survey = {
 };
 
 /** The account's subscription, as "Planos" shows it. */
+/** A row of an agenda's "Logs", in either of the two tabs. */
+export type AgendaLog = {
+  id: string;
+  agendaId: string;
+  /** "dd/mm/aaaa hh:mm". */
+  at: string;
+  user: string;
+  /** "Criar", "Atualizar", "Adicionar" or "Remover". */
+  action: string;
+  /** Which tab the row belongs to. */
+  kind: "config" | "hours";
+  /** The setting that changed, or the weekday for an hours row. */
+  field: string;
+  /** The old and new values; for an hours row, the start and the end of the window. */
+  before: string;
+  after: string;
+  /** Set when the new value is a colour, so the row shows its swatch. */
+  color?: boolean;
+};
+
+/** A "Modelos de Email da Agenda" row. The last two labels are untranslated on the live site too. */
+export const AGENDA_EMAIL_TYPES = ["Agendamento Cancelado", "Agendamento Confirmado", "Agendamento Pendente Confirmação", "refused", "rescheduled"] as const;
+
+export type AgendaEmailTemplate = {
+  id: string;
+  agendaId: string;
+  /** One of AGENDA_EMAIL_TYPES. */
+  type: string;
+  /** "Sem título" while the template has no name of its own. */
+  name: string;
+  subject: string;
+};
+
 /** A line of the notifications inbox. */
 export type InboxNotification = {
   id: string;
@@ -784,6 +817,8 @@ export type Data = {
   surveys: Survey[];
   profile: Profile;
   notifications: InboxNotification[];
+  agendaLogs: AgendaLog[];
+  agendaEmails: AgendaEmailTemplate[];
   plan: Plan;
   coinTransactions: CoinTransaction[];
   payments: Payment[];

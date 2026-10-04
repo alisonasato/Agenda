@@ -220,6 +220,16 @@ página lista todas, com os filtros por nível e por status. A preferência de s
 Nada ainda cria notificações sozinho — elas vêm da semente. Quando alguma ação do painel passar a
 avisar, é nessa coleção que ela escreve.
 
+## Logs e modelos de e-mail da agenda
+Os dois botões pequenos de cada card de agenda abrem coleções próprias. `data.agendaEmails` guarda
+os modelos de e-mail daquela agenda — tipo, nome e assunto — que `/agendamentos/configurar_agenda/emails`
+lista. `data.agendaLogs` guarda o histórico que `/agendamentos/historico` mostra, com `kind`
+separando a aba de configurações da aba de horários: na primeira, `field`, `before` e `after` são a
+configuração e os dois valores; na segunda, são o dia da semana e o começo e o fim da janela.
+
+Nenhuma das duas é alimentada pelo resto do painel ainda: as linhas vêm da semente. Quando salvar
+uma agenda passar a registrar o que mudou, é em `agendaLogs` que a linha entra.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

@@ -47,10 +47,10 @@ export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda;
               >
                 <LinkIcon className="w-4 h-4" />
               </a>
-              <a href="#" className="btn-icon btn-icon-sm" title="Configurar Email">
+              <a href={`${ROUTES.emailsAgenda}/?id=${agenda.id}`} className="btn-icon btn-icon-sm" title="Configurar Email">
                 <ChatIcon className="w-4 h-4" />
               </a>
-              <a href="#" className="btn-icon btn-icon-sm" title="Logs">
+              <a href={`${ROUTES.logsAgenda}/?id=${agenda.id}`} className="btn-icon btn-icon-sm" title="Logs">
                 <ActivityIcon className="w-4 h-4" />
               </a>
             </div>
