@@ -201,6 +201,16 @@ Confirmar grava um cliente em `clients` e um agendamento em `appointments` com s
 é como o original deixa um agendamento externo até a agenda aceitá-lo — ele aparece em seguida na
 lista de Agendamentos e no calendário do painel.
 
+## Sua Conta
+A tela `/accounts/profile` não tem um cadastro só dela: o nome, o e-mail e o telefone do usuário
+são os do membro proprietário em `data.members`, o mesmo registro que "Convidar equipe" edita, de
+modo que uma mudança aparece nos dois lugares e no menu "Conectado como" do topo.
+
+`data.profile` guarda só o que é dessa tela: `emailVerified`, `newsletter`, `socialAccounts`
+(os provedores vinculados), `extraEmails` (os endereços adicionados além do principal) e
+`orgSlug`, o nome da organização que a tabela "Organizações" mostra ao lado das filiais de
+`data.accounts`.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

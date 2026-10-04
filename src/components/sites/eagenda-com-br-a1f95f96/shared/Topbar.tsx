@@ -1,6 +1,8 @@
 "use client";
 
 import { withBase } from "@/lib/basePath";
+import { useData } from "@/lib/seiri/store";
+import { ROUTES } from "./Sidebar";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import {
   ActivityIcon,
@@ -86,12 +88,7 @@ function Notifications() {
   const { open, setOpen, ref } = useToggle();
   return (
     <div ref={ref} className="relative">
-      <button
-        type="button"
-        aria-label="Notificações"
-        className={`relative tbtn${open ? " bg-slate-100" : ""}`}
-        onClick={() => setOpen((o) => !o)}
-      >
+      <button type="button" aria-label="Notificações" className={`relative tbtn${open ? " bg-slate-100" : ""}`} onClick={() => setOpen((o) => !o)}>
         <BellIcon className="w-5 h-5" />
       </button>
       {open && (
@@ -127,6 +124,9 @@ function Notifications() {
 type TopbarProps = { title?: string; header?: ReactNode; email: string; onToggleSidebar: () => void };
 
 export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
+  // "Sua Conta" can change the signed-in address, so the menu follows the owner's record.
+  const owner = useData().members.find((m) => m.profile === "owner");
+  const signedInAs = owner?.email || email;
   const [blueSidebar, setBlueSidebar] = useState(false);
 
   return (
@@ -165,9 +165,11 @@ export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
             <>
               <div className="hmenu-header">
                 <p className="hmenu-header-label">Conectado como</p>
-                <p className="hmenu-header-value" title={email}>{email}</p>
+                <p className="hmenu-header-value" title={signedInAs}>
+                  {signedInAs}
+                </p>
               </div>
-              <a href="#" className="hmenu-item" role="menuitem" onClick={close}>
+              <a href={ROUTES.minhaConta} className="hmenu-item" role="menuitem" onClick={close}>
                 <UserCircleIcon className="hmenu-item-icon w-4 h-4" />
                 <span className="hmenu-item-label">Minha Conta</span>
               </a>

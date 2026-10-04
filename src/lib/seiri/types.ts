@@ -495,6 +495,20 @@ export type Survey = {
 };
 
 /** The account's subscription, as "Planos" shows it. */
+/** "Sua Conta": what the signed-in user's own account page keeps, beside their member record. */
+export type Profile = {
+  emailVerified: boolean;
+  newsletter: boolean;
+  /** Providers already connected: "Facebook", "Google" or "Microsoft Graph". */
+  socialAccounts: string[];
+  /** Addresses added beside the member's own, none of them verified yet. */
+  extraEmails: string[];
+  /** The organisation the user owns, as the Organizações table names it. */
+  orgSlug: string;
+};
+
+export const SOCIAL_PROVIDERS = ["Facebook", "Google", "Microsoft Graph"] as const;
+
 export type Plan = {
   name: string;
   /** "Mensal" or "Anual". */
@@ -739,6 +753,7 @@ export type Data = {
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
+  profile: Profile;
   plan: Plan;
   coinTransactions: CoinTransaction[];
   payments: Payment[];

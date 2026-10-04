@@ -488,8 +488,7 @@ function PrivacyStep() {
           <p className="halert-description">
             É necessário verificar o e-mail do seu usuário para habilitar o duplo fator de organização para todos os membros da organização.
           </p>
-          {/* The profile page isn't cloned yet. */}
-          <a className="text-primary underline" href="#">
+          <a className="text-primary underline" href={ROUTES.minhaConta}>
             Clique aqui
           </a>
         </Alert>
