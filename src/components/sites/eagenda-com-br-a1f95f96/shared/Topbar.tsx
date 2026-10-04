@@ -173,7 +173,9 @@ export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
                 <UserCircleIcon className="hmenu-item-icon w-4 h-4" />
                 <span className="hmenu-item-label">Minha Conta</span>
               </a>
-              <a href="#" className="hmenu-item" role="menuitem" onClick={close}>
+              {/* The original's /agendamentos/meus-agendamentos/ lists what the signed-in user booked as a
+                  client somewhere; with none, it redirects to the agendas, which is what this does. */}
+              <a href={ROUTES.configurarAgendas} className="hmenu-item" role="menuitem" onClick={close}>
                 <CalendarIcon className="hmenu-item-icon w-4 h-4" />
                 <span className="hmenu-item-label">Meus agendamentos</span>
               </a>
