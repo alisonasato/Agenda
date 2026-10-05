@@ -853,6 +853,7 @@ export type Data = {
   supportCode: SupportCode;
   /** The token the WhatsApp activation screen asks the user to send. */
   whatsappCode: string;
+  teamLogs: TeamLog[];
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
@@ -1106,3 +1107,24 @@ export const BILLING_PERSON_TYPES: { value: string; label: string }[] = [
   { value: "1", label: "Pessoa Física" },
   { value: "2", label: "Pessoa Jurídica" },
 ];
+
+/** A row of "Histórico de Atividades de Usuários": one action the team took on an appointment. */
+export type TeamLog = {
+  id: string;
+  /** When the action happened, "dd/mm/aaaa hh:mm". */
+  at: string;
+  agendaId: string;
+  /** The slot the action touched, "dd/mm/aaaa hh:mm". */
+  slotAt: string;
+  /** The appointment's short code, shown as a `<code>`. */
+  code: string;
+  /** The member's e-mail, which is how the original names the user. */
+  user: string;
+  action: string;
+};
+
+/** The chip tone each action is painted with; anything else falls back to the plain one. */
+export const TEAM_LOG_TONES: Record<string, string> = {
+  "Agendamento criado": "hchip--accent",
+  "Agendamento cancelado": "hchip--danger",
+};

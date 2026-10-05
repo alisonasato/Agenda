@@ -287,6 +287,15 @@ código" grava um token novo.
 O relógio de 10 minutos e o estado "já enviei" são da tela, não dos dados: são efêmeros e
 recomeçam a cada visita.
 
+## Histórico da equipe
+`data.teamLogs` guarda o que a equipe fez com agendamentos: quando, em qual agenda, para qual
+horário, o identificador do agendamento, o e-mail de quem agiu e a ação. A tela de Histórico de
+Atividades de Usuários lê tudo, e `?member=<id>` reduz ao e-mail daquele membro — é assim que o
+ícone de histórico de Administrar Equipe abre o histórico de uma pessoa só.
+
+É um registro inerte: nenhuma outra tela escreve nele, então criar ou cancelar um agendamento no
+clone não gera linha aqui.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e
