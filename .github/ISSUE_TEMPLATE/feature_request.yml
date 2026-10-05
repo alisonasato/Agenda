@@ -1,0 +1,25 @@
+name: Nova tela ou melhoria
+description: Sugerir uma tela que falta ou uma mudança em uma existente
+title: "[Melhoria]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: O que falta
+      description: Qual tela, botão ou comportamento ainda não existe ou não funciona como deveria?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Como deveria funcionar
+      description: Inclua o caminho da tela original e prints, se tiver.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto adicional

@@ -1,25 +1,23 @@
 {
-  "name": "ai-website-clone-template",
+  "name": "seiri",
   "version": "0.4.0",
   "private": true,
-  "description": "Clone any website into a clean, modern Next.js codebase using AI coding agents",
-  "author": "JCodesMore",
+  "description": "Protótipo do Seiri, um sistema de agendamento online (Next.js 16, React 19, Tailwind CSS v4)",
+  "author": "alisonasato",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JCodesMore/ai-website-cloner-template.git"
+    "url": "https://github.com/alisonasato/Agenda.git"
   },
-  "homepage": "https://github.com/JCodesMore/ai-website-cloner-template",
+  "homepage": "https://alisonasato.github.io/Agenda/",
   "bugs": {
-    "url": "https://github.com/JCodesMore/ai-website-cloner-template/issues"
+    "url": "https://github.com/alisonasato/Agenda/issues"
   },
   "keywords": [
-    "claude-code",
-    "website-clone",
-    "reverse-engineering",
+    "agendamento",
+    "scheduling",
     "nextjs",
-    "ai",
-    "template",
+    "react",
     "tailwindcss",
     "shadcn-ui"
   ],
