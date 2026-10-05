@@ -29,7 +29,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "test": "node --test 'src/**/*.test.mjs'"
   },
   "dependencies": {
     "@types/qrcode": "^1.5.6",

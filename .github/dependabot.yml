@@ -6,6 +6,12 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Fixados para se comportar como no site original; majors só quando alguém decidir migrar.
+    ignore:
+      - dependency-name: intl-tel-input
+        update-types: ["version-update:semver-major"]
+      - dependency-name: ckeditor5
+        update-types: ["version-update:semver-major"]
     groups:
       npm-minor-patch:
         update-types:

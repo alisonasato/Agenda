@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+# A newer push to the same PR cancels the run still going; pushes to main always run to the end.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -31,6 +36,9 @@ jobs:
 
       - name: Type check
         run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
 
       - name: Build
         run: npm run build
