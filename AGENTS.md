@@ -8,60 +8,75 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Website Reverse-Engineer Template
+# Seiri
 
-## What This Is
-A reusable template for reverse-engineering any website into a clean, modern Next.js codebase using AI coding agents. The Next.js + shadcn/ui + Tailwind v4 base is pre-scaffolded — just run `/clone-website <url1> [<url2> ...]`.
+Prototype of Seiri, an online scheduling system, rebuilt screen by screen from the eAgenda dashboard
+(eagenda.com.br). There is no backend: every screen reads and writes the browser's localStorage.
 
 ## Tech Stack
 - **Framework:** Next.js 16 (App Router, React 19, TypeScript strict)
-- **UI:** shadcn/ui (Radix primitives, Tailwind CSS v4, `cn()` utility)
-- **Icons:** Lucide React (default — will be replaced/supplemented by extracted SVGs)
-- **Styling:** Tailwind CSS v4 with oklch design tokens
-- **Deployment:** Vercel
+- **Styling:** the original's own class names (`hbtn`, `htable-row`, `hchip`...), compiled into
+  `src/app/eagenda.css` by `scripts/build-css-eagenda.sh`; Tailwind CSS v4 utilities for the rest
+- **Icons:** SVGs extracted from the original in `src/components/sites/eagenda-com-br-a1f95f96/shared/icons.tsx`
+- **Libraries:** chart.js (charts), ckeditor5 (rich text), intl-tel-input (phone field),
+  qrcode, lottie-web (onboarding animations), lucide-react (a few icons)
+- **Deployment:** GitHub Pages, as a static export (`.github/workflows/pages.yml`),
+  at https://alisonasato.github.io/Agenda/
 
 ## Commands
 - `npm run dev` — Start dev server
 - `npm run build` — Production build
 - `npm run lint` — ESLint check
 - `npm run typecheck` — TypeScript check
-- `npm run check` — Run lint + typecheck + build
+- `npm run check` — Run lint + typecheck + build (what CI runs)
+- `GITHUB_PAGES=1 npx next build` — Static export to `out/`, as Pages builds it
+- `node <file>.test.mjs` — Unit tests; each `*.test.mjs` under `src/` runs on its own
+
+`next dev` does not hydrate routes that use `<Suspense>` + `useSearchParams`; verify those on the
+static export (see `docs/DATA-LAYER.md`, "Notas de ambiente").
 
 ## Code Style
 - TypeScript strict mode, no `any`
 - Named exports, PascalCase components, camelCase utils
-- Tailwind utility classes, no inline styles
+- Reuse the original's classes from `eagenda.css` before adding Tailwind utilities; no inline styles
 - 2-space indentation
 - Responsive: mobile-first
+- Links to the app's own files outside `next/link` (plain `<a>`, `<img>`, `fetch()`) go through
+  `withBase()` from `src/lib/basePath.ts`, so they work under `/Agenda` on Pages
 
 ## Design Principles
-- **Pixel-perfect emulation** — match the target's spacing, colors, typography exactly
-- **No personal aesthetic changes during emulation phase** — match 1:1 first, customize later
-- **Real content** — use actual text and assets from the target site, not placeholders
-- **Beauty-first** — every pixel matters
+- **Pixel-perfect emulation** — match the original's spacing, colors, typography exactly
+- **No personal aesthetic changes** — match 1:1 first, customize later
+- **Real content** — use the original's actual text and assets, never placeholders; when something
+  could not be seen in the original (e.g. a table row on an empty account), say so in that page's notes
 
 ## Project Structure
 ```
 src/
-  app/              # Next.js routes
-  components/       # React components
-    ui/             # shadcn/ui primitives
-    icons.tsx       # Extracted SVG icons as React components
+  app/                                   # one route per cloned screen
+    eagenda.css                          # the original's compiled styles (generated)
+    globals.css                          # Tailwind entry and the theme tokens behind bg-primary, rounded-xl...
+  components/sites/eagenda-com-br-a1f95f96/
+    <page-key>/                          # components of one screen
+    shared/                              # shell, sidebar, topbar, modals, inputs, icons
   lib/
-    utils.ts        # cn() utility (shadcn)
-  types/            # TypeScript interfaces
-  hooks/            # Custom React hooks
+    basePath.ts                          # withBase() for the Pages sub-path
+    seiri/                               # data layer: types, seed, localStorage store, rules
+  types/                                 # declarations for untyped packages
 public/
-  images/           # Downloaded images from target site
-  videos/           # Downloaded videos from target site
-  seo/              # Favicons, OG images, webmanifest
+  brand/                                 # Seiri logo and favicon
+  sites/eagenda-com-br-a1f95f96/         # assets downloaded from the original, per screen
 docs/
-  research/         # Inspection output (design tokens, components, layout)
-  design-references/ # Screenshots and visual references
-scripts/            # Asset download scripts
+  DATA-LAYER.md                          # how the data layer works, collection by collection
+  research/eagenda-com-br-a1f95f96/      # per-screen notes: PAGE_TOPOLOGY, BEHAVIORS, component specs
+  design-references/                     # screenshots (written by /clone-website)
+scripts/                                 # CSS build and asset download scripts
 ```
+
+## Adding a screen
+New screens are cloned with `/clone-website` (`.claude/skills/clone-website/SKILL.md`), which writes
+the notes under `docs/research/` before building. Screens that need data add a collection to
+`src/lib/seiri/types.ts` and `seed.ts` and a section to `docs/DATA-LAYER.md`.
 
 ## MOST IMPORTANT NOTES
 - When launching Claude Code agent teams, ALWAYS have each teammate work in their own worktree branch and merge everyone's work at the end, resolving any merge conflicts smartly since you are basically serving the orchestrator role and have full context to our goals, work given, work achieved, and desired outcomes.
-
-@docs/research/INSPECTION_GUIDE.md

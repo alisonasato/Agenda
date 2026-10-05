@@ -12,6 +12,11 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `store.ts` | `useData()`, `update()`, `reset()` e `nextId()` |
 | `slots.ts` | Os slots de 30 minutos do calendário: `slotsOf()`, `slotColor()`, `hourRange()` |
 | `select.ts` | Formatação (`formatWhen`, `formatMoney`, `formatDuration`), o filtro de período `inPreset()` e o `expand()` que troca ids por nomes |
+| `booking.ts` | Os dias e horários que a tela pública de agendamento oferece |
+| `csv.ts` | Exportar e importar CSV (ver abaixo) |
+| `holidays.ts` | Feriados customizados e nacionais (ver abaixo) |
+| `limits.ts` | Limites de agendamentos e listas de bloqueio (ver abaixo) |
+| `sends.ts` | Os envios que Acompanhamento mostra (ver abaixo) |
 
 ## Como funciona
 - Tudo vive em **localStorage**, chave `seiri.data.v1`. O primeiro acesso grava o seed; dali em diante
