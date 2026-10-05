@@ -6,12 +6,29 @@ import { CalendarIcon, CloseCircleIcon, SearchSolidIcon, SettingsIcon } from "..
 import { ROUTES } from "../shared/Sidebar";
 import { useData } from "@/lib/seiri/store";
 import { dayKey, keyFromToday, withinDays } from "@/lib/seiri/select";
+import { slotsOf } from "@/lib/seiri/slots";
+import type { Data } from "@/lib/seiri/types";
 
 type Agenda = { name: string; today: number; tomorrow: number; next7: number; occupancy: string; active: boolean };
 
 const SLOTS = 5;
 
 const norm = (s: string) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+/** "Taxa Ocupação": how much of the next seven days' capacity is already taken. */
+function occupancyOf(data: Data, agendaId: string, now: Date) {
+  let capacity = 0;
+  let taken = 0;
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+    for (const slot of slotsOf(data, agendaId, day)) {
+      if (slot.blocked) continue;
+      capacity += slot.max;
+      taken += slot.appointments.length;
+    }
+  }
+  return capacity ? Math.round((taken / capacity) * 100) : 0;
+}
 
 function StatusChip({ active }: { active: boolean }) {
   return <span className={`hchip ${active ? "hchip--success" : "hchip--danger"} hchip--primary hchip--sm`}>{active ? "Ativo" : "Inativo"}</span>;
@@ -58,7 +75,7 @@ export function AgendasSection() {
       today: mine.filter((x) => dayKey(x.start) === keyFromToday(0, now)).length,
       tomorrow: mine.filter((x) => dayKey(x.start) === keyFromToday(1, now)).length,
       next7,
-      occupancy: next7 ? `${next7} horário(s) ocupado(s) nos próximos 7 dias` : "Sem horários ocupados",
+      occupancy: `${occupancyOf(data, a.id, now)}%`,
       active: a.active,
     };
   });
@@ -137,7 +154,8 @@ export function AgendasSection() {
                       <span className="font-semibold text-gray-900 inter-semibold">{a.next7}</span>
                     </td>
                     <td className="htable-cell hidden xl:table-cell">
-                      <span className="hchip hchip--danger hchip--primary hchip--sm">{a.occupancy}</span>
+                      {/* Only 0% was observable on the verified account, where the chip is the success tone. */}
+                      <span className="hchip hchip--success hchip--primary hchip--sm">{a.occupancy}</span>
                     </td>
                     <td className="htable-cell hidden sm:table-cell">
                       <StatusChip active={a.active} />
@@ -200,7 +218,7 @@ export function AgendasSection() {
                       <Activity strokeWidth={1.5} className="w-4 h-4 text-gray-400" />
                       <span className="text-xs font-semibold text-gray-600 inter-semibold">Taxa Ocupação</span>
                     </div>
-                    <span className="hchip hchip--danger hchip--primary hchip--sm">{a.occupancy}</span>
+                    <span className="hchip hchip--success hchip--primary hchip--sm">{a.occupancy}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
