@@ -28,9 +28,9 @@ Prototype of Seiri, an online scheduling system, rebuilt screen by screen from t
 - `npm run build` — Production build
 - `npm run lint` — ESLint check
 - `npm run typecheck` — TypeScript check
-- `npm run check` — Run lint + typecheck + build (what CI runs)
+- `npm test` — Unit tests: every `*.test.mjs` under `src/`, via `node --test`
+- `npm run check` — Run lint + typecheck + tests + build (what CI runs)
 - `GITHUB_PAGES=1 npx next build` — Static export to `out/`, as Pages builds it
-- `node <file>.test.mjs` — Unit tests; each `*.test.mjs` under `src/` runs on its own
 
 `next dev` does not hydrate routes that use `<Suspense>` + `useSearchParams`; verify those on the
 static export (see `docs/DATA-LAYER.md`, "Notas de ambiente").

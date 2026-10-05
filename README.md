@@ -19,9 +19,9 @@ npm run dev        # servidor de desenvolvimento
 npm run build      # build de produção
 npm run lint       # ESLint
 npm run typecheck  # checagem de tipos
-npm run check      # lint + typecheck + build (o mesmo que o CI roda)
+npm run check      # lint + typecheck + testes + build (o mesmo que o CI roda)
 GITHUB_PAGES=1 npx next build   # export estático em out/, como o GitHub Pages
-node <arquivo>.test.mjs         # testes unitários (cada *.test.mjs em src/ roda sozinho)
+npm test                        # testes unitários (todos os *.test.mjs em src/)
 ```
 
 ## Estrutura
