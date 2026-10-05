@@ -31,6 +31,7 @@ src/app/                 # rotas (uma por tela) e eagenda.css, o CSS gerado a pa
 src/components/sites/    # componentes das telas (shared/ = peças reutilizadas)
 src/lib/seiri/           # camada de dados: tipos, dados iniciais, localStorage e regras
 public/                  # marca do Seiri e imagens/dados baixados do original
+docs/FUNCIONALIDADES.md  # guia de tudo o que dá para fazer, tela por tela
 docs/DATA-LAYER.md       # como a camada de dados funciona
 docs/database/           # proposta de banco PostgreSQL: schema.sql e diagramas
 docs/research/           # notas de extração e verificação de cada tela
