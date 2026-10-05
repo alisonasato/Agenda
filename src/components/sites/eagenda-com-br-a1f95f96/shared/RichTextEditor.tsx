@@ -55,6 +55,8 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
     let editor: ClassicEditor | undefined;
     let cancelled = false;
     ClassicEditor.create(hostRef.current!, {
+      // CKEditor 5 refuses to start without a key since v44; "GPL" is the open-source one.
+      licenseKey: "GPL",
       plugins: [
         Essentials,
         Autoformat,
@@ -117,12 +119,15 @@ export function RichTextEditor({ editorRef, name, id, language, maxLength, class
       translations: [ptBr],
       // Heading titles (Paragraph, Heading 1…) are translated by CKEditor itself.
       language: { ui: "pt-br", content: language ?? "pt-br" },
-    }).then((e) => {
-      if (cancelled) return void destroy(e);
-      editor = e;
-      if (initialDataRef.current) e.setData(initialDataRef.current);
-      if (editorRef) editorRef.current = e;
-    });
+    })
+      .then((e) => {
+        if (cancelled) return void destroy(e);
+        editor = e;
+        if (initialDataRef.current) e.setData(initialDataRef.current);
+        if (editorRef) editorRef.current = e;
+      })
+      // Without this the field would just stay invisible: create() rejects and nothing says so.
+      .catch((err: unknown) => console.error("CKEditor não iniciou:", err));
     return () => {
       cancelled = true;
       if (editorRef) editorRef.current = null;
