@@ -128,7 +128,8 @@ export function TrendChart() {
             boxWidth: 8,
             boxHeight: 8,
             usePointStyle: true,
-            titleFont: { weight: "600" },
+            // chart.js 4.5 types the weight as a number or one of its keywords, no longer a numeric string.
+            titleFont: { weight: 600 },
           },
         },
         scales: {
