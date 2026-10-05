@@ -278,6 +278,15 @@ extra), `PLAN_FEATURES` (as funcionalidades pagas) e `BILLING_PERSON_TYPES`.
 `data.plan` continua sendo o plano ATUAL da conta, que é o que Meu Plano mostra. Contratar não
 muda nada: o clone não tem provedor de pagamento, então a tela de confirmação para no aviso.
 
+## Ativação do WhatsApp
+`data.whatsappCode` guarda o token que a tela de Ativar WhatsApp pede para o usuário enviar.
+Ele mora nos dados, e não num `useState` sorteado, porque a tela é pré-renderizada: um valor
+aleatório gerado na renderização sairia diferente no servidor e no navegador. "Gerar novo
+código" grava um token novo.
+
+O relógio de 10 minutos e o estado "já enviei" são da tela, não dos dados: são efêmeros e
+recomeçam a cada visita.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

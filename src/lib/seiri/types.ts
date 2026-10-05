@@ -851,6 +851,8 @@ export type Data = {
   accessLists: AccessList[];
   supportVisits: SupportVisit[];
   supportCode: SupportCode;
+  /** The token the WhatsApp activation screen asks the user to send. */
+  whatsappCode: string;
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];

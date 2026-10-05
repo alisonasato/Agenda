@@ -80,6 +80,7 @@ const PATHS = {
   acessoIndividual: "/users/clientes_autorizados",
   gruposUsuarios: "/users/listar_grupos",
   novaEtapa: "/users/grupos/novo",
+  ativarWhatsapp: "/agendamentos/configurar/whatsapp-ativacao",
   alterarPlano: "/users/alterar-plano",
   confirmarPlano: "/users/confirmar-plano",
   convitesCadastro: "/users/convites-cadastro",
