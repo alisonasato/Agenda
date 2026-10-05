@@ -6,7 +6,11 @@ TypeScript) com Tailwind CSS v4.
 ## Estado atual
 
 A interface está sendo construída tela a tela a partir de uma referência visual. Ainda não há
-backend: os dados são fictícios e nada é salvo.
+backend: os dados de exemplo são fictícios e as alterações ficam salvas só no navegador
+(localStorage) — ver `docs/DATA-LAYER.md`.
+
+Versão publicada: https://alisonasato.github.io/Agenda/ (GitHub Pages, atualizada a cada push em
+`main`).
 
 ## Comandos
 
@@ -15,15 +19,19 @@ npm run dev        # servidor de desenvolvimento
 npm run build      # build de produção
 npm run lint       # ESLint
 npm run typecheck  # checagem de tipos
-npm run check      # lint + typecheck + build
+npm run check      # lint + typecheck + build (o mesmo que o CI roda)
+GITHUB_PAGES=1 npx next build   # export estático em out/, como o GitHub Pages
+node <arquivo>.test.mjs         # testes unitários (cada *.test.mjs em src/ roda sozinho)
 ```
 
 ## Estrutura
 
 ```
-src/app/                 # rotas
+src/app/                 # rotas (uma por tela) e eagenda.css, o CSS gerado a partir do original
 src/components/sites/    # componentes das telas (shared/ = peças reutilizadas)
-public/                  # imagens, dados geográficos e marca
+src/lib/seiri/           # camada de dados: tipos, dados iniciais, localStorage e regras
+public/                  # marca do Seiri e imagens/dados baixados do original
+docs/DATA-LAYER.md       # como a camada de dados funciona
 docs/research/           # notas de extração e verificação de cada tela
 scripts/                 # geração do CSS e download de dados
 ```
