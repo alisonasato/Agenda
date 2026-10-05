@@ -80,6 +80,8 @@ const PATHS = {
   acessoIndividual: "/users/clientes_autorizados",
   gruposUsuarios: "/users/listar_grupos",
   novaEtapa: "/users/grupos/novo",
+  alterarPlano: "/users/alterar-plano",
+  confirmarPlano: "/users/confirmar-plano",
   convitesCadastro: "/users/convites-cadastro",
   cadastrosRecebidos: "/users/convites-cadastro/cadastros",
   textosConvite: "/users/convites-cadastro/textos-de-email",

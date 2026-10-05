@@ -269,6 +269,15 @@ Três coleções cobrem o fluxo de convidar clientes a se cadastrarem sozinhos:
 
 Nada sai por e-mail e nenhum acesso é criado: aprovar um cadastro só muda o status da linha.
 
+## Planos à venda
+O catálogo de planos não é dado do usuário, então mora em constantes de `types.ts` e não no
+`store`: `PLAN_OFFERS` (os quatro planos com preço mensal e anual), `PLAN_PRICINGS` (as quatro
+frequências de cada um, com os ids que o original posta), `PLAN_EXTRAS` (o preço de cada unidade
+extra), `PLAN_FEATURES` (as funcionalidades pagas) e `BILLING_PERSON_TYPES`.
+
+`data.plan` continua sendo o plano ATUAL da conta, que é o que Meu Plano mostra. Contratar não
+muda nada: o clone não tem provedor de pagamento, então a tela de confirmação para no aviso.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Combobox } from "../shared/Combobox";
 import { DatePicker } from "../shared/DatePicker";
+import { cnpjMask, cpfMask } from "../shared/masks";
 import { PhoneInput } from "../shared/PhoneInput";
 import { SaveBar } from "../shared/SaveBar";
 import { SaveIcon, SearchSolidIcon, WarningTriangleIcon } from "../shared/icons";
@@ -18,23 +19,6 @@ const GENDERS: { value: Gender; label: string }[] = [
   { value: "Outro", label: "Outro" },
   { value: "Prefiro não informar", label: "Prefiro não informar" },
 ];
-
-const cpfMask = (value: string) => {
-  const d = value.replace(/\D/g, "").slice(0, 11);
-  if (d.length <= 3) return d;
-  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
-  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
-  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
-};
-
-const cnpjMask = (value: string) => {
-  const d = value.replace(/\D/g, "").slice(0, 14);
-  return d
-    .replace(/^(\d{2})(\d)/, "$1.$2")
-    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-    .replace(/\.(\d{3})(\d)/, ".$1/$2")
-    .replace(/(\d{4})(\d)/, "$1-$2");
-};
 
 const parseBR = (text?: string) => {
   const [day, month, year] = (text ?? "").split("/").map(Number);
