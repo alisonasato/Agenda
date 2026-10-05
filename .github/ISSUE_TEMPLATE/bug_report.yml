@@ -1,0 +1,57 @@
+name: Erro
+description: Algo na interface não funciona ou está diferente da referência
+title: "[Erro]: "
+labels: ["bug"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Tela
+      description: Caminho da tela afetada.
+      placeholder: /users/convites-cadastro
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: O que aconteceu
+      description: Descreva o erro. Prints ajudam.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Abrir a tela...
+        2. Clicar em...
+        3. Ver...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que era esperado
+      description: Como a tela original se comporta, se souber.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Onde
+      options:
+        - GitHub Pages
+        - Local (npm run dev)
+        - Local (build de produção)
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador
+      placeholder: Chrome 140, Safari 19...
