@@ -55,6 +55,7 @@ static export (see `docs/DATA-LAYER.md`, "Notas de ambiente").
 src/
   app/                                   # one route per cloned screen
     eagenda.css                          # the original's compiled styles (generated)
+    globals.css                          # Tailwind entry and the theme tokens behind bg-primary, rounded-xl...
   components/sites/eagenda-com-br-a1f95f96/
     <page-key>/                          # components of one screen
     shared/                              # shell, sidebar, topbar, modals, inputs, icons
