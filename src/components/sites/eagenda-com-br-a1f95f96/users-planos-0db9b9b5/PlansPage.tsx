@@ -96,24 +96,24 @@ export function PlansPage() {
               </p>
             </div>
             <div className="halert-actions">
-              <button type="button" className="hbtn hbtn--primary hbtn--sm">
+              <a href={`${ROUTES.confirmarPlano}/?id=3`} className="hbtn hbtn--primary hbtn--sm">
                 <ArrowRightIcon className="w-4 h-4" />
                 Assinar Plano Básico
-              </button>
+              </a>
             </div>
           </div>
         </div>
       )}
 
       <div className="flex flex-wrap items-center gap-2 hui-reveal mt-4">
-        <button type="button" className="hbtn hbtn--primary">
+        <a href={`${ROUTES.confirmarPlano}/?id=3`} className="hbtn hbtn--primary">
           <ArrowRightIcon className="w-4 h-4" />
           Assinar Plano Básico · BRL 45/mês
-        </button>
-        <button type="button" className="hbtn hbtn--secondary">
+        </a>
+        <a href={ROUTES.alterarPlano} className="hbtn hbtn--secondary">
           <CrownIcon className="w-4 h-4" />
           Ver todos os planos
-        </button>
+        </a>
         <a href={ROUTES.extrato} className="hbtn hbtn--secondary">
           <WalletIcon className="w-4 h-4" />
           Detalhes de AgendaCoins

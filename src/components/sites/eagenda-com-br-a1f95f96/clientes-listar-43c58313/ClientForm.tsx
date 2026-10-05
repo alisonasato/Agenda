@@ -4,20 +4,13 @@ import { useState } from "react";
 import { Modal } from "../shared/Modal";
 import { Combobox } from "../shared/Combobox";
 import { DatePicker } from "../shared/DatePicker";
+import { cpfMask } from "../shared/masks";
 import { PhoneInput } from "../shared/PhoneInput";
 import { CheckCircleIcon, DangerCircleIcon, InfoIcon, MapPinIcon } from "../shared/icons";
 import { BRAZIL, COUNTRY_OPTIONS, useGeoCascade } from "../shared/useGeoCascade";
 import { nextId, update, useData } from "@/lib/seiri/store";
 import { fold } from "@/lib/seiri/select";
 import { MARITAL_STATUS, type Address, type Client } from "@/lib/seiri/types";
-
-const cpfMask = (value: string) => {
-  const d = value.replace(/\D/g, "").slice(0, 11);
-  if (d.length <= 3) return d;
-  if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
-  if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
-  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
-};
 
 const cepMask = (value: string) => {
   const d = value.replace(/\D/g, "").slice(0, 8);

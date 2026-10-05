@@ -851,6 +851,9 @@ export type Data = {
   accessLists: AccessList[];
   supportVisits: SupportVisit[];
   supportCode: SupportCode;
+  /** The token the WhatsApp activation screen asks the user to send. */
+  whatsappCode: string;
+  teamLogs: TeamLog[];
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
@@ -1029,4 +1032,99 @@ export type InviteEmailTemplate = {
   /** "Mensagem extra": added to the system's message, never replacing it. */
   body: string;
   isDefault: boolean;
+};
+
+/** The catalogue "Alterar Plano" lists; prices are the ones the live page shows. */
+export type PlanOffer = {
+  /** The id the original puts in /users/confirmar-plano/<id>. */
+  id: string;
+  name: string;
+  /** Reais per month on the monthly cycle, and what the annual cycle bills per month. */
+  monthly: string;
+  annualMonthly: string;
+  /** Reais billed once a year, shown only while the annual cycle is picked. */
+  annualTotal: number;
+  appointments: number;
+  users: number;
+};
+
+export const PLAN_OFFERS: PlanOffer[] = [
+  { id: "3", name: "Plano Básico", monthly: "45", annualMonthly: "40,67", annualTotal: 488, appointments: 500, users: 3 },
+  { id: "4", name: "Plano Intermediário", monthly: "90", annualMonthly: "81,33", annualTotal: 976, appointments: 1000, users: 3 },
+  { id: "5", name: "Plano Avançado", monthly: "172", annualMonthly: "157,17", annualTotal: 1886, appointments: 2000, users: 3 },
+  { id: "220", name: "Plano Empresa", monthly: "387", annualMonthly: "349,92", annualTotal: 4199, appointments: 5000, users: 3 },
+];
+
+/** One row of "Frequência de Pagamento"; the ids are the ones the original posts. */
+export type PlanPricing = { value: string; label: string };
+
+/** Keyed by PlanOffer id. */
+export const PLAN_PRICINGS: Record<string, PlanPricing[]> = {
+  "3": [
+    { value: "1", label: "R$ 45,00 para pagamento Mensal" },
+    { value: "6", label: "R$ 129,00 para pagamento Trimestral. Equivalente a R$ 43,00/mês" },
+    { value: "7", label: "R$ 255,00 para pagamento Semestral. Equivalente a R$ 42,50/mês" },
+    { value: "5", label: "R$ 488,00 para pagamento Anual. Equivalente a R$ 40,67/mês" },
+  ],
+  "4": [
+    { value: "2", label: "R$ 90,00 para pagamento Mensal" },
+    { value: "8", label: "R$ 261,00 para pagamento Trimestral. Equivalente a R$ 87,00/mês" },
+    { value: "9", label: "R$ 510,00 para pagamento Semestral. Equivalente a R$ 85,00/mês" },
+    { value: "10", label: "R$ 976,00 para pagamento Anual. Equivalente a R$ 81,33/mês" },
+  ],
+  "5": [
+    { value: "3", label: "R$ 172,00 para pagamento Mensal" },
+    { value: "11", label: "R$ 497,00 para pagamento Trimestral. Equivalente a R$ 165,67/mês" },
+    { value: "12", label: "R$ 974,00 para pagamento Semestral. Equivalente a R$ 162,33/mês" },
+    { value: "13", label: "R$ 1886,00 para pagamento Anual. Equivalente a R$ 157,17/mês" },
+  ],
+  "220": [
+    { value: "18", label: "R$ 387,00 para pagamento Mensal" },
+    { value: "19", label: "R$ 1118,00 para pagamento Trimestral. Equivalente a R$ 372,67/mês" },
+    { value: "20", label: "R$ 2191,00 para pagamento Semestral. Equivalente a R$ 365,17/mês" },
+    { value: "21", label: "R$ 4199,00 para pagamento Anual. Equivalente a R$ 349,92/mês" },
+  ],
+};
+
+/** "Personalize seu Plano": what each extra unit costs on top of the plan. */
+export const PLAN_EXTRAS: { name: string; label: string; price: string }[] = [
+  { name: "limite_agendamentos", label: "Agendamentos Extras por mês", price: "R$ 0,09/agendamento" },
+  { name: "limite_usuarios", label: "Usuários adicionais", price: "R$ 5,90/usuário" },
+  { name: "limite_contas", label: "Contas adicionais", price: "R$ 15,00/conta" },
+  { name: "limite_unidades", label: "Unidades de atendimento adicionais", price: "R$ 9,90/unidade" },
+];
+
+/** "Funcionalidades Extras", with the original's ids and its own "+ 0.00/mês" spelling. */
+export const PLAN_FEATURES: { value: string; label: string }[] = [
+  { value: "2", label: "Incorporar Tela de Agendamento em Seu Site: + 0.00/mês" },
+  { value: "7", label: "Upload de arquivos no formulário de agendamento: + 9.00/mês" },
+  { value: "8", label: "Envio de Pesquisa de Satisfação: + 10.00/mês" },
+  { value: "10", label: "Upload de arquivos grandes no formulário de agendamento: + 18.00/mês" },
+  { value: "5", label: "Enviar e-mails usando o seu domínio comercial: + 30.00/mês" },
+];
+
+export const BILLING_PERSON_TYPES: { value: string; label: string }[] = [
+  { value: "1", label: "Pessoa Física" },
+  { value: "2", label: "Pessoa Jurídica" },
+];
+
+/** A row of "Histórico de Atividades de Usuários": one action the team took on an appointment. */
+export type TeamLog = {
+  id: string;
+  /** When the action happened, "dd/mm/aaaa hh:mm". */
+  at: string;
+  agendaId: string;
+  /** The slot the action touched, "dd/mm/aaaa hh:mm". */
+  slotAt: string;
+  /** The appointment's short code, shown as a `<code>`. */
+  code: string;
+  /** The member's e-mail, which is how the original names the user. */
+  user: string;
+  action: string;
+};
+
+/** The chip tone each action is painted with; anything else falls back to the plain one. */
+export const TEAM_LOG_TONES: Record<string, string> = {
+  "Agendamento criado": "hchip--accent",
+  "Agendamento cancelado": "hchip--danger",
 };

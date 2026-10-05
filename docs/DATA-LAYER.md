@@ -274,6 +274,33 @@ Três coleções cobrem o fluxo de convidar clientes a se cadastrarem sozinhos:
 
 Nada sai por e-mail e nenhum acesso é criado: aprovar um cadastro só muda o status da linha.
 
+## Planos à venda
+O catálogo de planos não é dado do usuário, então mora em constantes de `types.ts` e não no
+`store`: `PLAN_OFFERS` (os quatro planos com preço mensal e anual), `PLAN_PRICINGS` (as quatro
+frequências de cada um, com os ids que o original posta), `PLAN_EXTRAS` (o preço de cada unidade
+extra), `PLAN_FEATURES` (as funcionalidades pagas) e `BILLING_PERSON_TYPES`.
+
+`data.plan` continua sendo o plano ATUAL da conta, que é o que Meu Plano mostra. Contratar não
+muda nada: o clone não tem provedor de pagamento, então a tela de confirmação para no aviso.
+
+## Ativação do WhatsApp
+`data.whatsappCode` guarda o token que a tela de Ativar WhatsApp pede para o usuário enviar.
+Ele mora nos dados, e não num `useState` sorteado, porque a tela é pré-renderizada: um valor
+aleatório gerado na renderização sairia diferente no servidor e no navegador. "Gerar novo
+código" grava um token novo.
+
+O relógio de 10 minutos e o estado "já enviei" são da tela, não dos dados: são efêmeros e
+recomeçam a cada visita.
+
+## Histórico da equipe
+`data.teamLogs` guarda o que a equipe fez com agendamentos: quando, em qual agenda, para qual
+horário, o identificador do agendamento, o e-mail de quem agiu e a ação. A tela de Histórico de
+Atividades de Usuários lê tudo, e `?member=<id>` reduz ao e-mail daquele membro — é assim que o
+ícone de histórico de Administrar Equipe abre o histórico de uma pessoa só.
+
+É um registro inerte: nenhuma outra tela escreve nele, então criar ou cancelar um agendamento no
+clone não gera linha aqui.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

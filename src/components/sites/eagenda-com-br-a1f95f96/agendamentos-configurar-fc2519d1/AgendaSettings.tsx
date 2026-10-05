@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   ActivityIcon,
   CalendarAddIcon,
   CalendarIcon,
   CaretDownIcon,
+  ChatBubbleIcon,
   ChevronRightIcon,
   CloseCircleIcon,
   SearchSolidIcon,
@@ -320,6 +321,60 @@ export function AgendaSettings() {
         )}
       </div>
       {ordering && <AgendaOrderModal onClose={() => setOrdering(false)} />}
+      <WhatsAppToast />
     </>
+  );
+}
+
+/** The original's floating invite to activate WhatsApp: shows 600ms in, and stays dismissed. */
+function WhatsAppToast() {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    let hidden = false;
+    try {
+      hidden = localStorage.getItem("hideWaToast") === "1";
+    } catch {
+      // Private windows and blocked site data throw here; the toast simply shows.
+    }
+    if (hidden) return;
+    const id = window.setTimeout(() => setShow(true), 600);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  if (!show) return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 z-[70] max-w-sm bg-white rounded-xl border border-slate-200 shadow-lg p-3" role="status" aria-live="polite">
+      <div className="flex items-start gap-3">
+        <div className="hui-icon-box hui-icon-box-success flex-shrink-0">
+          <ChatBubbleIcon className="w-5 h-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-gray-900 nunito-semibold">Acompanhe suas agendas pelo WhatsApp</p>
+          <p className="text-xs text-gray-600 mt-0.5 inter-regular">
+            Consulte agendamentos diretamente no WhatsApp.{" "}
+            <a href={ROUTES.ativarWhatsapp} className="text-primary underline inter-semibold hover:opacity-80">
+              Clique aqui para ativar
+            </a>
+          </p>
+        </div>
+        <button
+          type="button"
+          className="btn-icon btn-icon-sm flex-shrink-0"
+          aria-label="Fechar"
+          onClick={() => {
+            setShow(false);
+            try {
+              localStorage.setItem("hideWaToast", "1");
+            } catch {
+              // Nothing to remember if storage is unavailable; the toast just comes back.
+            }
+          }}
+        >
+          <CloseCircleIcon className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
   );
 }

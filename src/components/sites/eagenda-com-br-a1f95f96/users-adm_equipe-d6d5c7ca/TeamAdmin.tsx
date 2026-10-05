@@ -28,6 +28,7 @@ import {
   CloseCircleIcon,
   EyeClosedIcon,
   EyeIcon,
+  HistoryIcon,
   FunnelIcon,
   InboxIcon,
   LockIcon,
@@ -832,6 +833,16 @@ export function TeamAdmin() {
                           >
                             <PenIcon className="w-4 h-4" />
                           </button>
+                          <a
+                            href={`${ROUTES.logsEquipe}/?member=${row.member.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Histórico de Atividades"
+                            aria-label="Histórico de Atividades"
+                            className="btn-icon btn-icon-sm btn-icon-flat"
+                          >
+                            <HistoryIcon className="w-4 h-4" />
+                          </a>
                           {/* The original's owner cannot be removed from its own team. */}
                           {row.member.profile !== "owner" && (
                             <button
