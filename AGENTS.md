@@ -68,6 +68,7 @@ public/
   sites/eagenda-com-br-a1f95f96/         # assets downloaded from the original, per screen
 docs/
   DATA-LAYER.md                          # how the data layer works, collection by collection
+  database/                              # proposed PostgreSQL schema (schema.sql) and its diagrams
   research/eagenda-com-br-a1f95f96/      # per-screen notes: PAGE_TOPOLOGY, BEHAVIORS, component specs
   design-references/                     # screenshots (written by /clone-website)
 scripts/                                 # CSS build and asset download scripts

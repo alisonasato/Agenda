@@ -32,6 +32,7 @@ src/components/sites/    # componentes das telas (shared/ = peças reutilizadas)
 src/lib/seiri/           # camada de dados: tipos, dados iniciais, localStorage e regras
 public/                  # marca do Seiri e imagens/dados baixados do original
 docs/DATA-LAYER.md       # como a camada de dados funciona
+docs/database/           # proposta de banco PostgreSQL: schema.sql e diagramas
 docs/research/           # notas de extração e verificação de cada tela
 scripts/                 # geração do CSS e download de dados
 ```
