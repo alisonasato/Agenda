@@ -43,3 +43,18 @@ Checked against the live menu:
 - 8 pages (Integrações, Clientes, Acesso, Formulários, Regras status, Limites, Relatório clientes,
   Configurações Gerais): the same visible rows and highlights.
 - Search results for 9 queries across both modes are the same.
+
+## Ajuda destinations
+Three of the six leaves leave the app. The original points them at eAgenda's own support channels,
+which the rebrand cannot keep, so they go to the Seiri equivalents instead — fictional, like every
+other `seiri.com.br` address in the clone:
+
+| Leaf | Destination |
+| --- | --- |
+| Suporte via WhatsApp | `https://wa.me/5511999999999` — the same mock number the WhatsApp activation screen writes to |
+| Tutoriais | the root of `DOCS`, the documentation site `HelpCenter` already links its tutorials to |
+| Vídeos no YouTube | `https://www.youtube.com/@seiri` |
+
+They are absolute, so they skip `withBase`, and they carry `target="_blank"` with
+`rel="noopener noreferrer"`. The other three (Passo a Passo, Aplicativo, Autorizar Suporte) are
+cloned screens and stay internal.

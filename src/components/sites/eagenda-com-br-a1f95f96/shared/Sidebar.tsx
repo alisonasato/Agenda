@@ -1,6 +1,7 @@
 "use client";
 
 import { withBase } from "@/lib/basePath";
+import { DOCS } from "./HelpCenter";
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ComponentType, type CSSProperties, type SVGProps } from "react";
 import {
   BuildingIcon,
@@ -93,6 +94,14 @@ const PATHS = {
 } as const;
 /** Hrefs for plain <a> links, so they carry the base path (GitHub Pages serves the app under one). */
 export const ROUTES = Object.fromEntries(Object.entries(PATHS).map(([k, v]) => [k, withBase(v)])) as { [K in keyof typeof PATHS]: string };
+
+// The Ajuda group's last destinations are off the app, so they stay absolute and skip withBase.
+// Same mock number the WhatsApp activation screen writes to; there is no real line behind it.
+const SUPPORT_WHATSAPP = "5511999999999";
+const YOUTUBE = "https://www.youtube.com/@seiri";
+
+/** An off-app destination opens in its own tab and does not hand the opener over. */
+const external = (href?: string) => (href?.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {});
 
 type Mode = "simple" | "full";
 /**
@@ -276,9 +285,9 @@ const NAV: NavEntry[] = [
     icon: QuestionCircleIcon,
     items: [
       { label: "Passo a Passo", href: ROUTES.passoAPasso },
-      { label: "Suporte via WhatsApp" },
-      { label: "Tutoriais" },
-      { label: "Vídeos no YouTube", hide: "simple" },
+      { label: "Suporte via WhatsApp", href: `https://wa.me/${SUPPORT_WHATSAPP}` },
+      { label: "Tutoriais", href: `${DOCS}/` },
+      { label: "Vídeos no YouTube", href: YOUTUBE, hide: "simple" },
       { label: "Aplicativo", href: ROUTES.aplicativo },
       { label: "Autorizar Suporte", href: ROUTES.autorizarSuporte },
     ],
@@ -423,6 +432,7 @@ function Group({ entry, mode, active, open, onToggle }: { entry: GroupEntry; mod
                 <li key={keyOf(item)} className={isHidden(item.hide, mode, isCurrent) ? "hidden" : undefined}>
                   <a
                     href={item.href ?? "#"}
+                    {...external(item.href)}
                     className={`snav-sub sidebar-text${isCurrent ? " nav-item-active" : ""}`}
                     aria-current={isCurrent ? "page" : undefined}
                     tabIndex={open ? 0 : -1}
@@ -571,6 +581,7 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
                 <a
                   key={`${h.group ?? ""}-${h.label}-${i}`}
                   href={h.href ?? "#"}
+                  {...external(h.href)}
                   className={`snav-row sidebar-search-result nav-item-idle${i === kbd ? " is-kbd-active" : ""}`}
                   aria-selected={i === kbd ? true : undefined}
                   onMouseMove={() => i !== kbd && setKbd(i)}
