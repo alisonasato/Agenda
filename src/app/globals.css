@@ -160,3 +160,21 @@
 .animate-spin-slow {
   animation: 2.5s linear 0s infinite normal none running seiri-spin;
 }
+
+/* Importar Clientes carries these two in an inline <style>; the generated eagenda.css has neither. */
+.imp-content {
+  width: 100%;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e4e7ec);
+  border-radius: var(--hui-radius-lg, 1rem);
+  box-shadow: var(--hui-shadow-sm, 0 1px 2px rgba(17, 24, 39, 0.04), 0 2px 8px rgba(17, 24, 39, 0.05));
+  padding: 0.5rem;
+}
+
+.imp-group {
+  background: color-mix(in srgb, var(--color-muted, #667085) 4%, #fff);
+  border: 1px solid color-mix(in srgb, var(--color-border, #e4e7ec) 65%, transparent);
+  border-radius: 0.875rem;
+  padding: 1.125rem 1.25rem;
+  box-shadow: inset 0 1px 2px rgba(16, 24, 40, 0.035);
+}

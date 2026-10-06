@@ -106,10 +106,11 @@ export function IndividualAccess() {
             <UsersIcon />
             <span className="hactionbar-label">Gestão em Lote</span>
           </a>
-          <button type="button" className="hbtn hbtn--ghost hbtn--sm">
+          <a href={ROUTES.importarClientes} className="hbtn hbtn--ghost hbtn--sm">
             <UploadIcon />
             <span className="hactionbar-label">Importar</span>
-          </button>
+          </a>
+          {/* The original's Exportar is ?export=xlsx, a file only its server can build. */}
           <button type="button" className="hbtn hbtn--ghost hbtn--sm">
             <DownloadIcon />
             <span className="hactionbar-label">Exportar</span>

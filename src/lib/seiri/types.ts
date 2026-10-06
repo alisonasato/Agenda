@@ -854,6 +854,7 @@ export type Data = {
   /** The token the WhatsApp activation screen asks the user to send. */
   whatsappCode: string;
   teamLogs: TeamLog[];
+  clientImports: ClientImport[];
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
@@ -1127,4 +1128,27 @@ export type TeamLog = {
 export const TEAM_LOG_TONES: Record<string, string> = {
   "Agendamento criado": "hchip--accent",
   "Agendamento cancelado": "hchip--danger",
+};
+
+/** A row of "Histórico de Importação" on Importar Clientes. */
+export type ClientImport = {
+  id: string;
+  /** Who sent the file; the original prints the member's e-mail. */
+  user: string;
+  fileName: string;
+  /** "dd/mm/aaaa hh:mm". */
+  at: string;
+  status: ImportStatus;
+};
+
+export type ImportStatus = "PROCESSING" | "DONE" | "FAILED";
+
+/**
+ * The verified account had never imported anything, so the table never rendered a row: these
+ * three states and their tones are inferred from the empty state's "andamento do processamento".
+ */
+export const IMPORT_STATUSES: Record<ImportStatus, { label: string; tone: string }> = {
+  PROCESSING: { label: "Processando", tone: "hchip--warning" },
+  DONE: { label: "Concluído", tone: "hchip--success" },
+  FAILED: { label: "Falhou", tone: "hchip--danger" },
 };

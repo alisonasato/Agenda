@@ -214,6 +214,22 @@ export function seed(): Data {
     supportVisits: [],
     supportCode: null,
     whatsappCode: "Qz7mKpR2sVxT9bLnEaWcHu",
+    clientImports: [
+      {
+        id: "ci1",
+        user: "contato@exemplo.com.br",
+        fileName: "clientes-convenio.xlsx",
+        at: "28/09/2026 14:22",
+        status: "DONE",
+      },
+      {
+        id: "ci2",
+        user: "joao.pedro@exemplo.com.br",
+        fileName: "base-antiga.csv",
+        at: "30/09/2026 09:05",
+        status: "FAILED",
+      },
+    ],
     teamLogs: [
       {
         id: "tl1",
@@ -629,6 +645,7 @@ export const EMPTY: Data = {
   supportCode: null,
   whatsappCode: "Qz7mKpR2sVxT9bLnEaWcHu",
   teamLogs: [],
+  clientImports: [],
   integrations: {},
   manualHours: [],
   surveys: [],

@@ -301,6 +301,15 @@ Atividades de Usuários lê tudo, e `?member=<id>` reduz ao e-mail daquele membr
 É um registro inerte: nenhuma outra tela escreve nele, então criar ou cancelar um agendamento no
 clone não gera linha aqui.
 
+## Importação de clientes
+`data.clientImports` guarda o histórico da tela Importar Clientes: quem enviou, o nome do
+arquivo, quando e o status. Enviar grava uma linha nova no topo com o status `PROCESSING`.
+
+O arquivo não é lido: nenhum cliente entra em `data.clients` e o status nunca muda sozinho,
+porque não há processamento. Os três estados e as cores dos chips são inferidos do texto do
+vazio no original, que fala em "andamento do processamento" — a conta verificada nunca tinha
+importado nada, então a tabela nunca mostrou uma linha.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e
