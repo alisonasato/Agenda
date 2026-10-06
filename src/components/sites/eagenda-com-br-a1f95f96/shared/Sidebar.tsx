@@ -81,6 +81,7 @@ const PATHS = {
   gruposUsuarios: "/users/listar_grupos",
   novaEtapa: "/users/grupos/novo",
   importarClientes: "/users/clientes_autorizados/upload",
+  webhooks: "/webhook/webhook-config",
   logsEquipe: "/users/logs",
   ativarWhatsapp: "/agendamentos/configurar/whatsapp-ativacao",
   alterarPlano: "/users/alterar-plano",
@@ -245,7 +246,7 @@ const NAV: NavEntry[] = [
       "Mercado Pago",
       "API",
       "Webhook",
-    ].map((label) => ({ label, key: `integracao:${label}` })),
+    ].map((label) => ({ label, key: `integracao:${label}`, ...(label === "Webhook" ? { href: ROUTES.webhooks } : {}) })),
   },
   {
     kind: "group",

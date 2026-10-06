@@ -214,6 +214,22 @@ export function seed(): Data {
     supportVisits: [],
     supportCode: null,
     whatsappCode: "Qz7mKpR2sVxT9bLnEaWcHu",
+    webhooks: [
+      {
+        id: "wh1",
+        classType: "APPOINTMENT",
+        url: "https://api.exemplo.com.br/seiri/agendamentos",
+        events: ["CREATED", "CANCELED"],
+        authHeader: '{"Authorization": "Bearer token-de-exemplo"}',
+      },
+      {
+        id: "wh2",
+        classType: "CALENDAR",
+        url: "https://api.exemplo.com.br/seiri/agendas/{register_key}/",
+        events: ["UPDATED"],
+        authHeader: "{}",
+      },
+    ],
     clientImports: [
       {
         id: "ci1",
@@ -646,6 +662,7 @@ export const EMPTY: Data = {
   whatsappCode: "Qz7mKpR2sVxT9bLnEaWcHu",
   teamLogs: [],
   clientImports: [],
+  webhooks: [],
   integrations: {},
   manualHours: [],
   surveys: [],

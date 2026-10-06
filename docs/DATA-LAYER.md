@@ -310,6 +310,17 @@ porque não há processamento. Os três estados e as cores dos chips são inferi
 vazio no original, que fala em "andamento do processamento" — a conta verificada nunca tinha
 importado nada, então a tabela nunca mostrou uma linha.
 
+## Webhooks
+`data.webhooks` guarda para onde a plataforma deveria avisar quando um registro muda: o tipo
+(`WEBHOOK_TYPES`), a URL, os eventos (`WEBHOOK_EVENTS`) e o cabeçalho de autenticação em JSON.
+
+Cada evento só é oferecido para os tipos que o original mostra — Cancelamento só em
+Agendamentos, Exclusão só em Agendas e Membros da Equipe — e trocar o tipo limpa os eventos já
+marcados.
+
+Nada é disparado: a URL nunca é chamada, e a coluna "método" é sempre POST, que é o único que
+o formulário do original produz.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e

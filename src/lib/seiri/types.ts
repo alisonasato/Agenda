@@ -855,6 +855,7 @@ export type Data = {
   whatsappCode: string;
   teamLogs: TeamLog[];
   clientImports: ClientImport[];
+  webhooks: Webhook[];
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
@@ -1152,3 +1153,29 @@ export const IMPORT_STATUSES: Record<ImportStatus, { label: string; tone: string
   DONE: { label: "Concluído", tone: "hchip--success" },
   FAILED: { label: "Falhou", tone: "hchip--danger" },
 };
+
+/** A row of the Webhooks screen: where to POST, and which events trigger it. */
+export type Webhook = {
+  id: string;
+  /** One of WEBHOOK_TYPES. */
+  classType: string;
+  url: string;
+  /** Values of WEBHOOK_EVENTS. */
+  events: string[];
+  /** "Cabeçalho de Autenticação (JSON)"; "{}" when none was given. */
+  authHeader: string;
+};
+
+export const WEBHOOK_TYPES: { value: string; label: string }[] = [
+  { value: "APPOINTMENT", label: "Agendamentos" },
+  { value: "CALENDAR", label: "Agendas" },
+  { value: "MEMBERSHIP", label: "Membros da Equipe" },
+];
+
+/** Each event is offered only for the record types the original shows it for. */
+export const WEBHOOK_EVENTS: { value: string; label: string; types: string[] }[] = [
+  { value: "CREATED", label: "Criação", types: ["APPOINTMENT", "CALENDAR", "MEMBERSHIP"] },
+  { value: "UPDATED", label: "Atualização", types: ["APPOINTMENT", "CALENDAR", "MEMBERSHIP"] },
+  { value: "CANCELED", label: "Cancelamento", types: ["APPOINTMENT"] },
+  { value: "DELETED", label: "Exclusão", types: ["CALENDAR", "MEMBERSHIP"] },
+];
