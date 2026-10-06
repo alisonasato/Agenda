@@ -856,6 +856,7 @@ export type Data = {
   teamLogs: TeamLog[];
   clientImports: ClientImport[];
   webhooks: Webhook[];
+  domains: OrgDomain[];
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
@@ -1179,3 +1180,31 @@ export const WEBHOOK_EVENTS: { value: string; label: string; types: string[] }[]
   { value: "CANCELED", label: "Cancelamento", types: ["APPOINTMENT"] },
   { value: "DELETED", label: "Exclusão", types: ["CALENDAR", "MEMBERSHIP"] },
 ];
+
+/** A row of "Gerenciamento de Domínios": a domain the organisation claims. */
+export type OrgDomain = {
+  id: string;
+  /** "empresa.com.br". */
+  name: string;
+  status: DomainStatus;
+  /** "dd/mm/aaaa hh:mm", empty while the domain has not been verified. */
+  verifiedAt: string;
+  /** The value of the TXT record the original asks to be added to the DNS. */
+  txtValue: string;
+};
+
+export type DomainStatus = "verified" | "pending" | "failed";
+
+export const DOMAIN_STATUSES: { value: "" | DomainStatus; label: string }[] = [
+  { value: "", label: "Todos" },
+  { value: "verified", label: "Verificados" },
+  { value: "pending", label: "Pendentes" },
+  { value: "failed", label: "Falha" },
+];
+
+/** The chip each situation is painted with, and the word the row shows. */
+export const DOMAIN_STATUS_CHIPS: Record<DomainStatus, { label: string; tone: string }> = {
+  verified: { label: "Verificado", tone: "hchip--success" },
+  pending: { label: "Pendente", tone: "hchip--warning" },
+  failed: { label: "Falha", tone: "hchip--danger" },
+};

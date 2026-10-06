@@ -82,6 +82,7 @@ const PATHS = {
   novaEtapa: "/users/grupos/novo",
   importarClientes: "/users/clientes_autorizados/upload",
   webhooks: "/webhook/webhook-config",
+  dominios: "/users/dominios",
   logsEquipe: "/users/logs",
   ativarWhatsapp: "/agendamentos/configurar/whatsapp-ativacao",
   alterarPlano: "/users/alterar-plano",

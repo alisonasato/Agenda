@@ -214,6 +214,22 @@ export function seed(): Data {
     supportVisits: [],
     supportCode: null,
     whatsappCode: "Qz7mKpR2sVxT9bLnEaWcHu",
+    domains: [
+      {
+        id: "dm1",
+        name: "minhaempresa.com.br",
+        status: "verified",
+        verifiedAt: "12/09/2026 10:34",
+        txtValue: "seiri-verificacao=8f3c1a0b5d7e4620",
+      },
+      {
+        id: "dm2",
+        name: "filial.minhaempresa.com.br",
+        status: "pending",
+        verifiedAt: "",
+        txtValue: "seiri-verificacao=2b9d67ac4e105f38",
+      },
+    ],
     webhooks: [
       {
         id: "wh1",
@@ -663,6 +679,7 @@ export const EMPTY: Data = {
   teamLogs: [],
   clientImports: [],
   webhooks: [],
+  domains: [],
   integrations: {},
   manualHours: [],
   surveys: [],

@@ -321,6 +321,14 @@ marcados.
 Nada é disparado: a URL nunca é chamada, e a coluna "método" é sempre POST, que é o único que
 o formulário do original produz.
 
+## Domínios
+`data.domains` guarda os domínios que a organização reivindica: o nome, a situação
+(`DOMAIN_STATUSES`), quando foi verificado e o valor do registro TXT que prova a posse.
+
+Registrar grava o domínio como `pending` com um TXT sorteado no navegador — no original ele vem
+do servidor. "Verificar Agora" só muda o estado para `verified` e carimba a data: nenhum DNS é
+consultado, então `failed` só aparece pela semente e pelo filtro.
+
 ## Notas de ambiente
 - `next dev` não hidrata as rotas que usam `<Suspense>` + `useSearchParams` (Agendamentos, Unidades):
   a página aparece, mas não responde a cliques. O build estático (`GITHUB_PAGES=1 npx next build` e
