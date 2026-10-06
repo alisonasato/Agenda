@@ -53,7 +53,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  /* The brand blue, the same value eagenda.css gives --color-primary. Tailwind builds the primary
+     utilities the original never used (bg-primary/10, ring-primary/40…) from this token, so a
+     greyscale here painted them grey beside the blue ones that come compiled in eagenda.css. */
+  --primary: #0a70d6;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -116,3 +119,44 @@
 }
 
 /* Base element styles come from the eAgenda preflight in ./eagenda.css (imported after this file). */
+
+/* The 404's animations. The original defines its own fadeIn and a gentler bounce than Tailwind's;
+   the bounce is renamed so it cannot shadow the utility the rest of the app may use. */
+@keyframes seiri-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes seiri-bounce-soft {
+  100% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-fade-in {
+  animation: 0.7s ease 0s 1 normal none running seiri-fade-in;
+}
+
+.animate-fade-in-delay {
+  animation: 1.2s ease 0.3s 1 normal backwards running seiri-fade-in;
+}
+
+.animate-bounce-soft {
+  animation: 1.2s ease 0s infinite alternate none running seiri-bounce-soft;
+}
+
+@keyframes seiri-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: 2.5s linear 0s infinite normal none running seiri-spin;
+}
