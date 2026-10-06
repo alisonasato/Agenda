@@ -67,6 +67,7 @@ public/
   brand/                                 # Seiri logo and favicon
   sites/eagenda-com-br-a1f95f96/         # assets downloaded from the original, per screen
 docs/
+  FUNCIONALIDADES.md                     # user guide: what every screen lets you do, and its limits
   DATA-LAYER.md                          # how the data layer works, collection by collection
   database/                              # proposed PostgreSQL schema (schema.sql) and its diagrams
   research/eagenda-com-br-a1f95f96/      # per-screen notes: PAGE_TOPOLOGY, BEHAVIORS, component specs
