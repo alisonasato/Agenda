@@ -28,9 +28,19 @@ function read(): Data {
     parsed = null;
   }
   const base = seed();
-  // credits and profile are the fixed-shape nested objects, so they are merged too: data stored
-  // before a field existed would otherwise replace them whole and leave that field undefined.
-  const data = parsed ? { ...base, ...parsed, credits: { ...base.credits, ...parsed.credits }, profile: { ...base.profile, ...parsed.profile } } : base;
+  // credits, profile and plan are the fixed-shape nested objects, so they are merged too: data
+  // stored before a field existed would otherwise replace them whole and leave that field
+  // undefined. The others (hours, orgSettings, bookingScreen, integrations) are maps, where a key
+  // the user removed has to stay removed, and supportCode is nullable.
+  const data = parsed
+    ? {
+        ...base,
+        ...parsed,
+        credits: { ...base.credits, ...parsed.credits },
+        profile: { ...base.profile, ...parsed.profile },
+        plan: { ...base.plan, ...parsed.plan },
+      }
+    : base;
   write(data);
   return data;
 }
@@ -48,6 +58,16 @@ function subscribe(listener: () => void) {
  */
 export function useData(): Data {
   return useSyncExternalStore(subscribe, read, () => EMPTY);
+}
+
+/**
+ * False while a component still holds the prerendered snapshot, true once the browser's data has
+ * arrived. Forms whose fields are uncontrolled (`defaultValue`, `defaultChecked`) need this: those
+ * props only apply on mount, so a field built during hydration would keep the empty value and never
+ * show what was saved. Keying the form on this remounts it once, before anyone can type.
+ */
+export function useHydrated(): boolean {
+  return useData() !== EMPTY;
 }
 
 /** Replaces the data and repaints every component reading it. */

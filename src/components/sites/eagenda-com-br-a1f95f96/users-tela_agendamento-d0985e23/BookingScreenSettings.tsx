@@ -10,7 +10,7 @@ import { SaveBar } from "../shared/SaveBar";
 import { CepField, fillFromCep, type CepAddress } from "../shared/CepField";
 import { COUNTRY_OPTIONS, useGeoCascade } from "../shared/useGeoCascade";
 import { ROUTES } from "../shared/Sidebar";
-import { update, useData } from "@/lib/seiri/store";
+import { update, useData, useHydrated } from "@/lib/seiri/store";
 import { AddAppointmentIcon, CaretDownIcon, CheckboxMark, ExternalLinkIcon, FlowIcon, InfoIcon, PenIcon, RefreshIcon, SaveIcon } from "../shared/icons";
 
 // CKEditor touches `window` on import, so it only loads in the browser.
@@ -273,6 +273,8 @@ function Option({
 export function BookingScreenSettings() {
   const saved = useSaved();
   const formRef = useRef<HTMLFormElement>(null);
+  // The fields are uncontrolled, so the form is rebuilt once the saved settings arrive.
+  const hydrated = useHydrated();
   const [stored, setStored] = useState(false);
   const [tab, setTab] = useState<Tab>("identity");
   const [flow, setFlow] = useState<Flow>(() => saved.text("booking_flow", "auto") as Flow);
@@ -397,6 +399,7 @@ export function BookingScreenSettings() {
         </div>
 
         <form
+          key={hydrated ? "ready" : "ssr"}
           ref={formRef}
           id="booking-screen-form"
           method="POST"
@@ -437,7 +440,14 @@ export function BookingScreenSettings() {
                   <div className="cfg-opt mt-3">
                     <div>
                       <label className="hcheckbox">
-                        <input type="checkbox" name="hide_short_name" id="id_hide_short_name" className="hcheckbox-input" />
+                        {/* Hand-written rather than an <Option>, so it has to read the saved value itself. */}
+                        <input
+                          type="checkbox"
+                          name="hide_short_name"
+                          id="id_hide_short_name"
+                          className="hcheckbox-input"
+                          defaultChecked={saved.bool("hide_short_name")}
+                        />
                         <span className="hcheckbox-box" aria-hidden="true">
                           <CheckboxMark />
                           <span className="hcheckbox-dash" aria-hidden="true" />

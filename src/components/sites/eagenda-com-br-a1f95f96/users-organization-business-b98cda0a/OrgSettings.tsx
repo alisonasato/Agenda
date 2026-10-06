@@ -6,7 +6,7 @@ import { DatePicker } from "../shared/DatePicker";
 import { PhoneInput } from "../shared/PhoneInput";
 import { SaveBar } from "../shared/SaveBar";
 import { Select } from "../shared/Select";
-import { update, useData } from "@/lib/seiri/store";
+import { update, useData, useHydrated } from "@/lib/seiri/store";
 import { ROUTES } from "../shared/Sidebar";
 import { CaretDownIcon, CaretUpIcon, CheckboxMark, DangerCircleIcon, InfoIcon, PenIcon, PlaneIcon, SaveIcon, TrashIcon, UndoIcon } from "../shared/icons";
 
@@ -363,8 +363,11 @@ function StepForm({ alerts, saveBar, children }: { alerts?: ReactNode; saveBar?:
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  // The fields are uncontrolled, so the form is rebuilt once the saved settings arrive.
+  const hydrated = useHydrated();
   return (
     <form
+      key={hydrated ? "ready" : "ssr"}
       ref={formRef}
       method="POST"
       className="cfg-form"
