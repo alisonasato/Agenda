@@ -4,8 +4,10 @@ import { useState, type CSSProperties } from "react";
 import { DatePicker } from "../shared/DatePicker";
 import { AlertDialog } from "../shared/AlertDialog";
 import { nextId, update, useData } from "@/lib/seiri/store";
-import type { Survey } from "@/lib/seiri/types";
-import { AddAppointmentIcon, CheckboxMark, CheckReadIcon, InboxIcon, DangerCircleIcon, PenIcon, TrashIcon } from "../shared/icons";
+import type { Survey, SurveyQuestion } from "@/lib/seiri/types";
+import { TEMPLATE_QUESTIONS } from "@/lib/seiri/types";
+import { AddAppointmentIcon, CheckboxMark, CheckReadIcon, EyeIcon, InboxIcon, DangerCircleIcon, PenIcon, TrashIcon } from "../shared/icons";
+import { ROUTES } from "../shared/Sidebar";
 import { ChipMultiSelect } from "../shared/ChipMultiSelect";
 import { Combobox } from "../shared/Combobox";
 import { Modal, ModalSubmit } from "../shared/Modal";
@@ -23,7 +25,7 @@ const COLUMNS = ["Formulário", "Tipo", "Agendas", "Perguntas", "Respostas", "Va
 const SLOTS = 10;
 
 /** "Novo Formulário" modal. The original loads this body over htmx; the fields are the same. */
-function SurveyFormModal({ survey, onClose }: { survey?: Survey; onClose: () => void }) {
+export function SurveyFormModal({ survey, onClose }: { survey?: Survey; onClose: () => void }) {
   const data = useData();
   const [today] = useState(() => new Date());
   const [name, setName] = useState(survey?.name ?? "");
@@ -47,11 +49,15 @@ function SurveyFormModal({ survey, onClose }: { survey?: Survey; onClose: () => 
         expiresAt: !stage && expires ? `${pad(expires.getDate())}/${pad(expires.getMonth() + 1)}/${expires.getFullYear()}` : (survey?.expiresAt ?? ""),
         loginRequired,
         template,
-        // Importing the standard template brings its questions; from scratch starts empty.
-        questions: survey?.questions ?? (template ? 5 : 0),
         responses: survey?.responses ?? 0,
       };
-      return { ...d, surveys: survey ? d.surveys.map((x) => (x.id === survey.id ? row : x)) : [...d.surveys, row] };
+      if (survey) return { ...d, surveys: d.surveys.map((x) => (x.id === survey.id ? row : x)) };
+      // Importing the standard template copies its three questions; from scratch starts empty.
+      const questions: SurveyQuestion[] = [];
+      if (template) {
+        for (const q of TEMPLATE_QUESTIONS) questions.push({ ...q, id: nextId("sq", [...d.surveyQuestions, ...questions]), surveyId: row.id });
+      }
+      return { ...d, surveys: [...d.surveys, row], surveyQuestions: [...d.surveyQuestions, ...questions] };
     });
     onClose();
   };
@@ -195,10 +201,14 @@ export function SurveysPage() {
   const rows = data.surveys.map((survey) => ({
     survey,
     stageLabel: (SURVEY_STAGES.find((x) => x.value === survey.stage)?.label ?? survey.stage).split(" - ")[0],
-    agendaNames: survey.agendaIds.length ? survey.agendaIds.map((id) => data.agendas.find((a) => a.id === id)?.name ?? id).join(", ") : "—",
+    // The original writes "Nenhuma" here, not the dash the other columns use.
+    agendaNames: survey.agendaIds.length ? survey.agendaIds.map((id) => data.agendas.find((a) => a.id === id)?.name ?? id).join(", ") : "Nenhuma",
+    questions: data.surveyQuestions.filter((q) => q.surveyId === survey.id).length,
   }));
 
-  const remove = (id: string) => update((d) => ({ ...d, surveys: d.surveys.filter((x) => x.id !== id) }));
+  // A form's questions go with it.
+  const remove = (id: string) =>
+    update((d) => ({ ...d, surveys: d.surveys.filter((x) => x.id !== id), surveyQuestions: d.surveyQuestions.filter((q) => q.surveyId !== id) }));
 
   return (
     <>
@@ -242,11 +252,14 @@ export function SurveysPage() {
                         <span className="hchip hchip--default hchip--soft hchip--sm">{row.stageLabel}</span>
                       </td>
                       <td className="htable-cell">{row.agendaNames}</td>
-                      <td className="htable-cell htable-cell--num">{row.survey.questions}</td>
+                      <td className="htable-cell htable-cell--num">{row.questions}</td>
                       <td className="htable-cell htable-cell--num">{row.survey.responses}</td>
-                      <td className="htable-cell whitespace-nowrap">{row.survey.expiresAt || "Sem prazo"}</td>
+                      <td className="htable-cell whitespace-nowrap">{row.survey.expiresAt || "—"}</td>
                       <td className="htable-cell htable-cell--end whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
+                          <a href={`${ROUTES.formularioDetalhes}?id=${row.survey.id}`} className="btn-icon btn-icon-sm btn-icon-flat" title="Ver Detalhes">
+                            <EyeIcon className="w-4 h-4" />
+                          </a>
                           <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Editar" onClick={() => setEditing(row.survey)}>
                             <PenIcon className="w-4 h-4" />
                           </button>

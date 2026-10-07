@@ -7,7 +7,7 @@ isto ainda**: o protótipo continua guardando tudo no `localStorage`, como descr
 
 | Arquivo | O que tem |
 |---|---|
-| [`schema.sql`](schema.sql) | O esquema completo: 90 tabelas, chaves, índices e restrições |
+| [`schema.sql`](schema.sql) | O esquema completo: 92 tabelas, chaves, índices e restrições |
 | este README | Decisões, o mapa coleção → tabela e os diagramas |
 
 Os diagramas abaixo foram gerados a partir do banco criado por `schema.sql`, então batem com ele
@@ -126,6 +126,7 @@ Cada chave de `Data` em `src/lib/seiri/types.ts` e onde ela vai parar:
 | `integrations` | `organization_integrations` |
 | `whatsappCode` | `organizations.whatsapp_activation_code` |
 | `surveys` | `surveys`, `survey_agendas` |
+| `surveyQuestions` | `survey_questions`, `survey_question_choices` |
 | `agendaGroups` | `agenda_groups`, `agenda_group_agendas` |
 | `invites` | `registration_invites`, `registration_invite_recipients`, `registration_invite_fields` |
 | `submissions` | `registration_submissions` |

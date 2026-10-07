@@ -304,6 +304,42 @@ CREATE TABLE survey_agendas (
   PRIMARY KEY (survey_id, agenda_id)
 );
 
+-- As perguntas de um formulário, da tela de detalhes. A ordem é a coluna "Ordem" do editor.
+CREATE TABLE survey_questions (
+  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  survey_id    uuid NOT NULL REFERENCES surveys(id) ON DELETE CASCADE,
+  text         text NOT NULL,
+  type         text NOT NULL CHECK (type IN (
+                 'text', 'short-text', 'licence-plate', 'radio', 'select', 'select-multiple',
+                 'file-upload', 'integer', 'float', 'texto-nota', 'date',
+                 'company-identification', 'checkbox')),
+  position     integer NOT NULL,            -- "Ordem"; ORDER é palavra reservada
+  required     boolean NOT NULL DEFAULT false,
+  min_value    numeric,                     -- só para integer, float e texto-nota
+  max_value    numeric,
+  help_text    text NOT NULL DEFAULT '',
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (survey_id, position),
+  -- Alvo da chave estrangeira composta de survey_question_choices, abaixo.
+  UNIQUE (id, type),
+  CHECK (min_value IS NULL OR max_value IS NULL OR min_value <= max_value)
+);
+
+CREATE INDEX survey_questions_survey_idx ON survey_questions (survey_id, position);
+
+-- O protótipo guarda as alternativas numa string separada por vírgulas, como o original; aqui
+-- cada uma é uma linha. Só três tipos as oferecem, e é o CHECK que garante isso: type é repetido
+-- para que a regra caiba no banco, e a chave estrangeira composta impede que ele divirja.
+CREATE TABLE survey_question_choices (
+  question_id  uuid NOT NULL,
+  type         text NOT NULL CHECK (type IN ('radio', 'select', 'select-multiple')),
+  position     integer NOT NULL,
+  label        text NOT NULL,
+  PRIMARY KEY (question_id, position),
+  FOREIGN KEY (question_id, type) REFERENCES survey_questions (id, type) ON DELETE CASCADE
+);
+
+
 -- AgendaOptions: passos Formulários, Notificações, Avançadas e Acessos (1:1 com agendas).
 CREATE TABLE agenda_options (
   agenda_id                 uuid PRIMARY KEY REFERENCES agendas(id) ON DELETE CASCADE,

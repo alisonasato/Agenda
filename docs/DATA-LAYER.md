@@ -44,7 +44,20 @@ na agenda, nos horários, na tela de agendamento e nas integrações.
 
 ## Formulários
 `data.surveys` guarda os formulários: tipo, agendas vinculadas, data limite, login obrigatório e o
-modelo importado, com a contagem de perguntas e de respostas que a tabela mostra.
+modelo importado, com a contagem de respostas que a tabela mostra.
+
+`data.surveyQuestions` guarda as perguntas de cada formulário, uma linha por pergunta, ligadas
+pelo `surveyId`. Cada uma tem texto, tipo (um dos 13 de `QUESTION_TYPES`), ordem,
+obrigatoriedade, alternativas, limites e texto de ajuda. As alternativas ficam numa string separada
+por vírgulas, como no original; só os tipos de `CHOICE_TYPES` as usam, e só os de `RANGE_TYPES`
+usam os limites.
+
+A contagem de perguntas **não** é guardada: a tabela de Formulários e o cartão "Perguntas" contam
+as linhas de `surveyQuestions`. Um número gravado poderia divergir das perguntas que existem — era
+o que acontecia antes, quando importar o modelo gravava um 5 fixo e o original traz três perguntas.
+
+Importar "Pesquisa de Opinião de Atendimento" copia as três perguntas de `TEMPLATE_QUESTIONS` para
+o formulário recém-criado. Excluir um formulário leva as perguntas dele junto.
 
 ## Ações em lote
 "Administrar Agendas" não guarda nada próprio além de `data.manualHours`, as linhas que a ação

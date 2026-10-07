@@ -492,9 +492,88 @@ export type Survey = {
   loginRequired: boolean;
   /** The imported template, empty when the form was created from scratch. */
   template: string;
-  questions: number;
   responses: number;
 };
+
+/** A question of a form, from the editor on the form's detail page. */
+export type SurveyQuestion = {
+  id: string;
+  surveyId: string;
+  text: string;
+  /** One of QUESTION_TYPES. */
+  type: string;
+  order: number;
+  required: boolean;
+  /** The alternatives, separated by commas; only the choice types use it. */
+  choices: string;
+  /** Empty when the type takes no range. */
+  minValue: string;
+  maxValue: string;
+  helpText: string;
+};
+
+/** "Tipo de Resposta", with the values the original stores rather than the labels it shows. */
+export const QUESTION_TYPES: { value: string; label: string }[] = [
+  { value: "text", label: "texto (várias linhas)" },
+  { value: "short-text", label: "texto curto (uma linha)" },
+  { value: "licence-plate", label: "texto curto com máscara (placa)" },
+  { value: "radio", label: "marcar uma alternativa" },
+  { value: "select", label: "selecionar uma alternativa da lista" },
+  { value: "select-multiple", label: "selecionar várias alternativas da lista" },
+  { value: "file-upload", label: "envio de arquivo" },
+  { value: "integer", label: "número inteiro" },
+  { value: "float", label: "número decimal" },
+  { value: "texto-nota", label: "nota entre zero e 10" },
+  { value: "date", label: "data" },
+  { value: "company-identification", label: "identificação de empresa" },
+  { value: "checkbox", label: "checkbox" },
+];
+
+/** The types that ask for a list of alternatives. `checkbox` is not one of them, in the original. */
+export const CHOICE_TYPES = ["radio", "select", "select-multiple"];
+
+/** The types that take a minimum and a maximum. */
+export const RANGE_TYPES = ["integer", "float", "texto-nota"];
+
+/** A question a new form starts on. */
+export const DEFAULT_QUESTION_TYPE = "text";
+
+/**
+ * The questions "Pesquisa de Opinião de Atendimento" brings, verbatim from the original. Importing
+ * the template copies these into the new form.
+ */
+export const TEMPLATE_QUESTIONS: Omit<SurveyQuestion, "id" | "surveyId">[] = [
+  {
+    text: "Você foi atendido no horário agendado?",
+    type: "select",
+    order: 1,
+    required: false,
+    choices: "Sim. Fui atendido no horário,Não. Mas fui atendido em até 5 minutos após o horário marcado,Não. Fui atendido após 5 minutos do horário marcado",
+    minValue: "",
+    maxValue: "",
+    helpText: "",
+  },
+  {
+    text: "Qual a sua avaliação quanto ao serviço prestado? Avalie com uma nota de 0 a 10.",
+    type: "texto-nota",
+    order: 2,
+    required: false,
+    choices: "",
+    minValue: "",
+    maxValue: "",
+    helpText: "",
+  },
+  {
+    text: "Se desejar, utilize o campo abaixo para fazer críticas, sugestões, elogios e/ou reclamações. Sua opinião é muito importante para nós!",
+    type: "text",
+    order: 3,
+    required: false,
+    choices: "",
+    minValue: "",
+    maxValue: "",
+    helpText: "",
+  },
+];
 
 /** The account's subscription, as "Planos" shows it. */
 /** The permissions a user group may hold, as /autocomplete/member_permissions lists them. */
@@ -860,6 +939,7 @@ export type Data = {
   integrations: Integrations;
   manualHours: ManualHours[];
   surveys: Survey[];
+  surveyQuestions: SurveyQuestion[];
   profile: Profile;
   notifications: InboxNotification[];
   userGroups: UserGroup[];

@@ -38,6 +38,7 @@ const PATHS = {
   relatorioAgendamentos: "/relatorios/agendamentos",
   relatorioIndicadores: "/relatorios/indicadores",
   formularios: "/pesquisas/controle",
+  formularioDetalhes: "/pesquisas/controle/detalhes",
   notificacoesRegras: "/notificacao/regras",
   notificacoesStatus: "/notificacao/regras_status",
   novaRegraStatus: "/notificacao/regras_status/nova",
