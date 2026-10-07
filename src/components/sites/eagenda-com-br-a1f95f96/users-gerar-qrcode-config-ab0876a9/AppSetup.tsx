@@ -47,24 +47,18 @@ export function AppSetup() {
                 <div className="min-w-0">
                   <h3 className="text-sm md:text-base font-semibold text-gray-900 inter-semibold">{step.title}</h3>
                   <p className="text-sm text-gray-600 inter-regular mt-1">{step.desc}</p>
+                  {/* The original links the badge to its own store listing. Seiri has no app to
+                      point at, and a made-up listing would be a broken link to a real store, so
+                      the badge stays an image. */}
                   {i === 0 && (
-                    <a
-                      href="#"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex mt-3 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-primary)]/20 transition-all duration-200 hover:opacity-90"
-                      aria-label="Baixar na Google Play"
-                      title="Baixar na Google Play"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={withBase(`${ASSETS}/google-play-store-icon.svg`)}
-                        alt="Disponível no Google Play"
-                        width={151}
-                        height={45}
-                        className="h-11 w-auto"
-                      />
-                    </a>
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={withBase(`${ASSETS}/google-play-store-icon.svg`)}
+                      alt="Disponível no Google Play"
+                      width={151}
+                      height={45}
+                      className="mt-3 block h-11 w-auto"
+                    />
                   )}
                 </div>
               </li>
