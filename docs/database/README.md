@@ -7,7 +7,7 @@ isto ainda**: o protótipo continua guardando tudo no `localStorage`, como descr
 
 | Arquivo | O que tem |
 |---|---|
-| [`schema.sql`](schema.sql) | O esquema completo: 86 tabelas, chaves, índices e restrições |
+| [`schema.sql`](schema.sql) | O esquema completo: 90 tabelas, chaves, índices e restrições |
 | este README | Decisões, o mapa coleção → tabela e os diagramas |
 
 Os diagramas abaixo foram gerados a partir do banco criado por `schema.sql`, então batem com ele
@@ -20,7 +20,13 @@ createdb seiri
 psql -d seiri -v ON_ERROR_STOP=1 -f docs/database/schema.sql
 ```
 
-Testado no PostgreSQL 16. Usa `gen_random_uuid()`, que é nativo desde o 13.
+Usa `gen_random_uuid()`, que é nativo desde o 13.
+
+As seções 1 a 9 foram criadas num PostgreSQL 16 de verdade, e os diagramas saíram desse banco.
+A seção 10 (webhooks, domínios e importação), acrescentada depois, não passou por um servidor:
+foi validada com o próprio analisador do PostgreSQL (`libpg-query`), que confirma a sintaxe, a
+ordem de criação das tabelas e que toda chave estrangeira aponta para colunas com PK/UNIQUE —
+mas rodar `psql -f` continua sendo a prova final.
 
 ## Decisões
 
@@ -134,6 +140,9 @@ Cada chave de `Data` em `src/lib/seiri/types.ts` e onde ela vai parar:
 | `supportVisits` | `support_visits` |
 | `agendaLogs` | `agenda_change_logs` |
 | `teamLogs` | `team_activity_logs` |
+| `clientImports` | `client_imports` |
+| `webhooks` | `webhooks`, `webhook_events` |
+| `domains` | `organization_domains` |
 
 ## Visão geral
 
@@ -1161,3 +1170,56 @@ erDiagram
   members |o--o| team_activity_logs : "member_id"
   support_access_codes |o--o| support_visits : "access_code_id"
 ```
+
+
+### 10. Webhooks, domínios e importação de clientes
+
+```mermaid
+erDiagram
+  webhooks {
+    uuid id PK
+    uuid organization_id FK
+    text class_type
+    text url
+    jsonb auth_header
+    timestamptz created_at
+  }
+  webhook_events {
+    uuid webhook_id FK
+    text class_type
+    text event
+  }
+  organization_domains {
+    uuid id PK
+    uuid organization_id FK
+    text name
+    text status
+    text txt_value
+    timestamptz verified_at
+    timestamptz created_at
+  }
+  client_imports {
+    uuid id PK
+    uuid organization_id FK
+    uuid member_id FK
+    text file_name
+    text status
+    timestamptz started_at
+  }
+  organizations {
+    uuid id PK
+  }
+  members {
+    uuid id PK
+  }
+  organizations ||--o{ webhooks : "organization_id"
+  organizations ||--o{ organization_domains : "organization_id"
+  organizations ||--o{ client_imports : "organization_id"
+  members |o--o{ client_imports : "member_id"
+  webhooks ||--o{ webhook_events : "webhook_id, class_type"
+```
+
+`webhook_events` repete `class_type` de propósito. A tela só oferece cada evento para certos
+tipos de registro — não existe cancelamento de agenda nem exclusão de agendamento — e essa regra
+só pode virar um CHECK se a coluna estiver na mesma linha do evento. A chave estrangeira composta
+contra `webhooks (id, class_type)` impede que as duas divirjam.

@@ -1041,4 +1041,71 @@ CREATE TABLE team_activity_logs (
 
 CREATE INDEX team_activity_logs_org_idx ON team_activity_logs (organization_id, occurred_at DESC);
 
+
+-- =====================================================================================
+-- 10. Webhooks, domínios e importação de clientes
+-- =====================================================================================
+
+-- "Webhook" (Integrações): para onde o Seiri faz POST quando um registro muda.
+CREATE TABLE webhooks (
+  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id  uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  class_type       text NOT NULL CHECK (class_type IN ('APPOINTMENT', 'CALENDAR', 'MEMBERSHIP')),
+  url              text NOT NULL,
+  auth_header      jsonb NOT NULL DEFAULT '{}'::jsonb,   -- "Cabeçalho de Autenticação (JSON)"
+  created_at       timestamptz NOT NULL DEFAULT now(),
+  -- Alvo da chave estrangeira composta de webhook_events, abaixo.
+  UNIQUE (id, class_type)
+);
+
+CREATE INDEX webhooks_org_idx ON webhooks (organization_id);
+
+-- Os eventos que disparam um webhook. A tela só oferece cada evento para certos tipos de
+-- registro (não existe cancelamento de agenda, nem exclusão de agendamento), e é isso que o
+-- CHECK garante: class_type é repetido aqui só para que a regra possa ser escrita no banco,
+-- e a chave estrangeira composta impede que ele divirja do webhook.
+CREATE TABLE webhook_events (
+  webhook_id  uuid NOT NULL,
+  class_type  text NOT NULL,
+  event       text NOT NULL CHECK (event IN ('CREATED', 'UPDATED', 'CANCELED', 'DELETED')),
+  PRIMARY KEY (webhook_id, event),
+  FOREIGN KEY (webhook_id, class_type) REFERENCES webhooks (id, class_type) ON DELETE CASCADE,
+  CHECK (
+    event IN ('CREATED', 'UPDATED')
+    OR (event = 'CANCELED' AND class_type = 'APPOINTMENT')
+    OR (event = 'DELETED' AND class_type IN ('CALENDAR', 'MEMBERSHIP'))
+  )
+);
+
+-- "Gerenciamento de Domínios": os domínios que a organização reivindica, provados por um TXT.
+CREATE TABLE organization_domains (
+  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id  uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  name             text NOT NULL,
+  status           text NOT NULL DEFAULT 'pending' CHECK (status IN ('verified', 'pending', 'failed')),
+  txt_value        text NOT NULL,              -- o registro TXT que a tela manda publicar no DNS
+  verified_at      timestamptz,                -- vazio no protótipo enquanto não verificado
+  created_at       timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (organization_id, name),
+  -- A data existe exatamente quando o domínio está verificado.
+  CHECK ((status = 'verified') = (verified_at IS NOT NULL))
+);
+
+-- Duas organizações podem pedir o mesmo domínio, mas só uma chega a prová-lo.
+CREATE UNIQUE INDEX organization_domains_verified_name_idx
+  ON organization_domains (name)
+  WHERE status = 'verified';
+
+-- "Histórico de Importação" (Importar Clientes): um envio de planilha e como ele terminou.
+CREATE TABLE client_imports (
+  id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id  uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  member_id        uuid REFERENCES members(id) ON DELETE SET NULL,   -- quem enviou o arquivo
+  file_name        text NOT NULL,
+  status           text NOT NULL DEFAULT 'PROCESSING' CHECK (status IN ('PROCESSING', 'DONE', 'FAILED')),
+  started_at       timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX client_imports_org_idx ON client_imports (organization_id, started_at DESC);
+
 COMMIT;
