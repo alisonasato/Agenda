@@ -636,8 +636,12 @@ as listas de bloqueio ainda não são verificadas aqui. A aparência não segue 
 - **Nada é cobrado.** Planos, créditos e pacotes não passam por pagamento.
 - **Integrações não se conectam** a Google, Zoom, Teams, Mercado Pago, RD Station ou outros.
 - **Arquivos não são guardados.** Logotipos, banners e imagens são escolhidos, mas não armazenados.
-- **Páginas que faltam:** termos de uso, páginas de detalhe de cada integração, editor de perguntas
-  dos formulários e a página de cadastro por convite.
+- **Uma página que falta:** a de cadastro por convite, onde quem recebe o convite preenche os
+  próprios dados. O editor de perguntas dos formulários, que também faltava, está feito.
+- **Fora de escopo, não pendências:** as páginas de detalhe de cada integração, e as quatro do
+  rodapé (FAQ, Termos, Privacidade, Contato). Estas últimas não são telas do painel: ficam no site
+  de divulgação, em `www.eagenda.com.br`, com navegação própria e sem a moldura do painel. No
+  clone os quatro links apontam para os endereços equivalentes da Seiri.
 - **O banco de dados real** já tem uma proposta em [`docs/database/`](database/README.md), mas o app
   ainda não usa.
 
