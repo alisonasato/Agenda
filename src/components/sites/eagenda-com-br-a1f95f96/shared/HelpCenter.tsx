@@ -3,9 +3,7 @@
 import { useCallback, useRef, useState, type ComponentType, type SVGProps } from "react";
 import { BookOpen, CalendarPlus, CalendarX, CircleHelp, ExternalLink, LayoutDashboard, Library, Link, Repeat, X } from "lucide-react";
 import { useDismiss } from "./useDismiss";
-
-/** The documentation site the tutorials live on; the menu's "Tutoriais" entry points at its root. */
-export const DOCS = "https://www.seiri.com.br/docs";
+import { DOCS } from "./links";
 
 export type HelpItem = { icon: ComponentType<SVGProps<SVGSVGElement>>; title: string; desc: string; href: string };
 

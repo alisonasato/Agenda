@@ -18,6 +18,7 @@ import {
 } from "../shared/icons";
 import { update, useData } from "@/lib/seiri/store";
 import { MEMBER_PROFILES } from "@/lib/seiri/types";
+import { DOCS, SITE } from "../shared/links";
 
 const ASSETS = withBase("/sites/eagenda-com-br-a1f95f96/integracoes-526c97c5");
 
@@ -310,12 +311,11 @@ export function Integrations() {
               <p className="halert-description">Consulte a documentação para configurar cada integração ou fale com o suporte.</p>
             </div>
             <div className="halert-actions">
-              {/* The original points at eAgenda's docs and contact pages; Seiri has none yet. */}
-              <a href="#" className="hbtn hbtn--secondary hbtn--sm">
+              <a href={`${DOCS}/integracoes/`} target="_blank" rel="noopener noreferrer" className="hbtn hbtn--secondary hbtn--sm">
                 <BookIcon />
                 Documentação
               </a>
-              <a href="#" className="hbtn hbtn--secondary hbtn--sm">
+              <a href={`${SITE}/contato/`} target="_blank" rel="noopener noreferrer" className="hbtn hbtn--secondary hbtn--sm">
                 <ChatIcon />
                 Suporte
               </a>

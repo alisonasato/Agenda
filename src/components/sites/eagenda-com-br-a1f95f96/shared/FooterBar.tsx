@@ -1,8 +1,8 @@
 import { Fragment } from "react";
+import { SITE } from "./links";
 
 // Institutional pages of the product site, not screens of the dashboard: the prototype does not
 // host them, so these point off the app the way the Ajuda menu's outbound links do.
-const SITE = "https://www.seiri.com.br";
 const LINKS = [
   { label: "FAQ", href: `${SITE}/faq/` },
   { label: "Termos", href: `${SITE}/termos/` },

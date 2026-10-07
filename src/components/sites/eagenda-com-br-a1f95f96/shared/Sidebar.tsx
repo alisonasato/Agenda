@@ -1,7 +1,7 @@
 "use client";
 
 import { withBase } from "@/lib/basePath";
-import { DOCS } from "./HelpCenter";
+import { DOCS } from "./links";
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ComponentType, type CSSProperties, type SVGProps } from "react";
 import {
   BuildingIcon,
