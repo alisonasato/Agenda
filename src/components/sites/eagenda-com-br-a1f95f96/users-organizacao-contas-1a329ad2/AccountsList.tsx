@@ -198,17 +198,11 @@ export function AccountsList() {
                 {chips.map((c) => (
                   <span key={c.key} className="htag">
                     <span className="htag-label">{c.label}</span>
-                    <a
-                      href="#"
-                      className="htag-remove"
-                      aria-label="remover"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        c.remove();
-                      }}
-                    >
+                    {/* An action, not a destination. `.htag-remove` leaves the cursor alone, which
+                        an <a href> got from the browser and a button does not. */}
+                    <button type="button" className="htag-remove cursor-pointer" aria-label="remover" onClick={c.remove}>
                       <CloseCircleIcon className="w-3 h-3" />
-                    </a>
+                    </button>
                   </span>
                 ))}
               </div>

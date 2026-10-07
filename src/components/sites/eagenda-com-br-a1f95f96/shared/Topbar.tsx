@@ -212,10 +212,13 @@ export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
                 </span>
               </button>
               <div className="hmenu-divider" aria-hidden="true" />
-              <a href="#" className="hmenu-item hmenu-item--danger" role="menuitem" onClick={close}>
+              {/* There is no session to end, so this only closes the menu — an action, not a link.
+                  `.hmenu-item` is already written for a button: it resets the background, the
+                  border and the text alignment, and sets the cursor. */}
+              <button type="button" className="hmenu-item hmenu-item--danger" role="menuitem" onClick={close}>
                 <LogoutIcon className="hmenu-item-icon w-4 h-4" />
                 <span className="hmenu-item-label">Sair</span>
-              </a>
+              </button>
             </>
           )}
         </HMenu>
