@@ -74,13 +74,14 @@ agendamento, na hora e na duração dele.
 | Opção | Livres | Blocos |
 |---|---|---|
 | Todos os Horários | mostra | um por horário, dividido entre quem reservou |
-| Todos os Horários, sem agrupamento | mostra | um por agendamento |
-| Agendamentos, agrupados por horário | esconde | um por horário ocupado |
+| Todos os Horários, sem agrupamento | mostra | **o mesmo da primeira** |
+| Agendamentos, agrupados por horário | esconde | um por horário ocupado, dividido |
 | Agendamentos, sem agrupamento | esconde | um por agendamento |
 
-Na semana de referência: 132 blocos na primeira, 7 na terceira (os horários ocupados), 5 na quarta
-(os agendamentos, dois deles de uma hora ocupando dois horários cada) e 130 na segunda (125 livres
-mais os 5).
+Medido no original em 2026-10-08, numa semana cujo horário das 09:00 tinha dois agendamentos:
+**96 · 96 · 1 · 2** blocos. As duas primeiras dão a mesma tela, e só a última separa os dois numa
+caixa cada. O bloco agrupado divide o horário entre as pessoas, cada uma numa coluna
+`h-full flex-1 min-w-0 border-r cal-line-block` — é o que o clone já fazia.
 
 ### Cor dos Eventos
 
@@ -93,12 +94,16 @@ agrupar, cada um leva a sua.
 "Por status" usa o hexadecimal de cada chip: pendente `#F5A524`, confirmado `#0A70D6`, atendido
 `#17C964`, não compareceu `#D42325`, cancelado `#98A2B3`.
 
-### O que aqui é leitura, não captura
+### Conferido
 
-O menu foi capturado com os rótulos certos, mas **o que cada opção faz na grade do original não foi
-visto** — a conta de referência tinha poucos agendamentos e a diferença não aparecia. O
-comportamento acima é a leitura literal dos rótulos. Confirmar contra o original antes de tratar
-como fiel; o resto desta tela foi medido.
+Implementado primeiro pela leitura literal dos rótulos, e **medido contra o original em
+2026-10-08**. A leitura acertou em esconder os livres e errou no agrupamento: eu tinha feito
+"Todos os Horários, sem agrupamento" desenhar um bloco por agendamento, e o original mantém o
+agrupamento quando os livres estão na tela. Corrigido para o que foi medido.
+
+Também confirmado nessa visita: o calendário **não tem seletor de agenda**. A barra traz só
+Incluir Agendamento, Bloquear Horários, Configurar Horários e o menu Exibição; a agenda vem da URL
+(`/agendamentos/calendar/<id>/?calendars=<id>`), como o clone já fazia.
 
 
 ## Diferenças em relação ao original

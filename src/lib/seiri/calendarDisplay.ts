@@ -15,13 +15,23 @@ export const COLOR_MODES = ["Ocupação do Horário", "Por agenda", "Por status"
 export type ColorMode = (typeof COLOR_MODES)[number];
 
 /**
- * What the chosen "Tipo de Visualização" asks of the grid, read off the label itself:
- * - "Agendamentos…" drops the free slots and leaves only the booked ones;
- * - "…sem agrupamento" stops a slot being shared between the people in it, and draws one block per
- *   appointment at its own time instead.
+ * What the chosen "Tipo de Visualização" asks of the grid. Measured against the original on
+ * 2026-10-08, on a week whose 09:00 slot held two appointments:
+ *
+ * | Opção | blocos | ocupados |
+ * |---|---|---|
+ * | Todos os Horários | 96 | 1, dividido entre os dois |
+ * | Todos os Horários, sem agrupamento | 96 | 1, dividido entre os dois |
+ * | Agendamentos, agrupados por horário | 1 | 1, dividido entre os dois |
+ * | Agendamentos, sem agrupamento | 2 | 2, um por agendamento |
+ *
+ * So "Agendamentos…" drops the free slots, and "…sem agrupamento" only does anything in that
+ * family: with the free slots on screen the original groups either way, and the second option is
+ * the same view as the first.
  */
 export function displayFlags(mode: string) {
-  return { onlyBooked: mode.startsWith("Agendamentos"), grouped: !mode.includes("sem agrupamento") };
+  const onlyBooked = mode.startsWith("Agendamentos");
+  return { onlyBooked, grouped: !(onlyBooked && mode.includes("sem agrupamento")) };
 }
 
 /** The hex behind each status chip, for "Por status". */

@@ -62,7 +62,8 @@ const data = {
 // The two flags each label carries.
 {
   assert.deepEqual(displayFlags("Todos os Horários"), { onlyBooked: false, grouped: true });
-  assert.deepEqual(displayFlags("Todos os Horários, sem agrupamento"), { onlyBooked: false, grouped: false });
+  // Medido no original: com os livres na tela, ele agrupa de qualquer jeito.
+  assert.deepEqual(displayFlags("Todos os Horários, sem agrupamento"), { onlyBooked: false, grouped: true });
   assert.deepEqual(displayFlags("Agendamentos, agrupados por horário"), { onlyBooked: true, grouped: true });
   assert.deepEqual(displayFlags("Agendamentos, sem agrupamento"), { onlyBooked: true, grouped: false });
 
