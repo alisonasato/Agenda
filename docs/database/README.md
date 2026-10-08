@@ -125,6 +125,7 @@ Cada chave de `Data` em `src/lib/seiri/types.ts` e onde ela vai parar:
 | `orgSettings`, `bookingScreen` | `organization_settings` |
 | `integrations` | `organization_integrations` |
 | `whatsappCode` | `organizations.whatsapp_activation_code` |
+| `checklistDismissed` | `organizations.onboarding_checklist_dismissed` |
 | `surveys` | `surveys`, `survey_agendas` |
 | `surveyQuestions` | `survey_questions`, `survey_question_choices` |
 | `agendaGroups` | `agenda_groups`, `agenda_group_agendas` |

@@ -42,6 +42,31 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 O assistente não guarda nada próprio: ele junta os campos dos sete passos e, ao terminar, escreve
 na agenda, nos horários, na tela de agendamento e nas integrações.
 
+## Painel
+Os números do painel são **contados**, nunca guardados, para não divergirem de outra tela que
+mostre o mesmo. "Agendamentos/Mês" e o medidor "Agendamentos neste ciclo" da tela de Planos leem a
+mesma função, `monthUsage()` em `select.ts`: os agendamentos do mês corrente, sem os cancelados.
+O limite e o nome do plano saem de `data.plan`, que também alimenta o rodapé da barra lateral —
+antes o painel trazia "/ 100" e "Plano Teste" escritos à mão, enquanto `data.plan` dizia 300 e
+"Plano Gratuito".
+
+O checklist de onboarding deduz cada passo do que já está salvo, em
+`painel-6812d580/checklist.ts`:
+
+| Passo | Está feito quando |
+|---|---|
+| Adicionar logo e mensagem de boas-vindas | `bookingScreen.logo` **e** `bookingScreen.mensagem` estão preenchidos |
+| Informar o e-mail de contato do negócio | `orgSettings.email` **ou** `orgSettings.from_email` |
+| Fazer um agendamento teste | existe algum agendamento |
+| Escolher seu plano | `plan.name` não é "Plano Gratuito" |
+
+Como nada no protótipo tira a conta do plano grátis, o último passo fica pendente. O primeiro
+passo ainda pendente recebe o destaque (`is-emphasis`).
+
+`data.checklistDismissed` guarda o "✕": o original manda isso ao servidor, então aqui precisa
+sobreviver a um recarregamento também.
+
+
 ## Formulários
 `data.surveys` guarda os formulários: tipo, agendas vinculadas, data limite, login obrigatório e o
 modelo importado, com a contagem de respostas que a tabela mostra.

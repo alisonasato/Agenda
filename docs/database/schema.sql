@@ -38,6 +38,7 @@ CREATE TABLE organizations (
   name                      text NOT NULL,
   slug                      text NOT NULL UNIQUE,          -- Profile.orgSlug; vai no link público
   whatsapp_activation_code  text NOT NULL DEFAULT '',      -- Data.whatsappCode
+  onboarding_checklist_dismissed  boolean NOT NULL DEFAULT false,  -- Data.checklistDismissed
   timezone                  text NOT NULL DEFAULT 'America/Sao_Paulo',  -- fuso dos horários das agendas
   created_at                timestamptz NOT NULL DEFAULT now()
 );

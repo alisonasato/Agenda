@@ -4,6 +4,7 @@ import { useState, type CSSProperties } from "react";
 import { ArrowRightIcon, CrownIcon, InboxIcon, ReceiptIcon, StarsIcon, WalletIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
 import { useData } from "@/lib/seiri/store";
+import { monthUsage } from "@/lib/seiri/select";
 
 const TABS = [
   { id: "pagamentos", label: "Pagamentos" },
@@ -76,7 +77,10 @@ function Table({ columns, rows }: { columns: string[]; rows: React.ReactNode[] }
 
 /** Conta › Planos: the subscription, the AgendaCoins balance and the invoice archive. */
 export function PlansPage() {
-  const { plan, credits, coinTransactions, payments, planHistory } = useData();
+  const data = useData();
+  const { plan, credits, coinTransactions, payments, planHistory } = data;
+  // Counted, not stored, and by the same rule the Painel's meter uses.
+  const used = monthUsage(data);
   const [tab, setTab] = useState<Tab>("pagamentos");
   const tabIndex = TABS.findIndex((t) => t.id === tab);
   const free = plan.price === 0;
@@ -146,7 +150,7 @@ export function PlansPage() {
               </div>
             </div>
             <div className="space-y-3 pb-4 mb-4 border-b border-slate-100">
-              <Meter label="Agendamentos neste ciclo" used={plan.appointmentsUsed} max={plan.appointmentsMax} tone="accent" />
+              <Meter label="Agendamentos neste ciclo" used={used} max={plan.appointmentsMax} tone="accent" />
               <Meter label="Usuários" used={plan.usersUsed} max={plan.usersMax} tone="danger" />
             </div>
             <p className="mt-2.5 text-xs text-gray-500 inter-regular">{plan.note}</p>

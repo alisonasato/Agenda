@@ -2,6 +2,7 @@
 
 import { withBase } from "@/lib/basePath";
 import { DOCS } from "./links";
+import { useData } from "@/lib/seiri/store";
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ComponentType, type CSSProperties, type SVGProps } from "react";
 import {
   BuildingIcon,
@@ -461,6 +462,8 @@ type SidebarProps = {
 };
 
 export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: SidebarProps) {
+  // The plan's name belongs to the data, so the rail and the Painel cannot disagree.
+  const { plan } = useData();
   // The original reads the cookie on the server; here the first paint is the simplified menu.
   const mode = useSyncExternalStore(subscribeMode, readMode, () => "simple" as const);
   const entries = entriesFor(mode, active);
@@ -658,7 +661,7 @@ export function Sidebar({ active, peek = false, mobileOpen, onCloseMobile }: Sid
             <span className="sidebar-plan-crown" aria-hidden="true">
               <CrownIcon />
             </span>
-            <span className="sidebar-plan-name">Plano Teste</span>
+            <span className="sidebar-plan-name">{plan.name}</span>
             <span className="hchip hchip--success hchip--primary hchip--sm">Ativo</span>
           </div>
           <div className="sidebar-plan-cta-wrap">

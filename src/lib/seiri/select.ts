@@ -80,3 +80,16 @@ export const withinDays = (iso: string, days: number, today = new Date()) => {
   const key = dayKey(iso);
   return key >= keyFromToday(0, today) && key < keyFromToday(days, today);
 };
+
+/**
+ * Appointments booked in `today`'s month, which is what the plan's quota counts. The Painel's
+ * "Agendamentos/Mês" meter and the one on Planos both read this, so the two screens cannot
+ * disagree about the same account — a stored count could, and did.
+ */
+export function monthUsage(data: Data, today = new Date()) {
+  return data.appointments.filter((a) => {
+    if (a.status === "CANCELED") return false;
+    const d = parse(a.start);
+    return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
+  }).length;
+}

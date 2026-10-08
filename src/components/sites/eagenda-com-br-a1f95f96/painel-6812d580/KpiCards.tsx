@@ -4,12 +4,9 @@ import type { ComponentType, CSSProperties, SVGProps } from "react";
 import { CalendarKpiIcon, ClockIcon, CrownIcon, PlayIcon, ReportIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
 import { useData } from "@/lib/seiri/store";
-import { dayKey, keyFromToday } from "@/lib/seiri/select";
+import { dayKey, keyFromToday, monthUsage } from "@/lib/seiri/select";
 
 type Kpi = { label: string; value: number; color: string; href: string; icon: ComponentType<SVGProps<SVGSVGElement>> };
-
-/** What the plan allows in a month, the number the original's meter measures against. */
-const MONTHLY_LIMIT = 100;
 
 /** The top of the dashboard: "Agendamentos" beside "Utilização", the way the original lays it out. */
 export function KpiCards() {
@@ -17,10 +14,9 @@ export function KpiCards() {
   const today = new Date();
   const booked = data.appointments.filter((a) => a.status !== "CANCELED");
   const on = (offset: number) => booked.filter((a) => dayKey(a.start) === keyFromToday(offset, today)).length;
-  const month = booked.filter((a) => {
-    const d = new Date(`${a.start}:00`);
-    return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
-  }).length;
+  // The quota and its name belong to the plan, so this card and Planos cannot disagree.
+  const month = monthUsage(data, today);
+  const limit = data.plan.appointmentsMax;
 
   const KPIS: Kpi[] = [
     { label: "Agendamentos hoje", value: on(0), color: "var(--color-accent)", href: `${ROUTES.agendamentos}/?interval=today`, icon: CalendarKpiIcon },
@@ -75,7 +71,7 @@ export function KpiCards() {
           <div className="hwidget-actions">
             <a href={ROUTES.pacotesEnvio} className="hbtn hbtn--secondary hbtn--sm">
               <CrownIcon className="w-4 h-4" />
-              Plano Teste
+              {data.plan.name}
             </a>
           </div>
         </div>
@@ -93,12 +89,12 @@ export function KpiCards() {
               <span className="hmcard-label">Agendamentos/Mês</span>
               <span className="hmcard-values">
                 <span className="hmcard-value">{month}</span>
-                <span className="hmcard-limit"> / {MONTHLY_LIMIT}</span>
+                <span className="hmcard-limit"> / {limit}</span>
               </span>
             </div>
             <div className="hmcard-meter hmeter hmeter--accent hmeter--sm">
               <div className="hmeter-track">
-                <div className="hmeter-fill" style={{ width: `${Math.min(100, Math.round((month / MONTHLY_LIMIT) * 100))}%` }} />
+                <div className="hmeter-fill" style={{ width: `${limit ? Math.min(100, Math.round((month / limit) * 100)) : 0}%` }} />
               </div>
             </div>
           </a>

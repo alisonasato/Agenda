@@ -940,6 +940,8 @@ export type Data = {
   manualHours: ManualHours[];
   surveys: Survey[];
   surveyQuestions: SurveyQuestion[];
+  /** Whether the Painel's onboarding checklist was dismissed; the original keeps it on the server. */
+  checklistDismissed: boolean;
   profile: Profile;
   notifications: InboxNotification[];
   userGroups: UserGroup[];
