@@ -59,6 +59,48 @@ Data/Hora · Duração · Valor · Situação · Pagamento, e "Baixar" salva iss
 **"Pagamento realizado externamente"** de "Aceitar" grava `paidExternally` no agendamento, e é ela
 que a linha "Pagamento" do recibo mostra.
 
+## Menu "Exibição"
+
+As duas listas do menu valiam nada até 2026-10-08: o "Tipo de Visualização" guardava a escolha numa
+state que ninguém lia, e a "Cor dos Eventos" nem saía do componente do menu. As regras agora moram
+em `lib/seiri/calendarDisplay.ts`, longe do React, e a grade as lê.
+
+### Tipo de Visualização
+
+Os dois eixos saem do próprio rótulo: começar com "Agendamentos" esconde os horários livres, e
+"sem agrupamento" para de dividir um horário entre as pessoas nele, desenhando um bloco por
+agendamento, na hora e na duração dele.
+
+| Opção | Livres | Blocos |
+|---|---|---|
+| Todos os Horários | mostra | um por horário, dividido entre quem reservou |
+| Todos os Horários, sem agrupamento | mostra | um por agendamento |
+| Agendamentos, agrupados por horário | esconde | um por horário ocupado |
+| Agendamentos, sem agrupamento | esconde | um por agendamento |
+
+Na semana de referência: 132 blocos na primeira, 7 na terceira (os horários ocupados), 5 na quarta
+(os agendamentos, dois deles de uma hora ocupando dois horários cada) e 130 na segunda (125 livres
+mais os 5).
+
+### Cor dos Eventos
+
+`Ocupação do Horário` (a que o original abre) · `Por agenda` · `Por status` · `Por serviço`.
+Um horário bloqueado e vazio é cinza em qualquer modo; um bloqueado com gente dentro não é. Os
+modos que leem um registro recuam para a ocupação quando não há o que ler — um horário livre não
+tem status nem serviço. Mostrado inteiro, o horário toma a cor do primeiro agendamento; sem
+agrupar, cada um leva a sua.
+
+"Por status" usa o hexadecimal de cada chip: pendente `#F5A524`, confirmado `#0A70D6`, atendido
+`#17C964`, não compareceu `#D42325`, cancelado `#98A2B3`.
+
+### O que aqui é leitura, não captura
+
+O menu foi capturado com os rótulos certos, mas **o que cada opção faz na grade do original não foi
+visto** — a conta de referência tinha poucos agendamentos e a diferença não aparecia. O
+comportamento acima é a leitura literal dos rótulos. Confirmar contra o original antes de tratar
+como fiel; o resto desta tela foi medido.
+
+
 ## Diferenças em relação ao original
 - O recibo é **construção deste clone**: o original gera um PDF no servidor e não dá para ver o
   layout dele sem emitir um. Aqui ele é montado com as peças do design system (a mesma `dl` da

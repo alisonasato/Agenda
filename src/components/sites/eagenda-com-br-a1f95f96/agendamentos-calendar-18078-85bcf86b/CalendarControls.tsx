@@ -7,6 +7,7 @@ import { BlockHoursModal } from "./BlockHoursModal";
 import { TimetableModal } from "./TimetableModal";
 import { useIsMobile } from "../shared/useIsMobile";
 import type { CalendarView } from "../shared/calendarDates";
+import { COLOR_MODES, DISPLAY_MODES, type ColorMode } from "@/lib/seiri/calendarDisplay";
 
 const VIEWS: { value: CalendarView; label: string }[] = [
   { value: "day", label: "Dia" },
@@ -15,25 +16,19 @@ const VIEWS: { value: CalendarView; label: string }[] = [
 ];
 
 const DISPLAY_GROUPS = [
-  {
-    label: "Tipo de Visualização",
-    options: ["Todos os Horários", "Todos os Horários, sem agrupamento", "Agendamentos, agrupados por horário", "Agendamentos, sem agrupamento"],
-    initial: "Todos os Horários",
-  },
-  {
-    label: "Cor dos Eventos",
-    options: ["Ocupação do Horário", "Por agenda", "Por status", "Por serviço"],
-    initial: "Por agenda",
-  },
+  { label: "Tipo de Visualização", options: DISPLAY_MODES },
+  { label: "Cor dos Eventos", options: COLOR_MODES },
 ];
 
-function DisplayMenu({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+type DisplayMenuProps = { value: string; onChange: (v: string) => void; colorBy: ColorMode; onColorBy: (v: ColorMode) => void };
+
+// Both lists belong to the page, not to this menu: the grid has to read them too.
+function DisplayMenu({ value, onChange, colorBy, onColorBy }: DisplayMenuProps) {
   const [open, setOpen] = useState(false);
-  const [colorBy, setColorBy] = useState(DISPLAY_GROUPS[1].initial);
   const ref = useRef<HTMLDivElement>(null);
   useDismiss(ref, open, () => setOpen(false));
-  const selected = [value, colorBy];
-  const setters = [onChange, setColorBy];
+  const selected: string[] = [value, colorBy];
+  const setters: ((v: string) => void)[] = [onChange, (v) => onColorBy(v as ColorMode)];
 
   return (
     <div ref={ref} className="hinline-anchor">
@@ -140,13 +135,15 @@ type CalendarControlsProps = {
   view: CalendarView;
   onView: (v: CalendarView) => void;
   display: string;
+  colorBy: ColorMode;
+  onColorBy: (v: ColorMode) => void;
   onDisplay: (v: string) => void;
   shortTitle: string;
   onPrev: () => void;
   onNext: () => void;
 };
 
-export function CalendarControls({ view, onView, display, onDisplay, shortTitle, onPrev, onNext }: CalendarControlsProps) {
+export function CalendarControls({ view, onView, display, onDisplay, colorBy, onColorBy, shortTitle, onPrev, onNext }: CalendarControlsProps) {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState<"block" | "timetable" | null>(null);
   return (
@@ -175,7 +172,7 @@ export function CalendarControls({ view, onView, display, onDisplay, shortTitle,
             <ViewTabs view={view} onView={onView} fill />
             <div className="hactionbar w-full" role="group">
               <div className="hrail-track hactionbar-track">
-                <DisplayMenu value={display} onChange={onDisplay} />
+                <DisplayMenu value={display} onChange={onDisplay} colorBy={colorBy} onColorBy={onColorBy} />
                 <span className="hactionbar-sep" />
                 <ActionButtons onOpen={setOpen} />
               </div>
@@ -190,7 +187,7 @@ export function CalendarControls({ view, onView, display, onDisplay, shortTitle,
             <div className="flex items-center gap-2 min-w-0 col-start-1">
               <div className="hactionbar" role="group">
                 <div className="hrail-track hactionbar-track">
-                  <DisplayMenu value={display} onChange={onDisplay} />
+                  <DisplayMenu value={display} onChange={onDisplay} colorBy={colorBy} onColorBy={onColorBy} />
                 </div>
               </div>
             </div>

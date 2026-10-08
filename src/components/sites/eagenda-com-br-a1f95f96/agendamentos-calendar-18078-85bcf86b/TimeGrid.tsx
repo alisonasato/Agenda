@@ -5,18 +5,20 @@ import { WEEKDAYS_SHORT, sameDay } from "../shared/calendarDates";
 import { SlotDetailsModal } from "./SlotDetailsModal";
 import { useData } from "@/lib/seiri/store";
 import { expand, formatTime } from "@/lib/seiri/select";
-import { hourRange, shade, slotColor, tint, type Slot, slotsOf } from "@/lib/seiri/slots";
+import { hourRange, shade, tint, type Slot, slotsOf } from "@/lib/seiri/slots";
+import { colorOf, displayFlags, type ColorMode } from "@/lib/seiri/calendarDisplay";
 
 const ROW_PX = 120;
 const SLOT_PX = 60;
 
-type TimeGridProps = { days: Date[]; today: Date };
+type TimeGridProps = { days: Date[]; today: Date; display: string; colorBy: ColorMode };
 
 /**
  * The original draws the agenda's own half-hour slots, not the appointments: a free slot shows its
  * time range, a taken one splits between whoever booked it, and the colour is the slot's occupancy.
  */
-export function TimeGrid({ days, today }: TimeGridProps) {
+export function TimeGrid({ days, today, display, colorBy }: TimeGridProps) {
+  const { onlyBooked, grouped } = displayFlags(display);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const todayRef = useRef<HTMLDivElement>(null);
   const data = useData();
@@ -75,7 +77,8 @@ export function TimeGrid({ days, today }: TimeGridProps) {
 
           {days.map((day) => {
             const isToday = sameDay(day, today);
-            const slots = agenda ? slotsOf(data, agenda.id, day) : [];
+            const all = agenda ? slotsOf(data, agenda.id, day) : [];
+            const slots = onlyBooked ? all.filter((s) => s.appointments.length) : all;
             return (
               <div
                 key={`c-${day.toISOString()}`}
@@ -90,7 +93,7 @@ export function TimeGrid({ days, today }: TimeGridProps) {
                 </div>
 
                 {slots.map((slot) => {
-                  const color = slot.blocked && !slot.appointments.length ? "#98A2B3" : slotColor(slot);
+                  const color = colorOf(data, slot, null, colorBy);
                   const range = `${formatTime(slot.start)}–${formatTime(slot.end)}`;
                   const style: CSSProperties = { top: topOf(slot.start), height: SLOT_PX, left: "calc(0%)", width: "calc(100%)", boxSizing: "border-box" };
                   const label = slot.blocked
@@ -119,6 +122,41 @@ export function TimeGrid({ days, today }: TimeGridProps) {
                       </div>
                     );
 
+                  // Ungrouped draws each appointment on its own, so one that starts inside the
+                  // slot or runs past it keeps its real time; grouped shares the slot between them.
+                  if (!grouped)
+                    return slot.appointments
+                      .filter((a) => a.start === slot.start)
+                      .map((a) => {
+                        const { clientName, serviceName } = expand(data, a);
+                        const own = colorOf(data, slot, a, colorBy);
+                        return (
+                          <div
+                            key={a.id}
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${formatTime(a.start)} ${clientName}`}
+                            onClick={() => setOpen(slot)}
+                            onKeyDown={(e) => e.key === "Enter" && setOpen(slot)}
+                            className="absolute overflow-hidden text-left select-none cursor-pointer z-10 cal-ev border-b cal-line-block"
+                            style={{
+                              top: topOf(a.start),
+                              height: Math.max(24, a.duration * minute),
+                              left: "calc(0%)",
+                              width: "calc(100%)",
+                              boxSizing: "border-box",
+                              backgroundColor: own,
+                              color: "#FFFFFF",
+                            }}
+                          >
+                            <div className="h-full flex flex-col gap-0.5 px-1.5 py-1.5 min-w-0">
+                              <span className="flex items-center gap-1 min-w-0 text-[11px] font-semibold leading-tight truncate">{clientName}</span>
+                              <span className="text-[10px] leading-tight truncate opacity-90">{serviceName}</span>
+                            </div>
+                          </div>
+                        );
+                      });
+
                   return (
                     <div
                       key={slot.start}
@@ -136,7 +174,7 @@ export function TimeGrid({ days, today }: TimeGridProps) {
                           <div
                             key={a.id}
                             className="h-full flex-1 min-w-0 border-r cal-line-block"
-                            style={{ backgroundColor: color, color: "#FFFFFF", boxSizing: "border-box" }}
+                            style={{ backgroundColor: colorOf(data, slot, a, colorBy), color: "#FFFFFF", boxSizing: "border-box" }}
                           >
                             <div className="h-full flex flex-col gap-0.5 px-1.5 py-1.5 min-w-0">
                               <span className="flex items-center gap-1 min-w-0 text-[11px] font-semibold leading-tight truncate">{clientName}</span>
