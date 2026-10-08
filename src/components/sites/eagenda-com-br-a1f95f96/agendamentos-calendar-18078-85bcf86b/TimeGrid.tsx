@@ -112,7 +112,7 @@ export function TimeGrid({ days, today, display, colorBy }: TimeGridProps) {
                         onClick={() => setOpen(slot)}
                         onKeyDown={(e) => e.key === "Enter" && setOpen(slot)}
                         className="absolute overflow-hidden text-left select-none cursor-pointer z-10 cal-ev border-b cal-line-block"
-                        style={{ ...style, backgroundColor: tint(color, 0.72), color: shade(color, 0.45) }}
+                        style={{ ...style, backgroundColor: tint(color, 0.74), color: shade(color, 0.45) }}
                       >
                         <div className="h-full flex items-center gap-1.5 px-2 min-w-0">
                           <span className="text-[13px] font-semibold tabular-nums leading-none shrink-0" style={{ color: shade(color, 0.45) }}>

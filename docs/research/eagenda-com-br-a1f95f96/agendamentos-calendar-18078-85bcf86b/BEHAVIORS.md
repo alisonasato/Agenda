@@ -5,10 +5,12 @@
   `/agendamentos/calendar/get/` é uma lista de slots de 30 minutos (`slotDuration: "0:30:00"`), não
   de agendamentos. Slot livre mostra o intervalo ("09:30–10:00"); slot ocupado se divide entre quem
   reservou; um agendamento de 1 hora ocupa os dois slots por onde passa.
-- A cor é a "Ocupação do Horário", a opção com que o original abre: livre `#48CFAE`, lotado
-  `#D42325`, parcialmente ocupado `#F5A524` (o original só mostra os dois primeiros porque a conta
-  de referência tem `max_people: 1`). O fundo é a cor clareada 72% e o texto a cor escurecida 45%,
-  como o original calcula.
+- As cores da "Ocupação do Horário" são livre `#48CFAE`, lotado `#D42325`, parcialmente ocupado
+  `#F5A524` (o original só mostra os dois primeiros porque a conta de referência tem
+  `max_people: 1`). O fundo é a cor clareada **74%** e o texto a cor escurecida 45%, como o original
+  calcula (o 72% que esta nota trazia dava `204,242,232` onde o original dá `207,243,234`). **O calendário não abre nesta opção**, ao contrário do que esta nota dizia até
+  2026-10-08: apagando o `calendar:preferences` do original e recarregando, ele volta em
+  "Por agenda". Nesse modo o horário livre continua verde — só o reservado toma a cor da agenda.
 - Os slots vêm de `data.hours` (Configurar Horários) e os bloqueios de `data.blocks`
   (Bloquear Horários) — docs/DATA-LAYER.md.
 

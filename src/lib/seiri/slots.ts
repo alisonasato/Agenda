@@ -5,7 +5,11 @@ import type { Appointment, Data, Interval, SlotInfo } from "./types";
 /** The original serves the calendar as half-hour slots (`slotDuration: "0:30:00"`). */
 export const SLOT_MINUTES = 30;
 
-/** "Ocupação do Horário", the colouring the calendar opens with. */
+/**
+ * "Ocupação do Horário". Not the colouring the calendar opens with, despite what this comment
+ * said until 2026-10-08: clearing the original's `calendar:preferences` and reloading brings it
+ * back on "Por agenda". These are still the colours a free, partly taken and full slot get.
+ */
 export const SLOT_COLORS = { free: "#48CFAE", partial: "#F5A524", full: "#D42325" };
 
 /** The key "Editar Horário" and "Videoconferência" store a slot's own settings under. */

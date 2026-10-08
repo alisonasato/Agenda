@@ -9,7 +9,7 @@ import { MiniCalendar } from "./MiniCalendar";
 import { MonthGrid } from "./MonthGrid";
 import { TimeGrid } from "./TimeGrid";
 import { periodTitle, shiftDate, startOfDay, weekDays, type CalendarView } from "../shared/calendarDates";
-import { COLOR_MODES, DISPLAY_MODES, type ColorMode } from "@/lib/seiri/calendarDisplay";
+import { DEFAULT_COLOR_MODE, DISPLAY_MODES, type ColorMode } from "@/lib/seiri/calendarDisplay";
 import { ROUTES } from "../shared/Sidebar";
 
 // Whole calendar page: the topbar header (CTA + date nav) plus the island itself.
@@ -18,8 +18,7 @@ export function CalendarIsland() {
   const [date, setDate] = useState(today);
   const [view, setView] = useState<CalendarView>("week");
   const [display, setDisplay] = useState<string>(DISPLAY_MODES[0]);
-  // The calendar opens on the occupancy colouring, as the original does.
-  const [colorBy, setColorBy] = useState<ColorMode>(COLOR_MODES[0]);
+  const [colorBy, setColorBy] = useState<ColorMode>(DEFAULT_COLOR_MODE);
 
   const go = (dir: 1 | -1) => setDate((d) => shiftDate(d, view, dir));
   const title = periodTitle(date, view);

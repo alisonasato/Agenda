@@ -1,4 +1,4 @@
-import { SLOT_COLORS, slotColor, type Slot } from "./slots";
+import { slotColor, type Slot } from "./slots";
 import type { Appointment, Data, Status } from "./types";
 
 /** "Tipo de Visualização", the four the original's Exibição menu offers, in its order. */
@@ -9,8 +9,15 @@ export const DISPLAY_MODES = [
   "Agendamentos, sem agrupamento",
 ] as const;
 
-/** "Cor dos Eventos". The calendar opens on the first, which is what the grid paints. */
+/** "Cor dos Eventos", in the original's order. */
 export const COLOR_MODES = ["Ocupação do Horário", "Por agenda", "Por status", "Por serviço"] as const;
+
+/**
+ * What the calendar opens on. Measured by clearing the original's own `calendar:preferences`
+ * and reloading: it comes back on "Por agenda", not on the occupancy that the screen notes and
+ * the comment in slots.ts both claimed.
+ */
+export const DEFAULT_COLOR_MODE: ColorMode = "Por agenda";
 
 export type ColorMode = (typeof COLOR_MODES)[number];
 
@@ -53,13 +60,15 @@ export const BLOCKED_COLOR = "#98A2B3";
  */
 export function colorOf(data: Data, slot: Slot, appointment: Appointment | null, mode: ColorMode): string {
   if (slot.blocked && !slot.appointments.length) return BLOCKED_COLOR;
-  if (mode === "Ocupação do Horário") return slotColor(slot);
+  // Every mode but the first describes a booking, so an empty slot keeps the occupancy colour
+  // whichever is chosen. Measured on the original: under "Por agenda" the free slots stay mint,
+  // they do not take the agenda's colour.
+  if (!slot.appointments.length || mode === "Ocupação do Horário") return slotColor(slot);
 
   if (mode === "Por agenda") return data.agendas.find((a) => a.id === slot.agendaId)?.color ?? slotColor(slot);
 
   // The two below describe one appointment, so a slot shown as a whole uses the first one in it.
   const row = appointment ?? slot.appointments[0];
-  if (!row) return SLOT_COLORS.free;
   if (mode === "Por status") return STATUS_COLORS[row.status];
   return data.services.find((s) => s.id === row.serviceId)?.color ?? slotColor(slot);
 }

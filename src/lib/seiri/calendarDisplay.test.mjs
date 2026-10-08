@@ -6,7 +6,7 @@ import { register } from "node:module";
 // Node wants the extension that the source's own imports leave out.
 register('data:text/javascript,export function resolve(s, c, next) { return next(s[0] === "." && !s.endsWith(".ts") ? s + ".ts" : s, c); }');
 
-const { DISPLAY_MODES, COLOR_MODES, displayFlags, colorOf, STATUS_COLORS, BLOCKED_COLOR } = await import("./calendarDisplay.ts");
+const { DISPLAY_MODES, COLOR_MODES, DEFAULT_COLOR_MODE, displayFlags, colorOf, STATUS_COLORS, BLOCKED_COLOR } = await import("./calendarDisplay.ts");
 const { SLOT_COLORS } = await import("./slots.ts");
 
 const appointment = (over) => ({
@@ -56,7 +56,8 @@ const data = {
     "Agendamentos, sem agrupamento",
   ]);
   assert.deepEqual(COLOR_MODES, ["Ocupação do Horário", "Por agenda", "Por status", "Por serviço"]);
-  assert.equal(COLOR_MODES[0], "Ocupação do Horário", "o calendário abre nesta, e é a que a grade pinta");
+  // Medido apagando o `calendar:preferences` do original: ele volta em "Por agenda".
+  assert.equal(DEFAULT_COLOR_MODE, "Por agenda", "é nesta que o calendário abre");
 }
 
 // The two flags each label carries.
@@ -94,12 +95,20 @@ const data = {
   assert.notEqual(colorOf(data, blockedButBooked, null, "Por agenda"), BLOCKED_COLOR, "quem já estava agendado não vira cinza");
 }
 
-// Por agenda: the slot's own agenda, free or not.
+// Por agenda pinta quem está reservado; o horário livre continua na cor da ocupação.
 {
-  assert.equal(colorOf(data, slot({}), null, "Por agenda"), "#0A70D6");
-  assert.equal(colorOf(data, slot({ agendaId: "a2" }), null, "Por agenda"), "#EC4899");
+  const livre = slot({});
+  const reservado = (over) => slot({ appointments: [appointment({})], ...over });
+  assert.equal(colorOf(data, livre, null, "Por agenda"), SLOT_COLORS.free, "medido no original: o livre não toma a cor da agenda");
+  assert.equal(colorOf(data, reservado({}), null, "Por agenda"), "#0A70D6");
+  assert.equal(colorOf(data, reservado({ agendaId: "a2" }), null, "Por agenda"), "#EC4899");
   // An agenda that is no longer there falls back rather than painting nothing.
-  assert.equal(colorOf(data, slot({ agendaId: "sumiu" }), null, "Por agenda"), SLOT_COLORS.free);
+  assert.equal(colorOf(data, reservado({ agendaId: "sumiu" }), null, "Por agenda"), SLOT_COLORS.full);
+
+  // E isso vale para os três modos que descrevem uma reserva.
+  for (const modo of ["Por agenda", "Por status", "Por serviço"]) {
+    assert.equal(colorOf(data, livre, null, modo), SLOT_COLORS.free, `livre em "${modo}"`);
+  }
 }
 
 // Por status: the appointment's own status.
