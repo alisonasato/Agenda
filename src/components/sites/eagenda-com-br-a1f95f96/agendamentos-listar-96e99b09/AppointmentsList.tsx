@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useViewPref } from "../shared/viewPrefs";
 import {
   CaretDownIcon,
   CheckReadIcon,
@@ -148,6 +149,9 @@ const OPTIONAL_COLUMNS = [
 
 const SLOTS = 10;
 
+/** The original starts with Responsável on and the rest off. */
+const DEFAULT_COLUMNS = ["check_owner"];
+
 function ColumnsMenu({ visible, onToggle }: { visible: string[]; onToggle: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -197,7 +201,8 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
   const [query, setQuery] = useState("");
   const [preset, setPreset] = useState<Preset>(initialPreset);
   const [status, setStatus] = useState(initialStatus);
-  const [columns, setColumns] = useState<string[]>([]);
+  // Measured on the original: with its storage cleared it comes back with Responsável alone.
+  const [columns, toggleColumn] = useViewPref("appointments.columns", DEFAULT_COLUMNS);
   const data = useData();
 
   const shows = (id: string) => columns.includes(id);
@@ -260,7 +265,7 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
               <CloseCircleIcon className="w-4 h-4" />
               Limpar filtros
             </button>
-            <ColumnsMenu visible={columns} onToggle={(id) => setColumns((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]))} />
+            <ColumnsMenu visible={columns} onToggle={toggleColumn} />
           </div>
         </div>
 

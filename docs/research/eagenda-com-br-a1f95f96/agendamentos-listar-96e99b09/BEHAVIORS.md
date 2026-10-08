@@ -37,6 +37,15 @@ Refeita em 26/09/2026 contra o original com dados na tela. As dez colunas são a
 - **Limpar filtros:** resets search, status and period.
 - **Colunas:** toggles for Tags · Responsável · CPF · Email · Telefone · Comentários, divider,
   Respostas Formulários. Each adds/removes its column (`col_tags`, `col_owner`, `col_comment`).
+  - **A escolha é lembrada.** O original guarda uma chave de localStorage por checkbox
+    (`check_owner`, `check_tags`…) com `"true"`/`"false"`; o clone guarda o conjunto numa só,
+    `seiri.view.v1`, separada de `seiri.data.v1` — é preferência de quem olha, não dado da conta,
+    e não tem por que virar coluna no banco.
+  - **O padrão é só Responsável.** Medido apagando as chaves do original e recarregando: ele
+    reescreve `check_owner: "true"` e todas as outras `"false"`. O clone começava sem nenhuma.
+  - **Respostas Formulários não acrescenta coluna** — nem no original. Marcando lá, nenhum
+    `col_answers` aparece no DOM. Depende de haver respostas de formulário, que nem a conta de
+    referência nem o clone têm, então o interruptor inerte do clone é fiel e não um buraco.
 - **Novo Agendamento:** opens the form page in a new tab, like the original.
 
 ## Hover states
