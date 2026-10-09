@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ActionDialog, statusOf, type CalendarAction } from "../agendamentos-calendar-18078-85bcf86b/ActionDialog";
-import { CommentModal, ReceiptModal } from "../agendamentos-calendar-18078-85bcf86b/SlotModals";
+import { CommentModal, ReceiptModal, SlotVideoModal } from "../agendamentos-calendar-18078-85bcf86b/SlotModals";
 import {
   CalendarBlankIcon,
   CheckReadIcon,
@@ -18,6 +18,7 @@ import {
 import { ROUTES } from "../shared/Sidebar";
 import { update, useData } from "@/lib/seiri/store";
 import { expand, formatDate, formatTime, parse } from "@/lib/seiri/select";
+import { slotsOf } from "@/lib/seiri/slots";
 import { STATUS_LABELS, STATUS_TONES, type Status } from "@/lib/seiri/types";
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -114,6 +115,7 @@ export function AppointmentDetails() {
   const [tab, setTab] = useState<"notifications" | "changes">("notifications");
   const [comment, setComment] = useState(false);
   const [receipt, setReceipt] = useState(false);
+  const [video, setVideo] = useState(false);
   const [confirming, setConfirming] = useState<CalendarAction | null>(null);
 
   if (!appointment)
@@ -125,6 +127,9 @@ export function AppointmentDetails() {
 
   const { client, clientName, agendaName, serviceName } = expand(data, appointment);
   const start = parse(appointment.start);
+  // The link belongs to the slot, as on the calendar, so this reads and writes the same place.
+  const slot = slotsOf(data, appointment.agendaId, start).find((x) => x.appointments.some((a) => a.id === appointment.id));
+  const videoUrl = slot?.info.videoUrl ?? "";
   const end = new Date(start.getTime() + appointment.duration * 60000);
   const time = `${formatTime(appointment.start)} – ${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
 
@@ -241,12 +246,20 @@ export function AppointmentDetails() {
 
         <Card title="Atendimento">
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" className="hbtn hbtn--primary hbtn--sm">
+            <button type="button" className="hbtn hbtn--primary hbtn--sm" disabled={!slot} onClick={() => setVideo(true)}>
               <VideoIcon className="w-4 h-4" />
-              Configurar link
+              {videoUrl ? "Alterar link" : "Configurar link"}
             </button>
           </div>
-          <p className="appt-fact-sub mt-3">O cliente ainda não recebeu um link para entrar.</p>
+          {videoUrl ? (
+            <p className="appt-fact-sub mt-3">
+              <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="appt-link">
+                {videoUrl}
+              </a>
+            </p>
+          ) : (
+            <p className="appt-fact-sub mt-3">O cliente ainda não recebeu um link para entrar.</p>
+          )}
         </Card>
 
         <Card title="Cobrança">
@@ -361,6 +374,7 @@ export function AppointmentDetails() {
 
       {comment && <CommentModal appointmentId={appointment.id} onClose={() => setComment(false)} />}
       {receipt && <ReceiptModal appointmentId={appointment.id} onClose={() => setReceipt(false)} />}
+      {video && slot && <SlotVideoModal slot={slot} onClose={() => setVideo(false)} />}
       {confirming && (
         <ActionDialog
           action={confirming}
