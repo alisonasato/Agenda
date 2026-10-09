@@ -1,7 +1,8 @@
 "use client";
 
+import { ScrollRail } from "../shared/ScrollRail";
 import { useState, type CSSProperties } from "react";
-import { CalendarIcon, ChecklistIcon, ChevronRightIcon, CloseCircleIcon, DangerCircleIcon, PenIcon, TrashIcon, WidgetIcon } from "../shared/icons";
+import { CalendarIcon, ChecklistIcon, CloseCircleIcon, DangerCircleIcon, PenIcon, TrashIcon, WidgetIcon } from "../shared/icons";
 import { InlineFilter } from "../shared/InlineFilter";
 import { AlertDialog } from "../shared/AlertDialog";
 import { ROUTES } from "../shared/Sidebar";
@@ -70,8 +71,7 @@ export function BookingLimits() {
             </a>
           </div>
           <div className="w-full md:w-auto md:ml-auto flex items-center gap-2 min-w-0">
-            <div className="hactionbar" role="group">
-              <div className="hrail-track hactionbar-track">
+            <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
                 <InlineFilter
                   label="Agenda"
                   icon={<CalendarIcon className="hinline-icon w-4 h-4" />}
@@ -93,11 +93,7 @@ export function BookingLimits() {
                   values={intervals}
                   onChange={setIntervals}
                 />
-              </div>
-              <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-                <ChevronRightIcon className="w-4 h-4" />
-              </button>
-            </div>
+            </ScrollRail>
           </div>
         </div>
       </form>

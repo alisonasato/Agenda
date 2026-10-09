@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollRail } from "../shared/ScrollRail";
 import { useRef, useState, type CSSProperties } from "react";
 import { ActivityIcon, AddAppointmentIcon, CaretDownIcon, CheckReadIcon, ChevronLeftIcon, ChevronRightIcon, LockIcon, SettingsIcon } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
@@ -138,12 +139,14 @@ type CalendarControlsProps = {
   colorBy: ColorMode;
   onColorBy: (v: ColorMode) => void;
   onDisplay: (v: string) => void;
+  /** Where the narrow-viewport CTA goes; the topbar one carries the same day. */
+  newHref: string;
   shortTitle: string;
   onPrev: () => void;
   onNext: () => void;
 };
 
-export function CalendarControls({ view, onView, display, onDisplay, colorBy, onColorBy, shortTitle, onPrev, onNext }: CalendarControlsProps) {
+export function CalendarControls({ view, onView, display, onDisplay, colorBy, onColorBy, newHref, shortTitle, onPrev, onNext }: CalendarControlsProps) {
   const isMobile = useIsMobile();
   const [open, setOpen] = useState<"block" | "timetable" | null>(null);
   return (
@@ -160,26 +163,16 @@ export function CalendarControls({ view, onView, display, onDisplay, colorBy, on
                 <ChevronRightIcon width={16} height={16} />
               </button>
               <span className="flex-1 min-w-0 truncate text-sm nunito-bold text-slate-900 px-1">{shortTitle}</span>
-              <button
-                type="button"
-                className="hbtn hbtn--primary hbtn--icon hbtn--sm flex-shrink-0"
-                title="Incluir Agendamento"
-                aria-label="Incluir Agendamento"
-              >
+              <a href={newHref} className="hbtn hbtn--primary hbtn--icon hbtn--sm flex-shrink-0" title="Incluir Agendamento" aria-label="Incluir Agendamento">
                 <AddAppointmentIcon width={16} height={16} />
-              </button>
+              </a>
             </div>
             <ViewTabs view={view} onView={onView} fill />
-            <div className="hactionbar w-full" role="group">
-              <div className="hrail-track hactionbar-track">
+            <ScrollRail className="hactionbar w-full" trackClassName="hrail-track hactionbar-track">
                 <DisplayMenu value={display} onChange={onDisplay} colorBy={colorBy} onColorBy={onColorBy} />
                 <span className="hactionbar-sep" />
                 <ActionButtons onOpen={setOpen} />
-              </div>
-              <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-                <ChevronRightIcon width={16} height={16} className="w-4 h-4" />
-              </button>
-            </div>
+            </ScrollRail>
           </div>
         ) : (
           /* md and up: display menu · tabs · actions. */

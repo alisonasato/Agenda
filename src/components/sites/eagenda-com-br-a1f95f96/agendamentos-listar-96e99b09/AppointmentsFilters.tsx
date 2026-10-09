@@ -1,12 +1,12 @@
 "use client";
 
+import { ScrollRail } from "../shared/ScrollRail";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   AddAppointmentIcon,
   CalendarIcon,
   CaretDownIcon,
-  ChevronRightIcon,
   ClockSolidIcon,
   CloseCircleIcon,
   DownloadIcon,
@@ -99,8 +99,7 @@ export function AppointmentsFilters({ query, onQuery, preset, onPreset, today, o
             <AddAppointmentIcon className="w-4 h-4" />
             Novo Agendamento
           </a>
-          <div className="hactionbar" role="group">
-            <div className="hrail-track hactionbar-track">
+          <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
               <div ref={dateRef} className="hdaterange">
                 <button
                   type="button"
@@ -136,11 +135,7 @@ export function AppointmentsFilters({ query, onQuery, preset, onPreset, today, o
                 <DownloadIcon className="w-4 h-4" />
                 <span className="hactionbar-label">Exportar</span>
               </button>
-            </div>
-            <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-              <ChevronRightIcon className="w-4 h-4" />
-            </button>
-          </div>
+          </ScrollRail>
         </div>
       </div>
     </form>

@@ -25,13 +25,14 @@ export function CalendarIsland() {
   const shortTitle = periodTitle(date, view, true);
   const pad = (n: number) => String(n).padStart(2, "0");
   const dayParam = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  const newHref = `${ROUTES.novoAgendamento}/?dia=${dayParam}`;
 
   const header = (
     <div className="cal-topbar-head">
       {/* The day on screen goes with it, as it does from a slot. */}
       <a
         id="cal-cta-incluir"
-        href={`${ROUTES.novoAgendamento}/?dia=${dayParam}`}
+        href={newHref}
         className="hbtn hbtn--primary hbtn--sm cal-topbar-cta"
         title="Incluir Agendamento"
         aria-label="Incluir Agendamento"
@@ -66,6 +67,7 @@ export function CalendarIsland() {
                 onDisplay={setDisplay}
                 colorBy={colorBy}
                 onColorBy={setColorBy}
+                newHref={newHref}
                 shortTitle={shortTitle}
                 onPrev={() => go(-1)}
                 onNext={() => go(1)}

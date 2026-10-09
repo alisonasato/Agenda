@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollRail } from "../shared/ScrollRail";
 import { useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { ROUTES } from "../shared/Sidebar";
@@ -15,7 +16,6 @@ import {
   ActivityIcon,
   CalendarIcon,
   CaretDownIcon,
-  ChevronRightIcon,
   ClockDuoIcon,
   CloseCircleIcon,
   EyeIcon,
@@ -331,8 +331,7 @@ export function WaitingListPage() {
               <UserAddIcon />
               Incluir na Lista de Espera
             </button>
-            <div className="hactionbar" role="group">
-              <div className="hrail-track hactionbar-track">
+            <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
                 <div ref={dateRef} className="hdaterange">
                   <button
                     type="button"
@@ -366,11 +365,7 @@ export function WaitingListPage() {
                 />
                 <span className="hactionbar-sep" aria-hidden="true" />
                 <ViewMenu />
-              </div>
-              <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-                <ChevronRightIcon className="w-4 h-4" />
-              </button>
-            </div>
+            </ScrollRail>
           </div>
         </div>
       </form>

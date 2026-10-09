@@ -1,5 +1,6 @@
 "use client";
 
+import { ScrollRail } from "../shared/ScrollRail";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   ActivityIcon,
@@ -7,7 +8,6 @@ import {
   CalendarIcon,
   CaretDownIcon,
   ChatBubbleIcon,
-  ChevronRightIcon,
   CloseCircleIcon,
   SearchSolidIcon,
   SettingsIcon,
@@ -102,7 +102,9 @@ const STATUS = [
   { value: "inactive", label: "Inativas" },
 ];
 
-function AgendasTable({ rows }: { rows: Agenda[] }) {
+// The same two actions the cards carry. They were missing here, so the screen worked in one
+// layout and not the other.
+function AgendasTable({ rows, onToggle, onRemove }: { rows: Agenda[]; onToggle: (id: string) => void; onRemove: (id: string) => void }) {
   return (
     <div className="htable" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
       <div className="htable-scroll">
@@ -188,10 +190,15 @@ function AgendasTable({ rows }: { rows: Agenda[] }) {
                     <button type="button" title="Atualizar" className="btn-icon btn-icon-sm btn-icon-flat">
                       <ActivityIcon className="w-4 h-4" />
                     </button>
-                    <button type="button" title="Desativar Agenda" className="btn-icon btn-icon-sm btn-icon-warning">
+                    <button
+                      type="button"
+                      title={a.active ? "Desativar Agenda" : "Ativar Agenda"}
+                      className="btn-icon btn-icon-sm btn-icon-warning"
+                      onClick={() => onToggle(a.id)}
+                    >
                       <CloseCircleIcon className="w-4 h-4" />
                     </button>
-                    <button type="button" title="Excluir" className="btn-icon btn-icon-sm btn-icon-danger">
+                    <button type="button" title="Excluir" className="btn-icon btn-icon-sm btn-icon-danger" onClick={() => onRemove(a.id)}>
                       <CloseCircleIcon className="w-4 h-4" />
                     </button>
                   </div>
@@ -244,19 +251,14 @@ export function AgendaSettings() {
               <CalendarAddIcon className="w-4 h-4" />
               Nova Agenda
             </a>
-            <div className="hactionbar" role="group">
-              <div className="hrail-track hactionbar-track">
+            <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
                 <button type="button" className="hbtn hbtn--ghost hbtn--sm" onClick={() => setOrdering(true)}>
                   <SortIcon className="w-4 h-4" />
                   <span className="hactionbar-label">Organizar</span>
                 </button>
                 <span className="hactionbar-sep" aria-hidden="true" />
                 <SettingsMenu />
-              </div>
-              <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-                <ChevronRightIcon className="w-4 h-4" />
-              </button>
-            </div>
+            </ScrollRail>
           </div>
         </div>
 
@@ -317,7 +319,7 @@ export function AgendaSettings() {
             ))}
           </div>
         ) : (
-          <AgendasTable rows={agendas} />
+          <AgendasTable rows={agendas} onToggle={toggleAgenda} onRemove={removeAgenda} />
         )}
       </div>
       {ordering && <AgendaOrderModal onClose={() => setOrdering(false)} />}

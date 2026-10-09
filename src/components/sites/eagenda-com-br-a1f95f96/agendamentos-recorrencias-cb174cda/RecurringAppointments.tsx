@@ -1,7 +1,8 @@
 "use client";
 
+import { ScrollRail } from "../shared/ScrollRail";
 import { useState, type CSSProperties } from "react";
-import { CalendarIcon, CalendarAddIcon, ChevronRightIcon, CloseCircleIcon, SearchSolidIcon, WidgetIcon } from "../shared/icons";
+import { CalendarIcon, CalendarAddIcon, CloseCircleIcon, SearchSolidIcon, WidgetIcon } from "../shared/icons";
 import { InlineFilter } from "../shared/InlineFilter";
 import { RecurrenceModal } from "./RecurrenceModal";
 import { TrashIcon } from "../shared/icons";
@@ -81,8 +82,7 @@ export function RecurringAppointments() {
               <CalendarAddIcon className="w-4 h-4" />
               Novo Agendamento Recorrente
             </button>
-            <div className="hactionbar" role="group">
-              <div className="hrail-track hactionbar-track">
+            <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
                 <InlineFilter
                   label="Agenda"
                   icon={<CalendarIcon className="hinline-icon w-4 h-4" />}
@@ -98,11 +98,7 @@ export function RecurringAppointments() {
                   onChange={setServices}
                 />
                 <InlineFilter label="Tag" icon={<WidgetIcon className="hinline-icon w-4 h-4" />} options={TAGS} values={tags} onChange={setTags} />
-              </div>
-              <button type="button" className="hrail-arrow hrail-arrow--next" tabIndex={-1} aria-label="Rolar para o fim">
-                <ChevronRightIcon className="w-4 h-4" />
-              </button>
-            </div>
+            </ScrollRail>
           </div>
         </div>
       </form>
