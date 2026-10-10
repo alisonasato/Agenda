@@ -333,7 +333,9 @@ estado).
   teve e em que listas está. Copiar o link próprio do cliente ou removê-lo de todas as listas.
 
 **Limites:** as listas ainda não barram ninguém na tela pública. A lista externa (API) não é
-consultada. Importar/Exportar clientes autorizados não fazem nada.
+consultada. **Exportar** baixa uma planilha .xlsx com todos os clientes que estão em alguma lista
+(13 colunas, como a do original); o "Total de Agendamentos no Período Atual" é a leitura do clone
+e "Comentários" sai vazio. **Importar** não faz nada.
 
 ### Convites de Cadastro
 
@@ -342,6 +344,8 @@ consultada. Importar/Exportar clientes autorizados não fazem nada.
 - Crie um convite com uma lista de e-mails colada, o texto do e-mail, os campos que a pessoa deve
   preencher (e quais são obrigatórios), aprovação automática, criação de senha e validade do link.
 - Busca, filtro por status, editar e excluir (excluir apaga também os cadastros recebidos por ele).
+- **Modelo da planilha** baixa um .xlsx com as colunas `email` e `nome`. A planilha preenchida,
+  porém, não é lida: só a lista de e-mails colada entra no convite.
 
 ### Cadastros Recebidos
 

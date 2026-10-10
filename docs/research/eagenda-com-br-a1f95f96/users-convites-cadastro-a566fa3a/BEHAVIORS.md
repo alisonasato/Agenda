@@ -21,6 +21,10 @@ e-mails, "Documento de identificação" marcado e aprovação automática gravou
 `3 · 0 · Automática · Rascunho` com a data de hoje.
 
 ## Diferenças em relação ao original
-- "Modelo da planilha" é um botão inerte: o original baixa um `.xlsx` que só o servidor monta.
+- "Modelo da planilha" baixa um `.xlsx` montado no navegador (`xlsx.ts` + `inviteTemplate.ts`); o
+  original o monta no servidor. Medido no original: arquivo `modelo_convite_clientes_AAAA-MM-DD.xlsx`
+  (data do dia), aba "Clientes", cabeçalho `email` / `nome` sem estilo, uma linha de exemplo, colunas
+  com largura 34 e 28. O clone gera os mesmos bytes sempre (data fixa no zip), e o arquivo abre no
+  `openpyxl`, a mesma biblioteca do servidor.
 - A planilha escolhida no modal não é lida; só a lista de e-mails colada entra no convite.
 - Nada é enviado: o status nunca sai de `DRAFT` sozinho, porque não há disparo de e-mail.

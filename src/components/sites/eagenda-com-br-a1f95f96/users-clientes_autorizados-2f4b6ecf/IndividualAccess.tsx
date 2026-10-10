@@ -1,5 +1,9 @@
 "use client";
 
+import type { Client } from "@/lib/seiri/types";
+import { download } from "@/lib/seiri/csv";
+import { ACCESS_EXPORT_FILE, ACCESS_EXPORT_SHEET, accessExportRows } from "@/lib/seiri/accessExport";
+import { XLSX_TYPE, toXlsx } from "@/lib/seiri/xlsx";
 import { useState, type CSSProperties } from "react";
 import {
   CalendarIcon,
@@ -54,8 +58,14 @@ export function IndividualAccess() {
   const remove = (clientId: string) =>
     update((d) => ({ ...d, accessLists: d.accessLists.map((l) => ({ ...l, clientIds: l.clientIds.filter((id) => id !== clientId) })) }));
 
+  // A link someone pastes or opens from a spreadsheet has to stand on its own, not as a path under this site.
+  const bookingLink = (client: Client) => `${window.location.origin}${ROUTES.telaPublica}/?cliente=${client.accessKey ?? client.id}`;
+
+  const exportXlsx = () =>
+    download(ACCESS_EXPORT_FILE, toXlsx({ name: ACCESS_EXPORT_SHEET, styledHeader: true, rows: accessExportRows(data, bookingLink) }), XLSX_TYPE);
+
   const copy = (client: (typeof rows)[number]["client"]) => {
-    const link = `${ROUTES.telaPublica}/?cliente=${client.accessKey ?? client.id}`;
+    const link = bookingLink(client);
     navigator.clipboard?.writeText(link).catch(() => {});
     setCopied(client.id);
     setTimeout(() => setCopied(""), 1500);
@@ -110,8 +120,9 @@ export function IndividualAccess() {
             <UploadIcon />
             <span className="hactionbar-label">Importar</span>
           </a>
-          {/* The original's Exportar is ?export=xlsx, a file only its server can build. */}
-          <button type="button" className="hbtn hbtn--ghost hbtn--sm">
+          {/* The original's Exportar is ?export=xlsx. Its link carries no filter, so this takes every
+              client an access list lets in, not only the ones the filters leave on screen. */}
+          <button type="button" className="hbtn hbtn--ghost hbtn--sm" onClick={exportXlsx}>
             <DownloadIcon />
             <span className="hactionbar-label">Exportar</span>
           </button>

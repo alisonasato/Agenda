@@ -20,6 +20,20 @@ tira a linha e deixa `clientIds: ["c3"]` na lista. "Gestão em Lote" leva para
 `/Agenda/users/clientes_autorizados/listas_acesso`, que mostra a mesma lista.
 
 ## Diferenças em relação ao original
-- "Importar" e "Exportar" não fazem nada: o original sobe uma planilha e devolve um xlsx.
+- "Exportar" baixa `individual_client_access.xlsx` (aba "Sheet1"), montado no navegador por
+  `accessExport.ts`. Medido no original: 13 colunas — Cliente ID, Nome, Email, Telefone, CNPJ,
+  Comentários, Total de Agendamentos no Período Atual, Limite de Agendamentos, Período, Data limite de
+  Agendamento, Link expira em, Status, Link de Agendamento —, cabeçalho em negrito, borda fina,
+  centralizado no alto, sem larguras de coluna; o "Total" sai como texto e o "Limite" como número.
+  Leituras do clone, não vistas no original (a conta de referência tinha uma linha, com zero):
+  - "Total ... no Período Atual" conta os agendamentos do cliente (sem os cancelados) no período da
+    própria lista: hoje, a semana de domingo a sábado, o mês, ou os 15/30/N dias que terminam hoje;
+    sem período, todos.
+  - "Comentários" sai vazio: o cliente do clone não guarda comentários.
+  - Sai todo cliente que está em alguma lista, não só as linhas filtradas na tela; se estiver em
+    várias, vale a primeira lista.
+  - "Link de Agendamento" é absoluto, porque a planilha é aberta longe da página; "Copiar Link" usa o
+    mesmo endereço.
+- "Importar" não faz nada: o original sobe uma planilha e lê as linhas no servidor.
 - "Novo Cliente" abre a tela de listas com `?action=create`, porque o formulário próprio do cliente
   autorizado não foi clonado.

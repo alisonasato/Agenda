@@ -38,6 +38,12 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
 
+Planilhas .xlsx só saem, nunca entram: `xlsx.ts` escreve um .xlsx de uma aba (um zip sem compressão
+de umas poucas partes XML, com CRC-32 e deslocamentos à mão), usado por "Modelo da planilha"
+(`inviteTemplate.ts`) e pelo "Exportar" do Acesso Individual (`accessExport.ts`). Ler um .xlsx exigiria
+descomprimir (`DecompressionStream`) e interpretar o XML; por isso o upload do convite não lê a
+planilha.
+
 ## Onboarding
 O assistente não guarda nada próprio: ele junta os campos dos sete passos e, ao terminar, escreve
 na agenda, nos horários, na tela de agendamento e nas integrações.

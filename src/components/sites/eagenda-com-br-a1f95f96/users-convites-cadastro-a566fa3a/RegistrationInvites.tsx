@@ -1,5 +1,8 @@
 "use client";
 
+import { download } from "@/lib/seiri/csv";
+import { INVITE_TEMPLATE_SHEET, inviteTemplateFile } from "@/lib/seiri/inviteTemplate";
+import { XLSX_TYPE, toXlsx } from "@/lib/seiri/xlsx";
 import { useState, type CSSProperties } from "react";
 import { AlertDialog } from "../shared/AlertDialog";
 import { FilePicker } from "../shared/FilePicker";
@@ -82,8 +85,12 @@ export function RegistrationInvites() {
               <LetterIcon />
               <span className="hactionbar-label">Texto do e-mail</span>
             </a>
-            {/* The original downloads an .xlsx the clone has no server to build. */}
-            <button type="button" className="hbtn hbtn--ghost hbtn--sm">
+            {/* The original serves an .xlsx its server builds; this builds the same sheet in the browser. */}
+            <button
+              type="button"
+              className="hbtn hbtn--ghost hbtn--sm"
+              onClick={() => download(inviteTemplateFile(), toXlsx(INVITE_TEMPLATE_SHEET), XLSX_TYPE)}
+            >
               <SheetIcon />
               <span className="hactionbar-label">Modelo da planilha</span>
             </button>

@@ -8,8 +8,8 @@ export function toCsv(headers: string[], rows: (string | number)[][]) {
   return `﻿${lines.join("\r\n")}`;
 }
 
-/** Hands the browser a file to save, named after the page and today's date. */
-export function download(filename: string, content: string, type = "text/csv;charset=utf-8") {
+/** Hands the browser a file to save — text, or the bytes of a spreadsheet — named after the page and today's date. */
+export function download(filename: string, content: BlobPart, type = "text/csv;charset=utf-8") {
   const url = URL.createObjectURL(new Blob([content], { type }));
   const link = document.createElement("a");
   link.href = url;
