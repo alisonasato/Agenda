@@ -72,8 +72,12 @@ function Field({
 /**
  * The original's create_person_form modal (3xl panel): identification, the optional address block,
  * and the two alerts it shows on top — "Não foi possível salvar" and "Cliente já cadastrado".
+ *
+ * The new-appointment screen opens the same modal (`create_person_htmx`) and passes `onPick`, which
+ * selects the person in the field the button belongs to. There a clash by e-mail or phone creates
+ * nothing: the existing person is picked, and the modal stays open to say so.
  */
-export function ClientForm({ editing, onClose }: { editing: Client | null; onClose: () => void }) {
+export function ClientForm({ editing, onClose, onPick }: { editing: Client | null; onClose: () => void; onPick?: (clientId: string) => void }) {
   const data = useData();
   const [name, setName] = useState(editing?.name ?? "");
   const [email, setEmail] = useState(editing?.email ?? "");
@@ -94,14 +98,18 @@ export function ClientForm({ editing, onClose }: { editing: Client | null; onClo
     if (name.trim().length < 6) return setError("Digite o nome completo, com no mínimo 6 caracteres.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) return setError("Digite um e-mail válido.");
     const others = data.clients.filter((c) => c.id !== editing?.id);
-    const clash = others.find((c) => fold(c.email) === fold(email.trim()) || (cpf.trim() && c.cpf === cpf.trim()));
+    const sameEmail = (c: Client) => fold(c.email) === fold(email.trim());
+    const clash = others.find((c) => (onPick ? sameEmail(c) || (phone && c.phone === phone) : sameEmail(c) || (cpf.trim() && c.cpf === cpf.trim())));
     if (clash) {
       setError("");
-      return setDuplicate(`${clash.name} já usa este e-mail ou documento.`);
+      if (!onPick) return setDuplicate(`${clash.name} já usa este e-mail ou documento.`);
+      onPick(clash.id);
+      return setDuplicate("Este cliente já existe no sistema (mesmo e-mail ou telefone) e foi selecionado no agendamento. Nenhum cadastro novo foi criado.");
     }
+    const id = editing?.id ?? nextId("c", data.clients);
     update((d) => {
       const row: Client = {
-        id: editing?.id ?? nextId("c", d.clients),
+        id,
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
@@ -115,6 +123,7 @@ export function ClientForm({ editing, onClose }: { editing: Client | null; onClo
       };
       return { ...d, clients: editing ? d.clients.map((c) => (c.id === row.id ? row : c)) : [...d.clients, row] };
     });
+    onPick?.(id);
     onClose();
   };
 

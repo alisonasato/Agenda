@@ -93,14 +93,17 @@ não sincroniza nada.
 
 - Escolha agenda, serviço (só os da agenda), dia, horário, status, tags e um ou mais clientes.
 - Salvar cria **um agendamento por cliente escolhido** e abre a lista de agendamentos.
+- **Adicionar cliente / Adicionar acompanhante** abrem o cadastro de cliente sem sair da tela; quem
+  você cadastra já entra selecionado no campo. Se o e-mail ou o telefone já são de alguém, ninguém é
+  criado: essa pessoa é selecionada e o aviso diz isso.
 - **Regras que barram o agendamento:** se o cliente está numa [lista de bloqueio](#listas-de-bloqueio)
   ou já atingiu um [limite de agendamentos](#limites-de-agendamentos), nada é gravado e a barra de
   salvar diz por quê.
 
 **Limites:** as ações "Incluir na lista de espera" e "Encaixar no horário" gravam um agendamento
 comum (para a lista de espera, use a tela [Lista de Espera](#lista-de-espera)). "Aguardando
-Pagamento" é gravado como Pendente. Acompanhantes, membros da equipe, "Adicionar cliente" e os
-avisos por e-mail/SMS são só de tela. O responsável gravado é sempre a proprietária da conta.
+Pagamento" é gravado como Pendente. Acompanhantes, membros da equipe e os avisos por e-mail/SMS
+são só de tela. O responsável gravado é sempre a proprietária da conta.
 
 ---
 

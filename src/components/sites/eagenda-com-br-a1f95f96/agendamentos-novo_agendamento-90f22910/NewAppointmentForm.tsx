@@ -6,6 +6,7 @@ import { MultiSelect } from "../shared/MultiSelect";
 import { ROUTES } from "../shared/Sidebar";
 import { CheckboxMark, PenIcon, SaveIcon, UsersIcon } from "../shared/icons";
 import { SaveBar } from "../shared/SaveBar";
+import { ClientForm } from "../clientes-listar-43c58313/ClientForm";
 import { ACTIONS, STATUSES, dayOptions, timeOptions } from "./formOptions";
 import { useData, update, nextId } from "@/lib/seiri/store";
 import { blockedBy, exceeded, intervalLabel, keyLabel } from "@/lib/seiri/limits";
@@ -43,6 +44,12 @@ export function NewAppointmentForm() {
   const [companions, setCompanions] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const [blocked, setBlocked] = useState("");
+  // Which field the "Adicionar cliente / acompanhante" modal is filling.
+  const [adding, setAdding] = useState<"main" | "companion" | null>(null);
+  const pick = (clientId: string) => {
+    const set = adding === "companion" ? setCompanions : setClients;
+    set((ids) => (ids.includes(clientId) ? ids : [...ids, clientId]));
+  };
   const dirty = Boolean(agenda || day || time) || tags.length > 0 || clients.length > 0 || companions.length > 0 || action !== "new" || status !== "CONFIRMED";
 
   const days = useMemo(() => dayOptions(new Date()), []);
@@ -102,149 +109,163 @@ export function NewAppointmentForm() {
   };
 
   return (
-    <form id="new-appointment-form" onSubmit={onSubmit} noValidate>
-      <div className="hformpanel">
-        <section className="hformsection">
-          <div className="hformsection-head">
-            <h3 className="hformsection-title">Dados do agendamento</h3>
-          </div>
-          <div className="hformsection-body">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <Combobox
-                  id="agenda"
-                  label="Agenda"
-                  required
-                  options={agendaOptions}
-                  value={agenda}
-                  onChange={(v) => {
-                    setAgenda(v);
-                    setService("");
-                  }}
-                  placeholder="Escolha a agenda"
-                />
-              </div>
-              <div className="md:col-span-2" id="service-password-container">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* The original only shows this once the chosen agenda has services. */}
-                  {serviceOptions.length > 0 && (
-                    <Combobox id="service" label="Serviço" options={serviceOptions} value={service} onChange={setService} placeholder="Escolha o serviço" />
-                  )}
-                </div>
-              </div>
-              <div>
-                <Combobox id="action_new_appointment" label="Ação" required options={ACTIONS} value={action} onChange={setAction} placeholder="Selecione" />
-              </div>
-              <div>
-                <Combobox id="status" label="Status do Agendamento" required options={STATUSES} value={status} onChange={setStatus} placeholder="Selecione" />
-              </div>
-              <div>
-                <Combobox
-                  id="dia"
-                  label="Dia"
-                  required
-                  options={agenda ? days : []}
-                  value={day}
-                  onChange={setDay}
-                  placeholder="Selecione a agenda primeiro"
-                  disabled={!agenda}
-                />
-              </div>
-              <div>
-                <Combobox
-                  id="hora"
-                  label="Horário"
-                  required
-                  options={day ? times : []}
-                  value={time}
-                  onChange={setTime}
-                  placeholder="Selecione o dia primeiro"
-                  disabled={!day}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <MultiSelect id="tags" label="Tags" options={tagOptions} values={tags} onChange={setTags} placeholder="Buscar tags..." />
-              </div>
+    <>
+      <form id="new-appointment-form" onSubmit={onSubmit} noValidate>
+        <div className="hformpanel">
+          <section className="hformsection">
+            <div className="hformsection-head">
+              <h3 className="hformsection-title">Dados do agendamento</h3>
             </div>
-          </div>
-        </section>
-
-        <section className="hformsection">
-          <div className="hformsection-head">
-            <h3 className="hformsection-title">Participantes</h3>
-          </div>
-          <div className="hformsection-body">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <MultiSelect
-                  id="main_persons"
-                  label="Clientes"
-                  required
-                  options={clientOptions}
-                  values={clients}
-                  onChange={setClients}
-                  placeholder="Digite para buscar clientes..."
-                />
-                <div className="mt-1.5">
-                  <button type="button" className="hbtn hbtn--ghost hbtn--sm" style={{ "--hbtn-fg": "var(--color-accent)" } as React.CSSProperties}>
-                    <UsersIcon className="w-4 h-4" />
-                    Adicionar cliente
-                  </button>
+            <div className="hformsection-body">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <Combobox
+                    id="agenda"
+                    label="Agenda"
+                    required
+                    options={agendaOptions}
+                    value={agenda}
+                    onChange={(v) => {
+                      setAgenda(v);
+                      setService("");
+                    }}
+                    placeholder="Escolha a agenda"
+                  />
                 </div>
-              </div>
-              <div>
-                <MultiSelect
-                  id="person"
-                  label="Acompanhantes"
-                  options={clientOptions}
-                  values={companions}
-                  onChange={setCompanions}
-                  placeholder="Digite para buscar acompanhantes..."
-                />
-                <div className="mt-1.5">
-                  <button type="button" className="hbtn hbtn--ghost hbtn--sm" style={{ "--hbtn-fg": "var(--color-accent)" } as React.CSSProperties}>
-                    <UsersIcon className="w-4 h-4" />
-                    Adicionar acompanhante
-                  </button>
+                <div className="md:col-span-2" id="service-password-container">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {/* The original only shows this once the chosen agenda has services. */}
+                    {serviceOptions.length > 0 && (
+                      <Combobox id="service" label="Serviço" options={serviceOptions} value={service} onChange={setService} placeholder="Escolha o serviço" />
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <Combobox id="action_new_appointment" label="Ação" required options={ACTIONS} value={action} onChange={setAction} placeholder="Selecione" />
+                </div>
+                <div>
+                  <Combobox id="status" label="Status do Agendamento" required options={STATUSES} value={status} onChange={setStatus} placeholder="Selecione" />
+                </div>
+                <div>
+                  <Combobox
+                    id="dia"
+                    label="Dia"
+                    required
+                    options={agenda ? days : []}
+                    value={day}
+                    onChange={setDay}
+                    placeholder="Selecione a agenda primeiro"
+                    disabled={!agenda}
+                  />
+                </div>
+                <div>
+                  <Combobox
+                    id="hora"
+                    label="Horário"
+                    required
+                    options={day ? times : []}
+                    value={time}
+                    onChange={setTime}
+                    placeholder="Selecione o dia primeiro"
+                    disabled={!day}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <MultiSelect id="tags" label="Tags" options={tagOptions} values={tags} onChange={setTags} placeholder="Buscar tags..." />
                 </div>
               </div>
             </div>
-            {/* The live form no longer asks for the owner or team: the owner is the logged-in user. */}
-            <input type="hidden" name="owner_user" value={CURRENT_USER_ID} />
-          </div>
-        </section>
+          </section>
 
-        <section className="hformsection">
-          <div className="hformsection-head">
-            <h3 className="hformsection-title">Notificações</h3>
-          </div>
-          <div className="hformsection-body">
-            <div className="space-y-2.5">
-              <div>
-                <Checkbox id="enviar_email" label="Enviar confirmação por e-mail" defaultChecked />
+          <section className="hformsection">
+            <div className="hformsection-head">
+              <h3 className="hformsection-title">Participantes</h3>
+            </div>
+            <div className="hformsection-body">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <MultiSelect
+                    id="main_persons"
+                    label="Clientes"
+                    required
+                    options={clientOptions}
+                    values={clients}
+                    onChange={setClients}
+                    placeholder="Digite para buscar clientes..."
+                  />
+                  <div className="mt-1.5">
+                    <button
+                      type="button"
+                      className="hbtn hbtn--ghost hbtn--sm"
+                      style={{ "--hbtn-fg": "var(--color-accent)" } as React.CSSProperties}
+                      onClick={() => setAdding("main")}
+                    >
+                      <UsersIcon className="w-4 h-4" />
+                      Adicionar cliente
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <MultiSelect
+                    id="person"
+                    label="Acompanhantes"
+                    options={clientOptions}
+                    values={companions}
+                    onChange={setCompanions}
+                    placeholder="Digite para buscar acompanhantes..."
+                  />
+                  <div className="mt-1.5">
+                    <button
+                      type="button"
+                      className="hbtn hbtn--ghost hbtn--sm"
+                      style={{ "--hbtn-fg": "var(--color-accent)" } as React.CSSProperties}
+                      onClick={() => setAdding("companion")}
+                    >
+                      <UsersIcon className="w-4 h-4" />
+                      Adicionar acompanhante
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div>
-                <Checkbox id="incluir_regras" label="Incluir nas suas regras de notificações" defaultChecked />
-              </div>
-              <div>
-                <Checkbox id="enviar_sms" label="Enviar confirmação por SMS" disabled />
-                <p className="hinput-desc ml-7">O envio automático de SMS está desabilitado no seu plano.</p>
+              {/* The live form no longer asks for the owner or team: the owner is the logged-in user. */}
+              <input type="hidden" name="owner_user" value={CURRENT_USER_ID} />
+            </div>
+          </section>
+
+          <section className="hformsection">
+            <div className="hformsection-head">
+              <h3 className="hformsection-title">Notificações</h3>
+            </div>
+            <div className="hformsection-body">
+              <div className="space-y-2.5">
+                <div>
+                  <Checkbox id="enviar_email" label="Enviar confirmação por e-mail" defaultChecked />
+                </div>
+                <div>
+                  <Checkbox id="incluir_regras" label="Incluir nas suas regras de notificações" defaultChecked />
+                </div>
+                <div>
+                  <Checkbox id="enviar_sms" label="Enviar confirmação por SMS" disabled />
+                  <p className="hinput-desc ml-7">O envio automático de SMS está desabilitado no seu plano.</p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      </div>
+          </section>
+        </div>
 
-      <SaveBar
-        backHref={ROUTES.agendamentos}
-        saveLabel="Salvar Agendamento"
-        saveIcon={<SaveIcon />}
-        dirty={dirty}
-        toastIcon={<PenIcon className="w-4 h-4" />}
-        toastTitle={blocked ? "Limite atingido" : saved ? "Agendamento criado" : "Agendamento ainda não registrado"}
-        toastSub={blocked || (saved ? "Abrindo a lista de agendamentos…" : "Conclua para criar o agendamento.")}
-        forceToast={saved || Boolean(blocked)}
-      />
-    </form>
+        <SaveBar
+          backHref={ROUTES.agendamentos}
+          saveLabel="Salvar Agendamento"
+          saveIcon={<SaveIcon />}
+          dirty={dirty}
+          toastIcon={<PenIcon className="w-4 h-4" />}
+          toastTitle={blocked ? "Limite atingido" : saved ? "Agendamento criado" : "Agendamento ainda não registrado"}
+          toastSub={blocked || (saved ? "Abrindo a lista de agendamentos…" : "Conclua para criar o agendamento.")}
+          forceToast={saved || Boolean(blocked)}
+        />
+      </form>
+      {/* Outside the form: the modal has a form of its own. */}
+      {adding && <ClientForm editing={null} onClose={() => setAdding(null)} onPick={pick} />}
+    </>
   );
 }
