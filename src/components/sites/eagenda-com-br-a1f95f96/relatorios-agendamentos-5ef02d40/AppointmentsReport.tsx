@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { CalendarIcon, CaretDownIcon, CheckReadIcon, CloseCircleIcon, FunnelIcon, ReportIcon, SlidersIcon, SortIcon } from "../shared/icons";
-import { DateRangePopover, type Preset } from "../shared/DateRangePopover";
+import { DateRangePopover } from "../shared/DateRangePopover";
+import { ALL_PERIODS, inPeriod, lastDays, periodLabel, type Period } from "@/lib/seiri/range";
 import { InlineFilter } from "../shared/InlineFilter";
 import { InlineSelect, type SelectOption } from "../shared/InlineSelect";
 import { ROUTES } from "../shared/Sidebar";
@@ -10,7 +11,7 @@ import { ScrollRail } from "../shared/ScrollRail";
 import { useDismiss } from "../shared/useDismiss";
 
 import { useData } from "@/lib/seiri/store";
-import { dayKey, expand, formatWhen } from "@/lib/seiri/select";
+import { expand, formatWhen } from "@/lib/seiri/select";
 import { STATUS_LABELS } from "@/lib/seiri/types";
 import type { Data, Appointment } from "@/lib/seiri/types";
 
@@ -94,20 +95,11 @@ const DEFAULT_COLUMNS = [
   "Respostas de Formulários",
 ];
 
-const pad = (n: number) => String(n).padStart(2, "0");
-const short = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
-
-/** Default window: the last 30 days, ending today. */
-function defaultRange(today: Date) {
-  const from = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
-  return { from, to: today };
-}
-
 export function AppointmentsReport() {
   const data = useData();
   const [today] = useState(() => new Date());
   const [preview, setPreview] = useState<Appointment[] | null>(null);
-  const [range] = useState(() => defaultRange(new Date()));
+  const [period, setPeriod] = useState<Period>(() => lastDays(30, new Date()));
   const [agendas, setAgendas] = useState<string[]>([]);
   const [status, setStatus] = useState("exc_cancel");
   const [ordering, setOrdering] = useState("nome");
@@ -130,27 +122,47 @@ export function AppointmentsReport() {
                 onClick={() => setDateOpen((o) => !o)}
               >
                 <CalendarIcon className="hinline-icon w-4 h-4" />
-                <span className="hinline-label">
-                  {short(range.from)} – {short(range.to)}
-                </span>
+                <span className="hinline-label">{periodLabel(period)}</span>
                 <span className="hinline-chevron" aria-hidden="true">
                   <CaretDownIcon className="w-3.5 h-3.5" />
                 </span>
               </button>
               {dateOpen && (
                 <DateRangePopover
-                  preset={"Todos os períodos" as Preset}
+                  period={period}
                   today={today}
-                  initialMonth={range.from}
-                  onPreset={() => setDateOpen(false)}
-                  onClear={() => setDateOpen(false)}
+                  onPeriod={setPeriod}
+                  onClear={() => {
+                    setPeriod(ALL_PERIODS);
+                    setDateOpen(false);
+                  }}
                 />
               )}
             </div>
 
-            <InlineFilter label="Agenda" icon={<CalendarIcon className="hinline-icon w-4 h-4" />} options={data.agendas.map((a) => a.name)} values={agendas} onChange={setAgendas} />
-            <InlineSelect label="Status" icon={<CheckReadIcon className="hinline-icon w-4 h-4" />} options={STATUSES} value={status} onChange={setStatus} clearTo="exc_cancel" />
-            <InlineSelect label="Ordenar por" icon={<SortIcon className="hinline-icon w-4 h-4" />} options={ORDERINGS} value={ordering} onChange={setOrdering} clearTo="nome" />
+            <InlineFilter
+              label="Agenda"
+              icon={<CalendarIcon className="hinline-icon w-4 h-4" />}
+              options={data.agendas.map((a) => a.name)}
+              values={agendas}
+              onChange={setAgendas}
+            />
+            <InlineSelect
+              label="Status"
+              icon={<CheckReadIcon className="hinline-icon w-4 h-4" />}
+              options={STATUSES}
+              value={status}
+              onChange={setStatus}
+              clearTo="exc_cancel"
+            />
+            <InlineSelect
+              label="Ordenar por"
+              icon={<SortIcon className="hinline-icon w-4 h-4" />}
+              options={ORDERINGS}
+              value={ordering}
+              onChange={setOrdering}
+              clearTo="nome"
+            />
             <InlineFilter label="Colunas" icon={<SlidersIcon className="hinline-icon w-4 h-4" />} options={COLUMNS} values={columns} onChange={setColumns} />
 
             <span className="hactionbar-sep" aria-hidden="true" />
@@ -170,13 +182,11 @@ export function AppointmentsReport() {
             onClick={() =>
               setPreview(
                 data.appointments
-                  .filter((a) => dayKey(a.start) >= dayKey(range.from.toISOString()) && dayKey(a.start) <= dayKey(range.to.toISOString()))
+                  .filter((a) => inPeriod(a.start, period, today))
                   .filter((a) => (status === "exc_cancel" ? a.status !== "CANCELED" : status === "all" ? true : a.status === status))
                   .filter((a) => (agendas.length ? agendas.includes(data.agendas.find((g) => g.id === a.agendaId)?.name ?? "") : true))
                   .sort((x, y) =>
-                    ordering === "nome"
-                      ? (expand(data, x).clientName ?? "").localeCompare(expand(data, y).clientName ?? "")
-                      : x.start.localeCompare(y.start),
+                    ordering === "nome" ? (expand(data, x).clientName ?? "").localeCompare(expand(data, y).clientName ?? "") : x.start.localeCompare(y.start),
                   ),
               )
             }

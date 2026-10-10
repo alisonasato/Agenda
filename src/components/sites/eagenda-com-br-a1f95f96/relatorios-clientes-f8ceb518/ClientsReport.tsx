@@ -2,12 +2,12 @@
 
 import { useRef, useState, type CSSProperties } from "react";
 import { ActivityIcon, CalendarIcon, CaretDownIcon, CloseCircleIcon, UsersIcon } from "../shared/icons";
-import { DateRangePopover, type Preset } from "../shared/DateRangePopover";
+import { DateRangePopover } from "../shared/DateRangePopover";
+import { ALL_PERIODS, inPeriod, lastDays, periodKey, periodLabel, periodLongLabel, type Period } from "@/lib/seiri/range";
 import { InlineFilter } from "../shared/InlineFilter";
 import { useDismiss } from "../shared/useDismiss";
 
 import { useData } from "@/lib/seiri/store";
-import { dayKey } from "@/lib/seiri/select";
 import { STATUS_LABELS } from "@/lib/seiri/types";
 const STATUSES = [
   "Atendido",
@@ -32,41 +32,30 @@ const GROUPS = [
 ];
 
 const SLOTS = 10;
-const pad = (n: number) => String(n).padStart(2, "0");
-const short = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`;
-const long = (d: Date) => `${short(d)}/${d.getFullYear()}`;
-
-/** Default window: the last 30 days, ending today. */
-function defaultRange(today: Date) {
-  const from = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
-  return { from, to: today };
-}
 
 export function ClientsReport() {
   const data = useData();
   const [today] = useState(() => new Date());
-  const [range] = useState(() => defaultRange(new Date()));
+  const [period, setPeriod] = useState<Period>(() => lastDays(30, new Date()));
   const [agendas, setAgendas] = useState<string[]>([]);
   const [statuses, setStatuses] = useState<string[]>([]);
   const [group, setGroup] = useState("nome");
   // Results only change once "Aplicar filtros" is pressed, like the server-rendered original.
-  const [applied, setApplied] = useState({ group: "nome" });
-  const dirty = group !== applied.group;
+  const [applied, setApplied] = useState<{ group: string; period: Period }>(() => ({ group: "nome", period }));
+  // The period waits for "Aplicar filtros" like the grouping does: picking one only moves the label.
+  const dirty = group !== applied.group || periodKey(period) !== periodKey(applied.period);
 
   const [dateOpen, setDateOpen] = useState(false);
   const dateRef = useRef<HTMLDivElement>(null);
   useDismiss(dateRef, dateOpen, () => setDateOpen(false));
 
   const appliedLabel = GROUPS.find((g) => g.value === applied.group)?.label ?? "";
-  const rangeLabel = `${long(range.from)} – ${long(range.to)}`;
+  const rangeLabel = periodLongLabel(applied.period);
 
   // One row per client in the window, grouped by the chosen key.
   const rows = (() => {
-    const fromKey = dayKey(range.from.toISOString());
-    const toKey = dayKey(range.to.toISOString());
     const inWindow = data.appointments.filter((a) => {
-      const key = dayKey(a.start);
-      if (key < fromKey || key > toKey) return false;
+      if (!inPeriod(a.start, applied.period, today)) return false;
       if (agendas.length && !agendas.includes(data.agendas.find((g) => g.id === a.agendaId)?.name ?? "")) return false;
       if (statuses.length && !statuses.includes(a.status)) return false;
       return true;
@@ -97,7 +86,8 @@ export function ClientsReport() {
     setAgendas([]);
     setStatuses([]);
     setGroup("nome");
-    setApplied({ group: "nome" });
+    setPeriod(lastDays(30, today));
+    setApplied({ group: "nome", period: lastDays(30, today) });
   };
 
   return (
@@ -115,20 +105,20 @@ export function ClientsReport() {
                     onClick={() => setDateOpen((o) => !o)}
                   >
                     <CalendarIcon className="hinline-icon w-4 h-4" />
-                    <span className="hinline-label">
-                      {short(range.from)} – {short(range.to)}
-                    </span>
+                    <span className="hinline-label">{periodLabel(period)}</span>
                     <span className="hinline-chevron" aria-hidden="true">
                       <CaretDownIcon className="w-3.5 h-3.5" />
                     </span>
                   </button>
                   {dateOpen && (
                     <DateRangePopover
-                      preset={"Todos os períodos" as Preset}
+                      period={period}
                       today={today}
-                      initialMonth={range.from}
-                      onPreset={() => setDateOpen(false)}
-                      onClear={() => setDateOpen(false)}
+                      onPeriod={setPeriod}
+                      onClear={() => {
+                        setPeriod(ALL_PERIODS);
+                        setDateOpen(false);
+                      }}
                     />
                   )}
                 </div>
@@ -151,7 +141,7 @@ export function ClientsReport() {
                 <span className="hactionbar-sep" aria-hidden="true" />
 
                 <span id="report-apply-wrap" className="report-apply" style={{ display: dirty ? undefined : "none" }}>
-                  <button type="button" id="report-apply-btn" className="hbtn hbtn--ghost hbtn--sm" onClick={() => setApplied({ group })}>
+                  <button type="button" id="report-apply-btn" className="hbtn hbtn--ghost hbtn--sm" onClick={() => setApplied({ group, period })}>
                     <span className="hactionbar-label">Aplicar filtros</span>
                   </button>
                 </span>

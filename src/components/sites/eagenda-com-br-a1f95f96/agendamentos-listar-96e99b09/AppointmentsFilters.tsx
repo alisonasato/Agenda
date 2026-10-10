@@ -3,19 +3,11 @@
 import { ScrollRail } from "../shared/ScrollRail";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  AddAppointmentIcon,
-  CalendarIcon,
-  CaretDownIcon,
-  ClockSolidIcon,
-  CloseCircleIcon,
-  DownloadIcon,
-  EyeIcon,
-  SearchSolidIcon,
-} from "../shared/icons";
+import { AddAppointmentIcon, CalendarIcon, CaretDownIcon, ClockSolidIcon, CloseCircleIcon, DownloadIcon, EyeIcon, SearchSolidIcon } from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
 import { useDismiss } from "../shared/useDismiss";
-import { DateRangePopover, type Preset } from "../shared/DateRangePopover";
+import { DateRangePopover } from "../shared/DateRangePopover";
+import { ALL_PERIODS, periodLabel, type Period } from "@/lib/seiri/range";
 import { useAnchoredPopover } from "../shared/useAnchoredPopover";
 
 /** The action bar’s "Visualizar" menu (.hmenu), teleported like the original. */
@@ -62,14 +54,14 @@ function ViewMenu() {
 type FiltersProps = {
   query: string;
   onQuery: (v: string) => void;
-  preset: Preset;
-  onPreset: (p: Preset) => void;
+  period: Period;
+  onPeriod: (p: Period) => void;
   today: Date;
   /** Hands the visible rows to a CSV file, like the original's Exportar. */
   onExport: () => void;
 };
 
-export function AppointmentsFilters({ query, onQuery, preset, onPreset, today, onExport }: FiltersProps) {
+export function AppointmentsFilters({ query, onQuery, period, onPeriod, today, onExport }: FiltersProps) {
   const dateRef = useRef<HTMLDivElement>(null);
   const [dateOpen, setDateOpen] = useState(false);
   useDismiss(dateRef, dateOpen, () => setDateOpen(false));
@@ -100,41 +92,46 @@ export function AppointmentsFilters({ query, onQuery, preset, onPreset, today, o
             Novo Agendamento
           </a>
           <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
-              <div ref={dateRef} className="hdaterange">
-                <button
-                  type="button"
-                  className="hinline-trigger hdaterange-trigger hinline-trigger--bare"
-                  aria-expanded={dateOpen}
-                  onClick={() => setDateOpen((o) => !o)}
-                >
-                  <CalendarIcon className="hinline-icon w-4 h-4" />
-                  <span className="hinline-label">{preset}</span>
-                  <span className="hinline-chevron" aria-hidden="true">
-                    <CaretDownIcon className="w-3.5 h-3.5" />
-                  </span>
-                </button>
-                {dateOpen && (
-                  <DateRangePopover
-                    preset={preset}
-                    today={today}
-                    onPreset={(p) => {
-                      onPreset(p);
-                      setDateOpen(false);
-                    }}
-                  />
-                )}
-              </div>
-
-              <span className="hactionbar-sep" aria-hidden="true" />
-
-              <ViewMenu />
-
-              <span className="hactionbar-sep" aria-hidden="true" />
-
-              <button type="button" aria-label="Exportar" className="hbtn hbtn--ghost hbtn--sm" onClick={onExport}>
-                <DownloadIcon className="w-4 h-4" />
-                <span className="hactionbar-label">Exportar</span>
+            <div ref={dateRef} className="hdaterange">
+              <button
+                type="button"
+                className="hinline-trigger hdaterange-trigger hinline-trigger--bare"
+                aria-expanded={dateOpen}
+                onClick={() => setDateOpen((o) => !o)}
+              >
+                <CalendarIcon className="hinline-icon w-4 h-4" />
+                <span className="hinline-label">{periodLabel(period)}</span>
+                <span className="hinline-chevron" aria-hidden="true">
+                  <CaretDownIcon className="w-3.5 h-3.5" />
+                </span>
               </button>
+              {dateOpen && (
+                <DateRangePopover
+                  period={period}
+                  today={today}
+                  onPeriod={(p) => {
+                    onPeriod(p);
+                    setDateOpen(false);
+                  }}
+                  // Measured on the original: always there, and it goes back to every period.
+                  onClear={() => {
+                    onPeriod(ALL_PERIODS);
+                    setDateOpen(false);
+                  }}
+                />
+              )}
+            </div>
+
+            <span className="hactionbar-sep" aria-hidden="true" />
+
+            <ViewMenu />
+
+            <span className="hactionbar-sep" aria-hidden="true" />
+
+            <button type="button" aria-label="Exportar" className="hbtn hbtn--ghost hbtn--sm" onClick={onExport}>
+              <DownloadIcon className="w-4 h-4" />
+              <span className="hactionbar-label">Exportar</span>
+            </button>
           </ScrollRail>
         </div>
       </div>

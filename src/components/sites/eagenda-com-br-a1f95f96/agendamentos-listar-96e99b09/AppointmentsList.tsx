@@ -21,7 +21,8 @@ import { download, stamp, toCsv } from "@/lib/seiri/csv";
 import { Modal } from "../shared/Modal";
 import { SaveIcon } from "../shared/icons";
 import type { Appointment, Status } from "@/lib/seiri/types";
-import { expand, fold, formatWhen, inPreset } from "@/lib/seiri/select";
+import { expand, fold, formatWhen } from "@/lib/seiri/select";
+import { inPeriod, type Period } from "@/lib/seiri/range";
 import { ROUTES } from "../shared/Sidebar";
 import { ActionDialog, statusOf, type CalendarAction } from "../agendamentos-calendar-18078-85bcf86b/ActionDialog";
 import { CommentModal, ReceiptModal, TagsModal } from "../agendamentos-calendar-18078-85bcf86b/SlotModals";
@@ -199,18 +200,18 @@ type AppointmentsListProps = {
 export function AppointmentsList({ initialStatus = "", initialPreset = "Próximos 7 dias" }: AppointmentsListProps = {}) {
   const [today] = useState(() => new Date());
   const [query, setQuery] = useState("");
-  const [preset, setPreset] = useState<Preset>(initialPreset);
+  const [period, setPeriod] = useState<Period>(initialPreset);
   const [status, setStatus] = useState(initialStatus);
   // Measured on the original: with its storage cleared it comes back with Responsável alone.
   const [columns, toggleColumn] = useViewPref("appointments.columns", DEFAULT_COLUMNS);
   const data = useData();
 
   const shows = (id: string) => columns.includes(id);
-  const filtered = Boolean(query.trim()) || preset !== "Todos os períodos";
+  const filtered = Boolean(query.trim()) || period !== "Todos os períodos";
   const term = fold(query.trim());
   const rows = data.appointments
     .filter((a) => (status ? a.status === status : true))
-    .filter((a) => inPreset(a.start, preset, today))
+    .filter((a) => inPeriod(a.start, period, today))
     .filter((a) => {
       if (!term) return true;
       const { clientName, serviceName, agendaName } = expand(data, a);
@@ -240,12 +241,12 @@ export function AppointmentsList({ initialStatus = "", initialPreset = "Próximo
   const reset = () => {
     setQuery("");
     setStatus("");
-    setPreset("Próximos 7 dias");
+    setPeriod("Próximos 7 dias");
   };
 
   return (
     <>
-      <AppointmentsFilters query={query} onQuery={setQuery} preset={preset} onPreset={setPreset} today={today} onExport={exportCsv} />
+      <AppointmentsFilters query={query} onQuery={setQuery} period={period} onPeriod={setPeriod} today={today} onExport={exportCsv} />
 
       <div className="mt-6 md:mt-8 hui-reveal">
         <div className="flex flex-wrap items-center gap-3 mb-3">

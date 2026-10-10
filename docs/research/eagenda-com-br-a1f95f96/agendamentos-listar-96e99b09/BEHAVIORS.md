@@ -74,3 +74,39 @@ tag. With `interval=all` and `status=PENDING` it still shows the default copy
 ("Nenhum agendamento por aqui / Os agendamentos das suas agendas aparecerão nesta lista"),
 while the default `interval=next_7_days` shows "Nenhum agendamento encontrado…". The clone follows
 the same rule.
+
+## Seletor de período (medido em 2026-10-09)
+
+Os dias dos dois calendários do popover **não eram clicáveis**: o clone só sabia os cinco presets.
+Medido no original, e implementado em `lib/seiri/range.ts` (regras) e `shared/DateRangePopover.tsx`:
+
+- **Dois cliques.** O primeiro marca o início (`is-rstart` na célula, `is-selected` no botão) e
+  não muda nada: rótulo, filtro e URL ficam como estavam. O segundo fecha o intervalo, em qualquer
+  ordem — clicar 28 e depois 24 dá `24/10 – 28/10` — e é só nele que o filtro muda. Um terceiro clique
+  recomeça, e o intervalo antigo continua valendo até o novo ficar completo.
+- **Pré-visualização.** Com o início marcado, passar o mouse sobre outro dia pinta a faixa até ele,
+  atravessando os dois meses; passar *antes* do início troca os extremos.
+- **Faixa.** `is-inrange` em todas as células do intervalo, extremos inclusos, `is-rstart` no primeiro
+  e `is-rend` no último. Ao reabrir, o painel abre no mês do início.
+- **Rótulo.** `15/10 – 22/10`, ou `15/10` para um dia só (clicar duas vezes no mesmo). Nunca leva o
+  ano, nem quando o intervalo atravessa um: `20/12 – 05/01`.
+- **Preset vira intervalo.** Escolher "Próximos 7 dias" não guarda o nome: o original navega com datas
+  explícitas, o rótulo passa a ser `09/10 – 15/10` e nenhum preset fica destacado. Próximos 7 dias é
+  hoje + 6, Próximos 30 dias é hoje + 29 (`09/10 – 07/11`), Este mês é o mês corrente inteiro.
+  "Todos os períodos" é a exceção, porque não há intervalo para o qual convertê-lo. Só a abertura
+  padrão da tela, sem parâmetros, mostra o nome "Próximos 7 dias" destacado.
+- **"Limpar período"** está sempre no rodapé, também aqui e na Lista de Espera, e volta a
+  "Todos os períodos". O clone só o tinha nos relatórios.
+
+### Nos relatórios (Consolidado, Clientes, Agendamentos)
+
+O comportamento difere da lista: nada recarrega, o rótulo acompanha a escolha na hora, **o painel
+continua aberto** depois do segundo clique e depois de um preset (só "Limpar período" o fecha), e o
+resultado só muda em "Aplicar filtros". Abrem em `10/09 – 09/10`, os últimos 30 dias contando hoje.
+"Todos os períodos" é um estado válido ali, e "Limpar período" leva a ele.
+
+### O que não foi medido
+
+A URL do original recebe `start_date`/`end_date` (`dd/mm/aaaa`); o clone guarda o período em estado e
+não o põe na URL. A abertura vinda do card "Agendamentos hoje" do painel segue como estava, pelo
+nome do preset.

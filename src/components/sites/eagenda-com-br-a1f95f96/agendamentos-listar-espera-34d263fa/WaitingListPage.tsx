@@ -7,11 +7,12 @@ import { ROUTES } from "../shared/Sidebar";
 import { InlineFilter } from "../shared/InlineFilter";
 import { Modal } from "../shared/Modal";
 import { Combobox } from "../shared/Combobox";
-import { DateRangePopover, type Preset } from "../shared/DateRangePopover";
+import { DateRangePopover } from "../shared/DateRangePopover";
+import { ALL_PERIODS, inPeriod, periodLabel, type Period } from "@/lib/seiri/range";
 import { useAnchoredPopover } from "../shared/useAnchoredPopover";
 import { useDismiss } from "../shared/useDismiss";
 import { useData, update, nextId } from "@/lib/seiri/store";
-import { fold, formatDate, formatWhen, inPreset } from "@/lib/seiri/select";
+import { fold, formatDate, formatWhen } from "@/lib/seiri/select";
 import {
   ActivityIcon,
   CalendarIcon,
@@ -278,7 +279,7 @@ function WaitingModal({ onClose }: { onClose: () => void }) {
 /** Minha Agenda › Lista de Espera: who is waiting for a free slot (empty in this account). */
 export function WaitingListPage() {
   const [query, setQuery] = useState("");
-  const [preset, setPreset] = useState<Preset>("Todos os períodos");
+  const [period, setPeriod] = useState<Period>("Todos os períodos");
   const [agendas, setAgendas] = useState<string[]>([]);
   const [status, setStatus] = useState("");
   const [creating, setCreating] = useState(false);
@@ -286,12 +287,12 @@ export function WaitingListPage() {
   const [dateOpen, setDateOpen] = useState(false);
   useDismiss(dateRef, dateOpen, () => setDateOpen(false));
   const data = useData();
-  const filtered = !!query || agendas.length > 0 || status !== "" || preset !== "Todos os períodos";
+  const filtered = !!query || agendas.length > 0 || status !== "" || period !== "Todos os períodos";
   const term = fold(query.trim());
   const today = new Date();
   const rows = data.waiting
     .filter((w) => (status ? w.status === status : true))
-    .filter((w) => inPreset(w.start, preset, today))
+    .filter((w) => inPeriod(w.start, period, today))
     .filter((w) => {
       const client = data.clients.find((c) => c.id === w.clientId);
       const agenda = data.agendas.find((a) => a.id === w.agendaId);
@@ -332,39 +333,38 @@ export function WaitingListPage() {
               Incluir na Lista de Espera
             </button>
             <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
-                <div ref={dateRef} className="hdaterange">
-                  <button
-                    type="button"
-                    className="hinline-trigger hdaterange-trigger hinline-trigger--bare"
-                    aria-expanded={dateOpen}
-                    onClick={() => setDateOpen((o) => !o)}
-                  >
-                    <CalendarIcon className="hinline-icon w-4 h-4" />
-                    <span className="hinline-label">{preset}</span>
-                    <span className="hinline-chevron" aria-hidden="true">
-                      <CaretDownIcon className="w-3.5 h-3.5" />
-                    </span>
-                  </button>
-                  {dateOpen && (
-                    <DateRangePopover
-                      preset={preset}
-                      today={new Date()}
-                      onPreset={(p) => {
-                        setPreset(p);
-                        setDateOpen(false);
-                      }}
-                    />
-                  )}
-                </div>
-                <InlineFilter
-                  label="Agenda"
-                  icon={<CalendarIcon className="hinline-icon w-4 h-4" />}
-                  options={AGENDAS}
-                  values={agendas}
-                  onChange={setAgendas}
-                />
-                <span className="hactionbar-sep" aria-hidden="true" />
-                <ViewMenu />
+              <div ref={dateRef} className="hdaterange">
+                <button
+                  type="button"
+                  className="hinline-trigger hdaterange-trigger hinline-trigger--bare"
+                  aria-expanded={dateOpen}
+                  onClick={() => setDateOpen((o) => !o)}
+                >
+                  <CalendarIcon className="hinline-icon w-4 h-4" />
+                  <span className="hinline-label">{periodLabel(period)}</span>
+                  <span className="hinline-chevron" aria-hidden="true">
+                    <CaretDownIcon className="w-3.5 h-3.5" />
+                  </span>
+                </button>
+                {dateOpen && (
+                  <DateRangePopover
+                    period={period}
+                    today={new Date()}
+                    onPeriod={(p) => {
+                      setPeriod(p);
+                      setDateOpen(false);
+                    }}
+                    // Measured on the original: always there, and it goes back to every period.
+                    onClear={() => {
+                      setPeriod(ALL_PERIODS);
+                      setDateOpen(false);
+                    }}
+                  />
+                )}
+              </div>
+              <InlineFilter label="Agenda" icon={<CalendarIcon className="hinline-icon w-4 h-4" />} options={AGENDAS} values={agendas} onChange={setAgendas} />
+              <span className="hactionbar-sep" aria-hidden="true" />
+              <ViewMenu />
             </ScrollRail>
           </div>
         </div>
@@ -390,7 +390,7 @@ export function WaitingListPage() {
               setQuery("");
               setAgendas([]);
               setStatus("");
-              setPreset("Todos os períodos");
+              setPeriod("Todos os períodos");
             }}
           >
             <CloseCircleIcon />

@@ -4,14 +4,32 @@ import { useState, type ReactNode, type RefObject } from "react";
 import { FloatingPanel } from "./FloatingPanel";
 import { ChevronLeftIcon, ChevronRightIcon } from "../shared/icons";
 import { MONTHS, WEEKDAYS_SHORT, addMonths, pickerCells, sameDay } from "./calendarDates";
+import {
+  PRESETS,
+  cellFlags,
+  dayKeyOf,
+  isRange,
+  monthToShow,
+  pickDay,
+  pickPreset,
+  shownRange,
+  type DateRange,
+  type Pending,
+  type Period,
+} from "@/lib/seiri/range";
 
-export const PRESETS = ["Hoje", "Próximos 7 dias", "Próximos 30 dias", "Este mês", "Todos os períodos"] as const;
-// "Amanhã" never shows in the menu: it only arrives from the dashboard's "Agendamentos amanhã" card,
-// the same way the original links that card to a single day instead of one of its presets.
-export type Preset = (typeof PRESETS)[number] | "Amanhã";
+export { PRESETS, type Period, type Preset } from "@/lib/seiri/range";
+
+type MiniMonthProps = {
+  month: Date;
+  today: Date;
+  shown: ReturnType<typeof shownRange>;
+  onDay: (key: string) => void;
+  onHover: (key: string) => void;
+};
 
 // Always 42 cells (6 rows, blanks around the month), like the original's daysOf().
-function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
+function MiniMonth({ month, today, shown, onDay, onHover }: MiniMonthProps): ReactNode {
   return (
     <div className="hdaterange-cal">
       <div className="hdaterange-cal-title">
@@ -23,15 +41,24 @@ function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
         ))}
       </div>
       <div className="hdaterange-grid">
-        {pickerCells(month).map((d, i) => (
-          <div key={i} className="hdaterange-cell">
-            {d && (
-              <button type="button" className={`hdaterange-day${sameDay(d, today) ? " is-today" : ""}`}>
+        {pickerCells(month).map((d, i) => {
+          if (!d) return <div key={i} className="hdaterange-cell" />;
+          const key = dayKeyOf(d);
+          const f = cellFlags(key, shown);
+          return (
+            // The band sits on the cell and the ring on the button, as the original's two classes do.
+            <div key={i} className={`hdaterange-cell${f.inRange ? " is-inrange" : ""}${f.start ? " is-rstart" : ""}${f.end ? " is-rend" : ""}`}>
+              <button
+                type="button"
+                className={`hdaterange-day${sameDay(d, today) ? " is-today" : ""}${f.selected ? " is-selected" : ""}`}
+                onClick={() => onDay(key)}
+                onMouseEnter={() => onHover(key)}
+              >
                 {d.getDate()}
               </button>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -39,31 +66,46 @@ function MiniMonth({ month, today }: { month: Date; today: Date }): ReactNode {
 
 // Period picker: preset column + two months, as on the live filter bar.
 type DateRangePopoverProps = {
-  /** The active preset; none while no period is picked. */
-  preset?: Preset;
-  onPreset: (p: Preset) => void;
+  /** What is active: a preset by name, a range, or nothing while no period is picked. */
+  period?: Period;
+  /**
+   * Called with a range when its second day is clicked, and with what a preset becomes when one is
+   * chosen — a range for all of them but "Todos os períodos", which stays a name.
+   */
+  onPeriod: (p: Period) => void;
   today: Date;
   /** The report pages add a "Limpar período" footer under the calendars. */
   onClear?: () => void;
-  /** Month shown when the popover opens. Defaults to the current month; the reports open on the range start. */
+  /** Month shown when the popover opens. Defaults to the range's own month, else the current one. */
   initialMonth?: Date;
   /** Teleport the panel to <body> under this trigger (6px below, like the original); needs `panelRef` for dismissal. */
   anchor?: RefObject<HTMLElement | null>;
   panelRef?: RefObject<HTMLDivElement | null>;
 };
 
-export function DateRangePopover({ preset, onPreset, today, onClear, initialMonth, anchor, panelRef }: DateRangePopoverProps) {
-  const [month, setMonth] = useState(() => {
-    const base = initialMonth ?? today;
-    return new Date(base.getFullYear(), base.getMonth(), 1);
-  });
+export function DateRangePopover({ period, onPeriod, today, onClear, initialMonth, anchor, panelRef }: DateRangePopoverProps) {
+  const committed: DateRange | null = period && isRange(period) ? period : null;
+  const [month, setMonth] = useState(() => initialMonth ?? monthToShow(committed, today));
+  // The first day of a range, waiting for the second. Local to this open: the filter only changes
+  // when the second day is clicked, and the original keeps the old range on screen until then.
+  const [pending, setPending] = useState<Pending | null>(null);
+  const shown = shownRange(committed, pending);
+
+  const onDay = (key: string) => {
+    const next = pickDay(pending, key);
+    setPending(next.pending);
+    if (next.commit) onPeriod(next.commit);
+  };
+  const onHover = (key: string) => {
+    if (pending) setPending({ ...pending, hover: key });
+  };
 
   const body = (
     <>
       <div className="hdaterange-body">
         <div className="hdaterange-presets-col">
           {PRESETS.map((p) => (
-            <button key={p} type="button" className={`hdaterange-preset${p === preset ? " is-active" : ""}`} onClick={() => onPreset(p)}>
+            <button key={p} type="button" className={`hdaterange-preset${p === period ? " is-active" : ""}`} onClick={() => onPeriod(pickPreset(p, today))}>
               {p}
             </button>
           ))}
@@ -76,8 +118,8 @@ export function DateRangePopover({ preset, onPreset, today, onClear, initialMont
             <ChevronRightIcon className="w-4 h-4" />
           </button>
           <div className="hdaterange-cals">
-            <MiniMonth month={month} today={today} />
-            <MiniMonth month={addMonths(month, 1)} today={today} />
+            <MiniMonth month={month} today={today} shown={shown} onDay={onDay} onHover={onHover} />
+            <MiniMonth month={addMonths(month, 1)} today={today} shown={shown} onDay={onDay} onHover={onHover} />
           </div>
         </div>
       </div>
