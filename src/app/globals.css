@@ -191,3 +191,20 @@
 .survey-warning svg {
   color: rgb(202, 116, 0);
 }
+
+/* The drawer's movement. The generated eagenda.css carries its resting state (translate: 0, the dim at
+   opacity 0) but not what moves it. Measured on the original: the dialog slides on `translate` and the
+   page dims over .25s on cubic-bezier(.32,.72,0,1), `--off` being where it starts and ends, and the
+   shared `.hmodal-dim` layer reaches full opacity once `--on` is set. The two state rules name both
+   classes: eagenda.css sets the resting value on the single class, and a tie would be decided by import order. */
+.hdrawer-dialog {
+  transition: translate 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.hdrawer-dialog.hdrawer-dialog--off {
+  translate: 100% 0;
+}
+
+.hmodal-dim.hmodal-dim--on {
+  opacity: 1;
+}

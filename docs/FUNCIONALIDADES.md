@@ -32,8 +32,9 @@ fim, em [O que o protótipo ainda não faz](#o-que-o-protótipo-ainda-não-faz).
 
 `/` — a tela inicial.
 
-- **Checklist de primeiros passos:** os passos levam às telas certas; "Fazer um agendamento teste"
-  aparece concluído quando já existem agendamentos. O × dispensa o checklist.
+- **Checklist de primeiros passos:** cada passo leva à tela certa e é marcado quando o que ele pede já
+  está salvo: logo **e** mensagem de boas-vindas na Tela de Agendamento, o e-mail de contato, algum
+  agendamento, e um plano que não seja o gratuito. O × dispensa o checklist, e isso fica guardado.
 - **Agendamentos de hoje e de amanhã:** cartões que abrem a lista já filtrada pelo dia.
 - **Utilização:** medidor de agendamentos do mês e botão para o plano.
 - **Gráfico Agendamentos vs. Atendimentos:** barras de agendamentos (sem os cancelados) e linha de
@@ -43,11 +44,13 @@ fim, em [O que o protótipo ainda não faz](#o-que-o-protótipo-ainda-não-faz).
 
 **Topo da tela (em todas as páginas):**
 - **Sino:** lista as notificações não lidas e "Ver Todos" abre a caixa de entrada.
+- **Atividade recente** (telas largas): gaveta à direita com os agendamentos dos últimos 7 dias, do mais novo
+  para o mais antigo, cada um levando aos detalhes. Fecha pelo ✕, clicando fora ou com Esc.
 - **Ajuda:** painel com tutoriais da página atual.
 - **Conta:** Minha Conta, Meus agendamentos (abre as agendas) e o seletor "Barra lateral azul".
 - **Recolher menu:** esconde a barra lateral (no celular, abre e fecha o menu).
 
-**Limites:** o checklist só sabe deduzir o passo do agendamento teste. O seletor de idioma, o
+**Limites:** o passo "Escolher seu plano" nunca se completa, porque nada no protótipo tira a conta do plano gratuito. O seletor de idioma, o
 "Barra lateral azul" e "Sair" não mudam nada. Os tutoriais apontam para `seiri.com.br/docs`, que
 não foi verificado.
 

@@ -64,3 +64,34 @@ cartões KPI e o cartão de medidor em 267×148.
 ## Links (fase de lógica)
 - **Painel Configuração** leva a Administrar Agendas, e o número de hoje de cada agenda leva à
   lista de agendamentos — as duas telas já existem no clone.
+
+## Atividade recente (gaveta, medida em 2026-10-09)
+
+O botão da barra do topo (`lg` para cima) estava inerte. No original ele carrega
+`/painel/atividade-recente/` por HTMX e abre um `.hdrawer`.
+
+- **Estrutura**, lida do drawer aberto: `.hdrawer-content--right` com o fundo `.hdrawer-backdrop--opaque`
+  e o diálogo `.hdrawer-dialog--right.hdrawer-dialog--lg.hdrawer-dialog--draggable` (`role="dialog"`,
+  `aria-modal`, 448px, altura total), que leva `hdrawer-close`, `hdrawer-header` com o título
+  "Atividade recente", `hdrawer-body` e `hdrawer-footer`.
+- **Estado vazio**: `hempty hempty--inline` com "Sem atividade recente" / "Os agendamentos dos
+  últimos 7 dias aparecem aqui.". É o único estado visto: a conta de referência não tem nada nessa janela.
+- **Rodapé**: botão `hbtn--secondary hbtn--block` "Ver todos os agendamentos", para `/agendamentos/listar/`.
+- **Fecha** por ✕, por clique no fundo e por Esc. Enquanto está aberto o `<body>` fica com
+  `overflow: hidden` e a largura da barra de rolagem devolvida como `padding-right` (10px), para a
+  página não pular de lado.
+- **O escurecimento não é do drawer.** O `.hdrawer-backdrop` é transparente; quem escurece a página é a
+  camada compartilhada `.hmodal-dim.hmodal-dim--opaque`, que passa a `--on` (`rgba(0,0,0,.5)`, opacidade 1).
+  O diálogo desliza em `translate` e a camada esmaece, os dois em .25s com `cubic-bezier(.32,.72,0,1)`.
+  O `eagenda.css` extraído traz o repouso dessas peças mas não o que as move; as três regras que
+  faltavam foram para o `globals.css`.
+
+### O que é do clone, não do original
+
+- A **lista preenchida**: o original nunca a mostrou, então as linhas (cliente, serviço · agenda,
+  quando, chip de status, levando aos detalhes) são montadas com o vocabulário de lista do design
+  system. O mesmo vale para o critério da janela — aqui, os agendamentos cujo *dia* é um dos últimos 7,
+  hoje incluso (`lib/seiri/activity.ts`) — porque o campo em que o original filtra não pôde ser visto.
+- O original abre com um *spinner* enquanto o HTMX responde; aqui os dados já estão no navegador e
+  não há espera.
+- `hdrawer-dialog--draggable` está na classe, mas o que arrastar faz não foi medido.

@@ -20,6 +20,7 @@ import {
   UserCircleIcon,
 } from "./icons";
 import { useDismiss } from "./useDismiss";
+import { ActivityDrawer } from "./ActivityDrawer";
 
 const FLAGS = withBase("/brand/flags");
 const LANGUAGES = [
@@ -146,6 +147,8 @@ export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
   const owner = useData().members.find((m) => m.profile === "owner");
   const signedInAs = owner?.email || email;
   const [blueSidebar, setBlueSidebar] = useState(false);
+  const [activityOpen, setActivityOpen] = useState(false);
+  const closeActivity = useCallback(() => setActivityOpen(false), []);
 
   return (
     <nav className="topbar hui-enter sticky top-0 z-40 h-16 flex items-center gap-2 bg-[#F7F9FB]/90 backdrop-blur px-3 md:px-6">
@@ -175,9 +178,16 @@ export function Topbar({ title, header, email, onToggleSidebar }: TopbarProps) {
             {(close) => <LanguageItems close={close} />}
           </HMenu>
         </div>
-        <button type="button" title="Atividade recente" aria-label="Atividade recente" className="hidden lg:inline-flex notification-sidebar-toggle tbtn">
+        <button
+          type="button"
+          title="Atividade recente"
+          aria-label="Atividade recente"
+          className="hidden lg:inline-flex notification-sidebar-toggle tbtn"
+          onClick={() => setActivityOpen(true)}
+        >
           <ActivityIcon className="w-5 h-5" />
         </button>
+        {activityOpen && <ActivityDrawer onClose={closeActivity} />}
         <HMenu label="Conta" minWidth="15rem" icon={<UserCircleIcon className="w-5 h-5" />}>
           {(close) => (
             <>
