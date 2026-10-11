@@ -189,6 +189,28 @@ export const PlayIcon = (p: IconProps) => (
   </Solar>
 );
 
+/** A disc with a play triangle: "Ativar agenda?" in the original. */
+export const PlayCircleIcon = (p: IconProps) => (
+  <Solar {...p}>
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10m-1.306-6.154l4.72-2.787c.781-.462.781-1.656 0-2.118l-4.72-2.787C9.934 7.706 9 8.29 9 9.214v5.573c0 .923.934 1.507 1.694 1.059"
+    />
+  </Solar>
+);
+
+/** A disc with two pause bars: the card's "Desativar" button and "Desativar agenda?" in the original. */
+export const PauseCircleIcon = (p: IconProps) => (
+  <Solar {...p}>
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10M8.076 8.617C8 8.801 8 9.034 8 9.5v5c0 .466 0 .699.076.883a1 1 0 0 0 .541.54c.184.077.417.077.883.077s.699 0 .883-.076a1 1 0 0 0 .54-.541c.077-.184.077-.417.077-.883v-5c0-.466 0-.699-.076-.883a1 1 0 0 0-.541-.54C10.199 8 9.966 8 9.5 8s-.699 0-.883.076a1 1 0 0 0-.54.541m5 0C13 8.801 13 9.034 13 9.5v5c0 .466 0 .699.076.883a1 1 0 0 0 .541.54c.184.077.417.077.883.077s.699 0 .883-.076a1 1 0 0 0 .54-.541c.077-.184.077-.417.077-.883v-5c0-.466 0-.699-.076-.883a1 1 0 0 0-.541-.54C15.199 8 14.966 8 14.5 8s-.699 0-.883.076a1 1 0 0 0-.54.541"
+    />
+  </Solar>
+);
+
 export const CrownIcon = (p: IconProps) => (
   <Solar {...p}>
     <path d={P.crown} />

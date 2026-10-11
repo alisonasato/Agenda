@@ -8,6 +8,8 @@ import {
   CaretDownIcon,
   ChatBubbleIcon,
   CloseCircleIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
   RefreshIcon,
   SearchSolidIcon,
   SettingsIcon,
@@ -107,19 +109,12 @@ const STATUS = [
   { value: "inactive", label: "Inativas" },
 ];
 
-// The same two actions the cards carry. They were missing here, so the screen worked in one
+/** What the footer buttons do to an agenda: "Desativar" turns into "Ativar" once it is inactive. */
+const toggleAction = (agenda: Agenda): AgendaAction => (agenda.active ? "deactivate" : "activate");
+
+// The same actions the cards carry. They were missing here, so the screen worked in one
 // layout and not the other.
-function AgendasTable({
-  rows,
-  onGenerate,
-  onToggle,
-  onRemove,
-}: {
-  rows: Agenda[];
-  onGenerate: (agenda: Agenda) => void;
-  onToggle: (id: string) => void;
-  onRemove: (id: string) => void;
-}) {
+function AgendasTable({ rows, onAsk }: { rows: Agenda[]; onAsk: (action: AgendaAction, agenda: Agenda) => void }) {
   return (
     <div className="htable" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
       <div className="htable-scroll">
@@ -202,18 +197,18 @@ function AgendasTable({
                     <a title="Configurar" href={`${ROUTES.novaAgenda}/?id=${a.id}`} className="btn-icon btn-icon-sm btn-icon-solid">
                       <SettingsIcon className="w-4 h-4" />
                     </a>
-                    <button type="button" title="Atualizar" className="btn-icon btn-icon-sm btn-icon-flat" onClick={() => onGenerate(a)}>
+                    <button type="button" title="Atualizar" className="btn-icon btn-icon-sm btn-icon-flat" onClick={() => onAsk("generate", a)}>
                       <RefreshIcon className="w-4 h-4" />
                     </button>
                     <button
                       type="button"
                       title={a.active ? "Desativar Agenda" : "Ativar Agenda"}
                       className="btn-icon btn-icon-sm btn-icon-warning"
-                      onClick={() => onToggle(a.id)}
+                      onClick={() => onAsk(toggleAction(a), a)}
                     >
-                      <CloseCircleIcon className="w-4 h-4" />
+                      {a.active ? <PauseCircleIcon className="w-4 h-4" /> : <PlayCircleIcon className="w-4 h-4" />}
                     </button>
-                    <button type="button" title="Excluir" className="btn-icon btn-icon-sm btn-icon-danger" onClick={() => onRemove(a.id)}>
+                    <button type="button" title="Excluir" className="btn-icon btn-icon-sm btn-icon-danger" onClick={() => onAsk("delete", a)}>
                       <TrashIcon className="w-4 h-4" />
                     </button>
                   </div>
@@ -237,16 +232,22 @@ export function AgendaSettings() {
   // Agendas the cards' "Atualizar" has queued. The original queues a job on the server and says "já está na fila"
   // until it ends; here nothing runs one, so the queue empties by itself.
   const [queued, setQueued] = useState<string[]>([]);
+  const ask = (action: AgendaAction, agenda: Agenda) => setAsking({ action, agenda });
+  const toggleAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.map((x) => (x.id === id ? { ...x, active: !x.active } : x)) }));
+  const removeAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.filter((x) => x.id !== id) }));
   const confirmAsk = () => {
-    if (asking?.action === "update") {
-      const id = asking.agenda.id;
-      setQueued((q) => [...q, id]);
-      window.setTimeout(() => setQueued((q) => q.filter((x) => x !== id)), QUEUE_MS);
+    if (!asking) return;
+    const { action, agenda } = asking;
+    if (action === "update") {
+      setQueued((q) => [...q, agenda.id]);
+      window.setTimeout(() => setQueued((q) => q.filter((x) => x !== agenda.id)), QUEUE_MS);
+    } else if (action === "activate" || action === "deactivate") {
+      toggleAgenda(agenda.id);
+    } else if (action === "delete") {
+      removeAgenda(agenda.id);
     }
     setAsking(null);
   };
-  const toggleAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.map((x) => (x.id === id ? { ...x, active: !x.active } : x)) }));
-  const removeAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.filter((x) => x.id !== id) }));
 
   const data = useData();
   const term = fold(query.trim());
@@ -341,17 +342,12 @@ export function AgendaSettings() {
           <div id="card_lists" className="grid grid-cols-1 lg:grid-cols-2 gap-9 pl-7 lg:pl-0">
             {agendas.map((a) => (
               <div key={a.id} className="w-full min-w-0 h-full">
-                <AgendaNoteCard
-                  agenda={a}
-                  onUpdate={() => setAsking({ action: "update", agenda: a })}
-                  onToggle={() => toggleAgenda(a.id)}
-                  onRemove={() => removeAgenda(a.id)}
-                />
+                <AgendaNoteCard agenda={a} onUpdate={() => ask("update", a)} onToggle={() => ask(toggleAction(a), a)} onRemove={() => ask("delete", a)} />
               </div>
             ))}
           </div>
         ) : (
-          <AgendasTable rows={agendas} onGenerate={(a) => setAsking({ action: "generate", agenda: a })} onToggle={toggleAgenda} onRemove={removeAgenda} />
+          <AgendasTable rows={agendas} onAsk={ask} />
         )}
       </div>
       {ordering && <AgendaOrderModal onClose={() => setOrdering(false)} />}

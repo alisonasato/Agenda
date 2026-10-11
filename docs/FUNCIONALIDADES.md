@@ -149,6 +149,8 @@ são só de tela. O responsável gravado é sempre a proprietária da conta.
   quando a agenda tem horários.
 - Visão em **cartões** ou **tabela**, busca e filtro Todas/Ativas/Inativas.
 - **Nova Agenda**, **Configurar**, **Ver Agenda**, link público, **Desativar** e **Excluir**.
+- **Desativar/Ativar** e **Excluir** pedem confirmação antes de mexer na agenda; cancelar não muda nada.
+  Excluir é permanente.
 - **Atualizar** pede confirmação ("Atualizar agenda?" nos cartões, "Recalcular horários?" na
   tabela). Aqui não há o que reprocessar, porque os horários livres saem dos horários da semana; só
   o aviso "Atualização já solicitada" dura 5 s depois de confirmar nos cartões.

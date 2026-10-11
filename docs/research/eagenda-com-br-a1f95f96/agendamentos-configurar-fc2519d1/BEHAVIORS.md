@@ -38,9 +38,19 @@ O original tirou os filtros Unidade / Serviço / Usuário / Filtros desta barra:
   e, se o botão for clicado nesse intervalo, mostra "Atualização já solicitada". A fila não persiste:
   recarregar a página a esvazia. A confirmação não foi acionada no original, para não enfileirar nada
   na conta.
-- **Excluir** usa o ícone de lixeira nas duas visões (o clone tinha o do círculo com X).
-- No original, **Desativar/Ativar** e **Excluir** também pedem confirmação num diálogo; o clone ainda
-  executa na hora.
+- **Desativar / Ativar / Excluir** pedem confirmação num diálogo de alerta pequeno nas duas visões
+  (lidos no DOM do original em 10/10/2026; a confirmação posta e recarrega a tela, e não foi acionada):
+  - "Desativar agenda?" (ícone de pausa, tom `danger`) — "**Nome** deixa de aceitar novos agendamentos e
+    sai do ar para os clientes." — Cancelar / **Desativar** (`hbtn--danger`);
+  - "Ativar agenda?" (ícone de play, tom `success`) — "**Nome** volta a aceitar novos agendamentos." —
+    Cancelar / **Ativar** (`hbtn--success`);
+  - "Excluir agenda?" (lixeira, tom `danger`) — "**Nome** será excluída permanentemente — esta ação
+    não pode ser desfeita." — Cancelar / **Excluir** (`hbtn--danger`).
+  Cancelar, o X e Esc fecham sem mexer na agenda; confirmar desativa, ativa ou remove, como antes.
+- Ícones: **Desativar** é o círculo com duas barras (pausa; o clone usava o círculo com X) e **Excluir**
+  é a lixeira, nas duas visões. O original só tem uma agenda ativa, então o botão de uma agenda
+  **inativa** não foi visto: o clone usa o círculo com play (o do diálogo "Ativar agenda?"), título
+  "Ativar" e mantém a classe `btn-icon-warning` do botão de desativar — nada disso é medido.
 
 ## Verificação
 No build estático: o menu Configurações lista os seis destinos; Organizar troca a ordem e o store e

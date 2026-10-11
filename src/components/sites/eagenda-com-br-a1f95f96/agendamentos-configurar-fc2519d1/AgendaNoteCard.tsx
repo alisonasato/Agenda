@@ -6,6 +6,8 @@ import {
   CheckReadIcon,
   CloseCircleIcon,
   LinkIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
   RefreshIcon,
   SettingsIcon,
   TrashIcon,
@@ -193,7 +195,7 @@ export function AgendaNoteCard({
               <RefreshIcon className="w-4 h-4" />
             </button>
             <button type="button" className="btn-icon btn-icon-sm btn-icon-warning" title={agenda.active ? "Desativar" : "Ativar"} onClick={onToggle}>
-              <CloseCircleIcon className="w-4 h-4" />
+              {agenda.active ? <PauseCircleIcon className="w-4 h-4" /> : <PlayCircleIcon className="w-4 h-4" />}
             </button>
             <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir" onClick={onRemove}>
               <TrashIcon className="w-4 h-4" />
