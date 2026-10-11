@@ -22,6 +22,8 @@ diálogo e deixou duas linhas.
 
 ## Diferenças em relação ao original
 - O original carrega a tabela por HTMX atrás de um spinner; aqui ela já vem renderizada.
-- "Chave da API" é um botão inerte: aponta para `/users/integracao/api-webhooks`, uma das páginas
-  de integração fora de escopo.
+- "Chave da API" é um link simples (`<a>`) no original, para `/users/integracao/api-webhooks` (lido em
+  10/10/2026), uma das dez páginas de integração fora de escopo. O clone leva à tela Integrações, onde
+  o cartão "API & Webhooks" liga e desliga a integração; a página com a chave não existe aqui, e uma
+  chave inventada não teria a que dar acesso.
 - A coluna "método" é sempre `POST`; o formulário do original também não oferece outro.

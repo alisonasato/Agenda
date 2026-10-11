@@ -4,6 +4,7 @@ import { useState, type CSSProperties } from "react";
 import { AlertDialog } from "../shared/AlertDialog";
 import { Combobox } from "../shared/Combobox";
 import { Modal, ModalSubmit } from "../shared/Modal";
+import { ROUTES } from "../shared/Sidebar";
 import { CheckboxMark, ChevronRightIcon, DangerCircleIcon, GridPlusIcon, InboxIcon, InfoIcon, KeyIcon, PenIcon, SaveIcon, TrashIcon } from "../shared/icons";
 import { nextId, update, useData } from "@/lib/seiri/store";
 import { WEBHOOK_EVENTS, WEBHOOK_TYPES, type Webhook } from "@/lib/seiri/types";
@@ -39,11 +40,11 @@ export function Webhooks() {
           <GridPlusIcon />
           Adicionar Webhook
         </button>
-        {/* The original links the API integration page, which is out of this clone's scope. */}
-        <button type="button" className="hbtn hbtn--secondary">
+        {/* The original links /users/integracao/api-webhooks, which is out of this clone's scope: its card on Integrações is the closest thing. */}
+        <a href={ROUTES.integracoes} className="hbtn hbtn--secondary">
           <KeyIcon />
           Chave da API
-        </button>
+        </a>
       </div>
 
       <div className="mt-6 hui-reveal" style={{ animationDelay: ".03s" }}>
