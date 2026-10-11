@@ -23,6 +23,25 @@ O original tirou os filtros Unidade / Serviço / Usuário / Filtros desta barra:
   **Excluir** remove. **Configurar**, **Ver Agenda** e "Ver/Editar todos os horários" levam às telas
   correspondentes.
 
+- **Atualizar** (ícone de setas circulares, `RefreshIcon`; antes estava o `ActivityIcon`, de linhas)
+  abre um diálogo de alerta de destaque, e o original tem dois, um por visão (capturado em
+  10/10/2026; o botão traz `data-agenda-action`, e a confirmação posta e recarrega a tela):
+  - **Cartões** (`update`, POST `/agendamentos/atualizar_agenda/<id>`): "Atualizar agenda?" — "**Nome**
+    terá os horários disponíveis reprocessados." — Cancelar / Atualizar. Se a agenda já está na fila
+    (`data-agenda-queued="1"`), o mesmo diálogo vira "Atualização já solicitada" — "**Nome** já está na
+    fila para atualizar — aguarde a conclusão do processo." — com o ícone de relógio e só **Fechar**.
+  - **Tabela** (`generate`, POST `/agendamentos/gerardatas/<id>`): "Recalcular horários?" — "**Nome**
+    terá os horários disponíveis para agendamento recalculados." — Cancelar / Atualizar, sem estado de fila.
+
+  O clone não tem o que reprocessar: os horários livres saem dos horários da semana a cada leitura.
+  Confirmar só fecha o diálogo; nos cartões a agenda fica "na fila" por 5 s (simulado, sem trabalhador)
+  e, se o botão for clicado nesse intervalo, mostra "Atualização já solicitada". A fila não persiste:
+  recarregar a página a esvazia. A confirmação não foi acionada no original, para não enfileirar nada
+  na conta.
+- **Excluir** usa o ícone de lixeira nas duas visões (o clone tinha o do círculo com X).
+- No original, **Desativar/Ativar** e **Excluir** também pedem confirmação num diálogo; o clone ainda
+  executa na hora.
+
 ## Verificação
 No build estático: o menu Configurações lista os seis destinos; Organizar troca a ordem e o store e
 os cards seguem ("Unidade Centro" passou para o primeiro); Desativar deixa a agenda só na aba

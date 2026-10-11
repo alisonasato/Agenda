@@ -1,11 +1,33 @@
 import type { CSSProperties } from "react";
-import { ActivityIcon, CalendarIcon, ChatIcon, CheckReadIcon, CloseCircleIcon, LinkIcon, SettingsIcon, UsersIcon, WidgetIcon } from "../shared/icons";
+import {
+  ActivityIcon,
+  CalendarIcon,
+  ChatIcon,
+  CheckReadIcon,
+  CloseCircleIcon,
+  LinkIcon,
+  RefreshIcon,
+  SettingsIcon,
+  TrashIcon,
+  UsersIcon,
+  WidgetIcon,
+} from "../shared/icons";
 import { ROUTES } from "../shared/Sidebar";
 import { WEEKDAY_TABS, type Agenda } from "./agendas";
 import { scheduleRows } from "./schedule";
 
 // The "notebook" card: weekday tabs on the spine, then head, vitals, schedule, rules and footer.
-export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda; onToggle?: () => void; onRemove?: () => void }) {
+export function AgendaNoteCard({
+  agenda,
+  onUpdate,
+  onToggle,
+  onRemove,
+}: {
+  agenda: Agenda;
+  onUpdate?: () => void;
+  onToggle?: () => void;
+  onRemove?: () => void;
+}) {
   const rows = scheduleRows(agenda.week);
   return (
     <div className="hnote h-full config_card hui-card hui-card--flush" style={{ "--hnote-color": agenda.color } as CSSProperties}>
@@ -167,14 +189,14 @@ export function AgendaNoteCard({ agenda, onToggle, onRemove }: { agenda: Agenda;
           </a>
           <span className="hnote-foot-gap" />
           <span className="flex items-center gap-1">
-            <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Atualizar">
-              <ActivityIcon className="w-4 h-4" />
+            <button type="button" className="btn-icon btn-icon-sm btn-icon-flat" title="Atualizar" onClick={onUpdate}>
+              <RefreshIcon className="w-4 h-4" />
             </button>
             <button type="button" className="btn-icon btn-icon-sm btn-icon-warning" title={agenda.active ? "Desativar" : "Ativar"} onClick={onToggle}>
               <CloseCircleIcon className="w-4 h-4" />
             </button>
             <button type="button" className="btn-icon btn-icon-sm btn-icon-danger" title="Excluir" onClick={onRemove}>
-              <CloseCircleIcon className="w-4 h-4" />
+              <TrashIcon className="w-4 h-4" />
             </button>
           </span>
         </footer>

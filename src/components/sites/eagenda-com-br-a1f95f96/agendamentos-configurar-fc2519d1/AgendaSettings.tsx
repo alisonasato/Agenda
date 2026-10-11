@@ -3,18 +3,20 @@
 import { ScrollRail } from "../shared/ScrollRail";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
-  ActivityIcon,
   CalendarAddIcon,
   CalendarIcon,
   CaretDownIcon,
   ChatBubbleIcon,
   CloseCircleIcon,
+  RefreshIcon,
   SearchSolidIcon,
   SettingsIcon,
   SortIcon,
+  TrashIcon,
 } from "../shared/icons";
 import { useDismiss } from "../shared/useDismiss";
 import { ROUTES } from "../shared/Sidebar";
+import { AgendaActionDialog, type AgendaAction } from "./AgendaActionDialog";
 import { AgendaOrderModal } from "./AgendaOrderModal";
 import { AgendaNoteCard } from "./AgendaNoteCard";
 import { AGENDAS, type Agenda } from "./agendas";
@@ -95,6 +97,9 @@ function SettingsMenu() {
   );
 }
 
+/** How long the cards' "Atualizar" keeps an agenda "na fila". */
+const QUEUE_MS = 5000;
+
 type View = "cards" | "table";
 const STATUS = [
   { value: "", label: "Todas" },
@@ -104,7 +109,17 @@ const STATUS = [
 
 // The same two actions the cards carry. They were missing here, so the screen worked in one
 // layout and not the other.
-function AgendasTable({ rows, onToggle, onRemove }: { rows: Agenda[]; onToggle: (id: string) => void; onRemove: (id: string) => void }) {
+function AgendasTable({
+  rows,
+  onGenerate,
+  onToggle,
+  onRemove,
+}: {
+  rows: Agenda[];
+  onGenerate: (agenda: Agenda) => void;
+  onToggle: (id: string) => void;
+  onRemove: (id: string) => void;
+}) {
   return (
     <div className="htable" style={{ "--htable-row-h": "3.5rem", "--htable-head-h": "38px" } as CSSProperties}>
       <div className="htable-scroll">
@@ -187,8 +202,8 @@ function AgendasTable({ rows, onToggle, onRemove }: { rows: Agenda[]; onToggle: 
                     <a title="Configurar" href={`${ROUTES.novaAgenda}/?id=${a.id}`} className="btn-icon btn-icon-sm btn-icon-solid">
                       <SettingsIcon className="w-4 h-4" />
                     </a>
-                    <button type="button" title="Atualizar" className="btn-icon btn-icon-sm btn-icon-flat">
-                      <ActivityIcon className="w-4 h-4" />
+                    <button type="button" title="Atualizar" className="btn-icon btn-icon-sm btn-icon-flat" onClick={() => onGenerate(a)}>
+                      <RefreshIcon className="w-4 h-4" />
                     </button>
                     <button
                       type="button"
@@ -199,7 +214,7 @@ function AgendasTable({ rows, onToggle, onRemove }: { rows: Agenda[]; onToggle: 
                       <CloseCircleIcon className="w-4 h-4" />
                     </button>
                     <button type="button" title="Excluir" className="btn-icon btn-icon-sm btn-icon-danger" onClick={() => onRemove(a.id)}>
-                      <CloseCircleIcon className="w-4 h-4" />
+                      <TrashIcon className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
@@ -218,6 +233,18 @@ export function AgendaSettings() {
   const [status, setStatus] = useState("");
   const [view, setView] = useState<View>("cards");
   const [ordering, setOrdering] = useState(false);
+  const [asking, setAsking] = useState<{ action: AgendaAction; agenda: Agenda } | null>(null);
+  // Agendas the cards' "Atualizar" has queued. The original queues a job on the server and says "já está na fila"
+  // until it ends; here nothing runs one, so the queue empties by itself.
+  const [queued, setQueued] = useState<string[]>([]);
+  const confirmAsk = () => {
+    if (asking?.action === "update") {
+      const id = asking.agenda.id;
+      setQueued((q) => [...q, id]);
+      window.setTimeout(() => setQueued((q) => q.filter((x) => x !== id)), QUEUE_MS);
+    }
+    setAsking(null);
+  };
   const toggleAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.map((x) => (x.id === id ? { ...x, active: !x.active } : x)) }));
   const removeAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.filter((x) => x.id !== id) }));
 
@@ -252,12 +279,12 @@ export function AgendaSettings() {
               Nova Agenda
             </a>
             <ScrollRail className="hactionbar" trackClassName="hrail-track hactionbar-track">
-                <button type="button" className="hbtn hbtn--ghost hbtn--sm" onClick={() => setOrdering(true)}>
-                  <SortIcon className="w-4 h-4" />
-                  <span className="hactionbar-label">Organizar</span>
-                </button>
-                <span className="hactionbar-sep" aria-hidden="true" />
-                <SettingsMenu />
+              <button type="button" className="hbtn hbtn--ghost hbtn--sm" onClick={() => setOrdering(true)}>
+                <SortIcon className="w-4 h-4" />
+                <span className="hactionbar-label">Organizar</span>
+              </button>
+              <span className="hactionbar-sep" aria-hidden="true" />
+              <SettingsMenu />
             </ScrollRail>
           </div>
         </div>
@@ -314,15 +341,29 @@ export function AgendaSettings() {
           <div id="card_lists" className="grid grid-cols-1 lg:grid-cols-2 gap-9 pl-7 lg:pl-0">
             {agendas.map((a) => (
               <div key={a.id} className="w-full min-w-0 h-full">
-                <AgendaNoteCard agenda={a} onToggle={() => toggleAgenda(a.id)} onRemove={() => removeAgenda(a.id)} />
+                <AgendaNoteCard
+                  agenda={a}
+                  onUpdate={() => setAsking({ action: "update", agenda: a })}
+                  onToggle={() => toggleAgenda(a.id)}
+                  onRemove={() => removeAgenda(a.id)}
+                />
               </div>
             ))}
           </div>
         ) : (
-          <AgendasTable rows={agendas} onToggle={toggleAgenda} onRemove={removeAgenda} />
+          <AgendasTable rows={agendas} onGenerate={(a) => setAsking({ action: "generate", agenda: a })} onToggle={toggleAgenda} onRemove={removeAgenda} />
         )}
       </div>
       {ordering && <AgendaOrderModal onClose={() => setOrdering(false)} />}
+      {asking && (
+        <AgendaActionDialog
+          action={asking.action}
+          name={asking.agenda.name}
+          queued={queued.includes(asking.agenda.id)}
+          onConfirm={confirmAsk}
+          onClose={() => setAsking(null)}
+        />
+      )}
       <WhatsAppToast />
     </>
   );
