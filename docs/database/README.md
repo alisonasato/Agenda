@@ -83,6 +83,14 @@ Coisas que o protótipo ainda não define e que o esquema não inventou:
 - **Isolamento entre empresas.** O esquema tem `organization_id` em todo lugar, mas não liga o
   Row Level Security do PostgreSQL. Vale decidir junto com o backend se o isolamento fica no banco
   (RLS) ou na aplicação.
+- **Excluir agenda.** O diálogo do original diz "excluída permanentemente", mas não se sabe o que ele faz
+  com os agendamentos, e a exclusão não foi acionada na conta de referência. O protótipo leva tudo
+  que é da agenda (agendamentos, lista de espera, recorrências, horários, regras), tira a agenda das
+  listas que a citam e apaga a regra que só era dela, para não virar uma regra de "todas as agendas"
+  (`removeAgenda()` em `src/lib/seiri/agendas.ts`). No esquema, `appointments.agenda_id` não tem
+  `ON DELETE`: o banco **recusa** apagar uma agenda que ainda tem agendamentos, e o resto sai por
+  `ON DELETE CASCADE`. A regra "apagar o que ficaria global" não cabe numa chave estrangeira e é da
+  aplicação. Decidir com o backend se a agenda com histórico é recusada, arquivada ou apagada.
 - **LGPD.** `clients` guarda CPF, data de nascimento e endereço. Falta definir retenção, exportação e
   exclusão a pedido do titular.
 

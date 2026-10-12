@@ -22,6 +22,7 @@ import { AgendaActionDialog, type AgendaAction } from "./AgendaActionDialog";
 import { AgendaOrderModal } from "./AgendaOrderModal";
 import { AgendaNoteCard } from "./AgendaNoteCard";
 import { AGENDAS, type Agenda } from "./agendas";
+import { removeAgenda as removeAgendaFrom } from "@/lib/seiri/agendas";
 import { update, useData } from "@/lib/seiri/store";
 import { fold, formatDate, formatDuration } from "@/lib/seiri/select";
 import { DEFAULT_RULES, type Data } from "@/lib/seiri/types";
@@ -234,7 +235,7 @@ export function AgendaSettings() {
   const [queued, setQueued] = useState<string[]>([]);
   const ask = (action: AgendaAction, agenda: Agenda) => setAsking({ action, agenda });
   const toggleAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.map((x) => (x.id === id ? { ...x, active: !x.active } : x)) }));
-  const removeAgenda = (id: string) => update((d) => ({ ...d, agendas: d.agendas.filter((x) => x.id !== id) }));
+  const removeAgenda = (id: string) => update((d) => removeAgendaFrom(d, id));
   const confirmAsk = () => {
     if (!asking) return;
     const { action, agenda } = asking;

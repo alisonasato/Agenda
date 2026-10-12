@@ -17,6 +17,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `holidays.ts` | Feriados customizados e nacionais (ver abaixo) |
 | `limits.ts` | Limites de agendamentos e listas de bloqueio (ver abaixo) |
 | `sends.ts` | Os envios que Acompanhamento mostra (ver abaixo) |
+| `agendas.ts` | `removeAgenda()`: o que sai junto quando uma agenda é excluída (ver abaixo) |
 
 ## Como funciona
 - Tudo vive em **localStorage**, chave `seiri.data.v1`. O primeiro acesso grava o seed; dali em diante
@@ -217,6 +218,21 @@ a "Nome da Empresa"/"CNPJ" da tela de detalhes e os filtros de empresa da lista.
 A lixeira da lista de clientes marca `inactive` no cadastro em vez de removê-lo: o cliente sai das
 listas e o histórico de agendamentos continua apontando para ele, que é o que o original faz
 ("Desativar cliente?").
+
+## Excluir agenda
+Diferente do cliente, a agenda é apagada de verdade ("Excluir agenda?" diz "permanentemente"), e
+`removeAgenda()` (`agendas.ts`) leva junto o que é dela: agendamentos, lista de espera, recorrências,
+horários, regras, opções, regras de feriado, horários avulsos, histórico e modelos de e-mail. O log
+da equipe fica, e mostra "—" no lugar da agenda.
+
+As listas que citam a agenda só perdem o id. Onde lista vazia quer dizer "todas as agendas" (limites,
+feriados customizados, regras de notificação e de status, listas de acesso), a regra que era só
+dessa agenda é apagada: tirar o id a transformaria numa regra de todas. Bloqueios e horários manuais
+sem agenda também saem. Serviço, membro, pesquisa e grupo continuam, com a lista mais curta (um
+membro que só via essa agenda passa a ver todas, como uma lista vazia sempre quis dizer).
+
+O original não mostrou o que faz com os agendamentos; ver "Pontos em aberto" em
+`docs/database/README.md`.
 
 ## Consolidar clientes
 O modal "Consolidar" agrupa os clientes que repetem os campos escolhidos (e-mail, telefone ou CPF),

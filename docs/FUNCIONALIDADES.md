@@ -150,7 +150,9 @@ são só de tela. O responsável gravado é sempre a proprietária da conta.
 - Visão em **cartões** ou **tabela**, busca e filtro Todas/Ativas/Inativas.
 - **Nova Agenda**, **Configurar**, **Ver Agenda**, link público, **Desativar** e **Excluir**.
 - **Desativar/Ativar** e **Excluir** pedem confirmação antes de mexer na agenda; cancelar não muda nada.
-  Excluir é permanente.
+  Excluir é permanente e leva os agendamentos, a lista de espera, as recorrências e as regras da
+  agenda; os limites, feriados, regras de notificação e listas de acesso que eram só dela também
+  saem. Serviços e membros ficam, sem a agenda.
 - **Atualizar** pede confirmação ("Atualizar agenda?" nos cartões, "Recalcular horários?" na
   tabela). Aqui não há o que reprocessar, porque os horários livres saem dos horários da semana; só
   o aviso "Atualização já solicitada" dura 5 s depois de confirmar nos cartões.

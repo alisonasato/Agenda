@@ -46,7 +46,10 @@ O original tirou os filtros Unidade / Serviço / Usuário / Filtros desta barra:
     Cancelar / **Ativar** (`hbtn--success`);
   - "Excluir agenda?" (lixeira, tom `danger`) — "**Nome** será excluída permanentemente — esta ação
     não pode ser desfeita." — Cancelar / **Excluir** (`hbtn--danger`).
-  Cancelar, o X e Esc fecham sem mexer na agenda; confirmar desativa, ativa ou remove, como antes.
+  Cancelar, o X e Esc fecham sem mexer na agenda; confirmar desativa, ativa ou remove.
+  Remover chama `removeAgenda()` (`src/lib/seiri/agendas.ts`), que leva também o que é da agenda e a tira
+  das listas que a citam; o que o original faz com os agendamentos dela não foi visto (ver
+  `docs/DATA-LAYER.md`, "Excluir agenda").
 - Ícones: **Desativar** é o círculo com duas barras (pausa; o clone usava o círculo com X) e **Excluir**
   é a lixeira, nas duas visões. O original só tem uma agenda ativa, então o botão de uma agenda
   **inativa** não foi visto: o clone usa o círculo com play (o do diálogo "Ativar agenda?"), título
