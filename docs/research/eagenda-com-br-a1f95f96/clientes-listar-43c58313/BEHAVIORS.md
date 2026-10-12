@@ -18,6 +18,13 @@ navegador (docs/DATA-LAYER.md).
   importar."); com arquivo, o resultado vira um alerta do tipo "2 clientes importados · 1 já
   existia". Uma linha só entra se tiver nome, e-mail ou CPF, e é ignorada se já existir por um
   desses três.
+  - **Chips verdes:** ao escolher o arquivo, o script do original (`initializeImportClientsModal`, lido em
+    12/10/2026) lê a primeira linha (PapaParse no .csv, SheetJS no .xlsx/.xls) e troca `hchip--default`
+    por `hchip--success` nos chips das colunas que achou, sem diferenciar maiúsculas nem espaços nas
+    pontas; tirar o arquivo apaga todos. Medido nas duas cores: chip normal `rgb(239,239,240)` com texto
+    `rgb(51,65,85)`, chip achado `rgb(227,244,234)` com texto `rgb(0,102,39)`, mesmo tamanho (20px de
+    altura, 11px/600). O clone faz o mesmo com a primeira linha de `.csv` e `.xlsx`; `.xls` e arquivo
+    quebrado não acendem nada (o clone não os lê). A coluna `login` não tem chip, então não acende.
 - **Consolidar** abre o modal de dois passos do original: marcar os campos que identificam
   duplicatas (Email, Telefone, CPF/Identificação), "Continuar" mostra a revisão (campos
   selecionados, grupos encontrados e registros a fundir, este em vermelho) e "Confirmar Fusão"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Modal } from "../shared/Modal";
 import { FilePicker } from "../shared/FilePicker";
 import { CheckCircleIcon, DangerCircleIcon, DownloadIcon, InfoIcon, UploadIcon } from "../shared/icons";
@@ -61,6 +61,24 @@ function ingest(rows: string[][]) {
 export function ImportModal({ onClose }: { onClose: () => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [notice, setNotice] = useState<Notice>(null);
+  /** The column names in the chosen file's first row, lower-cased: the chips of the ones the modal expects turn green. */
+  const [found, setFound] = useState<string[]>([]);
+  const picked = useRef<File | null>(null);
+
+  const pick = async (next: File | null) => {
+    picked.current = next;
+    setFile(next);
+    let header: string[] = [];
+    if (next) {
+      try {
+        header = (await sheetRows(next.name, new Uint8Array(await next.arrayBuffer())))[0] ?? [];
+      } catch {
+        // Unreadable here (.xls, a broken file): no chip lights up, and "Enviar" says why.
+      }
+    }
+    // A slower read of an earlier pick must not paint over the file chosen since.
+    if (picked.current === next) setFound(header.map((h) => h.trim().toLowerCase()));
+  };
 
   const send = async () => {
     if (!file) return setNotice({ tone: "accent", text: "Selecione um arquivo CSV para importar." });
@@ -121,7 +139,7 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
             kind="sheet"
             accept=".csv,.xlsx,.xls"
             maxMb={5}
-            onFile={setFile}
+            onFile={(f) => void pick(f)}
             desc="Planilha CSV, XLSX ou XLS de até 5 MB — arraste aqui ou clique para escolher."
           />
         </div>
@@ -130,7 +148,11 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
           <p className="hinput-label">Colunas esperadas no arquivo</p>
           <div id="columns-list" className="mt-2 flex flex-wrap gap-1.5">
             {COLUMNS.map((column) => (
-              <span key={column} data-import-column={column} className="hchip hchip--default hchip--soft hchip--sm">
+              <span
+                key={column}
+                data-import-column={column}
+                className={`hchip ${found.includes(column) ? "hchip--success" : "hchip--default"} hchip--soft hchip--sm`}
+              >
                 {column}
               </span>
             ))}

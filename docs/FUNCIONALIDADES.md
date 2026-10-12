@@ -306,7 +306,8 @@ estado).
 - **Adicionar Cliente:** nome, e-mail, telefone, CPF, nascimento, gênero, nacionalidade, profissão,
   estado civil e endereço. Avisa quando já existe cadastro com o mesmo e-mail ou documento.
 - **Importar:** arquivo CSV ou XLSX (.xls, o formato antigo, não é lido) com as colunas `cliente_id`, `nome`, `email`, `telefone`, `cpf`,
-  `dt_nascimento`, `genero`, `nacionalidade`, `profissao`; "Baixar modelo (.xlsx)" traz uma planilha
+  `dt_nascimento`, `genero`, `nacionalidade`, `profissao`; ao escolher o arquivo, os nomes dessas
+  colunas que ele traz na primeira linha ficam verdes; "Baixar modelo (.xlsx)" traz uma planilha
   só com o cabeçalho (mais a coluna `login`, que o clone não usa). Linhas repetidas (mesmo nome, e-mail ou CPF) são ignoradas, e o resultado diz quantos
   entraram.
 - **Consolidar:** encontra cadastros duplicados por e-mail, telefone ou CPF, mostra a revisão e funde
