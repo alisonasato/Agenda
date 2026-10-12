@@ -7,7 +7,7 @@ register('data:text/javascript,export function resolve(s, c, next) { return next
 
 const { ACCESS_EXPORT_HEADER, ACCESS_EXPORT_FILE, ACCESS_EXPORT_SHEET, intervalText, periodCount, accessExportRows } = await import("./accessExport.ts");
 const { INVITE_TEMPLATE_SHEET, inviteTemplateFile } = await import("./inviteTemplate.ts");
-const { CLIENT_TEMPLATE_SHEET, clientTemplateFile } = await import("./clientTemplate.ts");
+const { CLIENT_TEMPLATE_SHEET, CLIENT_SHEET_HEADER, clientSheetFile, clientSheetRows } = await import("./clientSheet.ts");
 
 const TODAY = new Date(2026, 9, 9, 15, 0); // Friday 09/10/2026
 
@@ -187,8 +187,58 @@ const link = (c) => `https://exemplo.com.br/agendar/?cliente=${c.accessKey ?? c.
   ]);
   assert.ok(!CLIENT_TEMPLATE_SHEET.widths && !CLIENT_TEMPLATE_SHEET.styledHeader, "sem larguras nem estilo, como o do original");
 
-  assert.equal(clientTemplateFile(new Date(2026, 9, 12)), "lista_clientes_2026-10-12.xlsx", "medido: a data do dia no nome");
-  assert.equal(clientTemplateFile(new Date(2026, 0, 5)), "lista_clientes_2026-01-05.xlsx", "zero à esquerda");
+  assert.equal(clientSheetFile(new Date(2026, 9, 12)), "lista_clientes_2026-10-12.xlsx", "medido: a data do dia no nome");
+  assert.equal(clientSheetFile(new Date(2026, 0, 5)), "lista_clientes_2026-01-05.xlsx", "zero à esquerda");
+}
+
+// The client export: the template's header and a row per client, in the template's columns, all text.
+{
+  assert.deepEqual(clientSheetRows([]), CLIENT_TEMPLATE_SHEET.rows, "sem clientes, o export é o modelo");
+
+  const full = {
+    id: "c1",
+    name: "Ana Beatriz Lima",
+    email: "ana@exemplo.com.br",
+    phone: "+55 11 98888-1010",
+    cpf: "123.456.789-09",
+    birthday: "17/05/1990",
+    gender: "Feminino",
+    nationality: "Brasileira",
+    profession: "Engenheira",
+  };
+  const bare = { id: "c2", name: "Bruno Souza", email: "bruno@exemplo.com.br", phone: "", accessKey: "K-9" };
+  const rows = clientSheetRows([full, bare]);
+
+  assert.deepEqual(rows[0], CLIENT_SHEET_HEADER);
+  assert.deepEqual(rows[1], [
+    "c1",
+    "Ana Beatriz Lima",
+    "ana@exemplo.com.br",
+    "",
+    "+55 11 98888-1010",
+    "123.456.789-09",
+    "17/05/1990",
+    "Feminino",
+    "Brasileira",
+    "Engenheira",
+  ]);
+  assert.deepEqual(
+    rows[2],
+    ["K-9", "Bruno Souza", "bruno@exemplo.com.br", "", "", "", "", "", "", ""],
+    "a chave de acesso é o cliente_id, e o que falta sai vazio",
+  );
+  assert.ok(
+    rows.every((r) => r.length === 10),
+    "toda linha tem as dez colunas",
+  );
+  assert.ok(
+    rows.flat().every((cell) => typeof cell === "string"),
+    "tudo texto: um CPF não vira número",
+  );
+
+  const { toXlsx } = await import("./xlsx.ts");
+  const { fromXlsx } = await import("./xlsxRead.ts");
+  assert.deepEqual(await fromXlsx(toXlsx({ name: "Clientes", rows })), rows, "o arquivo volta igual, e o CPF conserva os zeros");
 }
 
 console.log("accessExport ok");

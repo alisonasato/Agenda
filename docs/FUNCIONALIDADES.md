@@ -311,7 +311,8 @@ estado).
   entraram.
 - **Consolidar:** encontra cadastros duplicados por e-mail, telefone ou CPF, mostra a revisão e funde
   (fica o primeiro cadastro, completado com os dados dos outros, e os agendamentos passam para ele).
-- **Exportar:** baixa um CSV dos clientes ativos.
+- **Exportar:** baixa uma planilha .xlsx dos clientes ativos que a lista está mostrando (com a busca e os
+  filtros), nas mesmas dez colunas do modelo de Importar: o arquivo pode ser importado de volta.
 - **Filtros:** nome, CPF/CNPJ, e-mail, telefone, empresa e documento da empresa.
 - Visualizar, editar e **desativar** (o cliente sai das listas, mas o histórico de agendamentos fica).
 

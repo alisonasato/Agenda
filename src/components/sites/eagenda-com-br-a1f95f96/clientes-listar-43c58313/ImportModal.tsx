@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Modal } from "../shared/Modal";
 import { FilePicker } from "../shared/FilePicker";
 import { CheckCircleIcon, DangerCircleIcon, DownloadIcon, InfoIcon, UploadIcon } from "../shared/icons";
-import { CLIENT_TEMPLATE_SHEET, clientTemplateFile } from "@/lib/seiri/clientTemplate";
+import { CLIENT_TEMPLATE_SHEET, clientSheetFile } from "@/lib/seiri/clientSheet";
 import { download } from "@/lib/seiri/csv";
 import { excelDate, sheetProblem, sheetRows } from "@/lib/seiri/sheetFile";
 import { fold } from "@/lib/seiri/select";
@@ -144,11 +144,7 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
         </ul>
 
         <div>
-          <button
-            type="button"
-            className="hbtn hbtn--secondary hbtn--sm"
-            onClick={() => download(clientTemplateFile(), toXlsx(CLIENT_TEMPLATE_SHEET), XLSX_TYPE)}
-          >
+          <button type="button" className="hbtn hbtn--secondary hbtn--sm" onClick={() => download(clientSheetFile(), toXlsx(CLIENT_TEMPLATE_SHEET), XLSX_TYPE)}>
             <DownloadIcon className="w-4 h-4" />
             Baixar modelo (.xlsx)
           </button>

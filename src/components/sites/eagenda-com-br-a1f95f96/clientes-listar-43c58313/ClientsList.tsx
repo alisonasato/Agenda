@@ -17,7 +17,9 @@ import {
 } from "../shared/icons";
 import { useData, update } from "@/lib/seiri/store";
 import { fold } from "@/lib/seiri/select";
-import { download, stamp, toCsv } from "@/lib/seiri/csv";
+import { clientSheetFile, clientSheetRows } from "@/lib/seiri/clientSheet";
+import { download } from "@/lib/seiri/csv";
+import { XLSX_TYPE, toXlsx } from "@/lib/seiri/xlsx";
 import { AlertDialog } from "../shared/AlertDialog";
 import { ROUTES } from "../shared/Sidebar";
 import { ClientForm } from "./ClientForm";
@@ -140,15 +142,8 @@ export function ClientsList() {
   const [form, setForm] = useState<{ open: boolean; editing: Client | null }>({ open: false, editing: null });
   const [open, setOpen] = useState<"import" | "consolidate" | null>(null);
 
-  /** Exports what the table is showing, the way the original's button offers the sheet. */
-  const exportCsv = () =>
-    download(
-      `clientes-${stamp()}.csv`,
-      toCsv(
-        ["Nome", "E-mail", "Telefone", "CPF", "Gênero"],
-        rows.map((c) => [c.name, c.email, c.phone, c.cpf ?? "", c.gender ?? ""]),
-      ),
-    );
+  /** The original's "Exportar" goes to `?export=xlsx` with the filters on (and no page): every client the list matches, as a spreadsheet. */
+  const exportXlsx = () => download(clientSheetFile(), toXlsx({ name: "Clientes", rows: clientSheetRows(rows) }), XLSX_TYPE);
 
   return (
     <>
@@ -189,7 +184,7 @@ export function ClientsList() {
                   Consolidar
                 </button>
                 <span className="hactionbar-sep" aria-hidden="true" />
-                <button type="button" aria-label="Exportar" className="hbtn hbtn--ghost hbtn--sm" onClick={exportCsv}>
+                <button type="button" aria-label="Exportar" className="hbtn hbtn--ghost hbtn--sm" onClick={exportXlsx}>
                   <DownloadIcon className="w-4 h-4" />
                   Exportar
                 </button>

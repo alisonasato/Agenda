@@ -23,7 +23,11 @@ navegador (docs/DATA-LAYER.md).
   selecionados, grupos encontrados e registros a fundir, este em vermelho) e "Confirmar Fusão"
   funde de verdade — mantém o primeiro cadastro de cada grupo, preenche os campos vazios dele com
   os dos outros e reaponta agendamentos e lista de espera para quem ficou.
-- **Exportar** baixa `clientes-AAAA-MM-DD.csv` com o que a tabela está mostrando (só os ativos).
+- **Exportar** baixa `lista_clientes_AAAA-MM-DD.xlsx` com os clientes ativos que a lista casa com a busca e
+  os filtros, nas dez colunas do modelo de Importar (`clientSheet.ts`; ver "Diferenças"). No original o
+  botão chama `exportClients()` (lido no script da página em 12/10/2026), que repete o endereço da lista
+  com os filtros, sem `page`, e `export=xlsx`: o arquivo traz todos os clientes do filtro, não só a página.
+  Aqui cada célula é texto, a data de nascimento sai "dd/mm/aaaa" e `login` sai vazio.
 - **Filtros** filtra pelos seis campos: nome, CPF, e-mail, telefone, Empresa e Documento da Empresa.
   Os dois últimos usam a denominação social e o CNPJ que a tela de editar cadastro preenche.
 
@@ -49,9 +53,13 @@ Cada linha traz os três botões do original, `btn-icon btn-icon-sm` de 36×36 c
   aba "Clientes", **só a linha de cabeçalho**, sem exemplo, sem larguras e sem estilo, com dez colunas:
   `cliente_id`, `nome`, `email`, **`login`**, `telefone`, `cpf`, `dt_nascimento`, `genero`,
   `nacionalidade`, `profissao`. Os chips do modal listam só nove (sem `login`). O clone monta o arquivo no
-  navegador (`clientTemplate.ts`, `xlsx.ts`) e abre no `openpyxl`; a coluna `login` é ignorada ao
-  importar, porque cliente aqui não tem login. Em uma conta com clientes o original pode devolver a
-  lista deles no mesmo endereço (o nome diz "lista"); isso não foi visto. Antes o modelo saía em `.csv`,
+  navegador (`clientSheet.ts`, `xlsx.ts`) e abre no `openpyxl`; a coluna `login` é ignorada ao
+  importar, porque cliente aqui não tem login. O nome diz "lista" e o "Exportar" do original pede
+  `?export=xlsx` na própria lista, então o clone trata o modelo como o export sem linhas e o export como
+  o modelo com os clientes; não foi conferido, porque a conta de referência não tem clientes para
+  exportar. Também não se sabe como o original escreve cada célula (data como data ou texto, CPF com ou
+  sem máscara) nem o que põe em `cliente_id`; o clone usa a chave de acesso (ou o id), como no Exportar
+  de Acesso Individual. Antes o modelo saía em `.csv`,
   com uma linha de exemplo que o original não tem.
 - A lista de regras do original traz uma linha que o clone não tem ("Preencha o campo username com o
   e-mail de acesso para também criar o login do cliente.") e o clone traz outra que o original não tem

@@ -35,15 +35,16 @@ tabela preenchida. As linhas são construção deste clone, montadas com as peç
 
 ## Exportar e importar
 CSV é gerado e lido no navegador (`src/lib/seiri/csv.ts`): separador `;`, com BOM para o Excel em
-pt-BR abrir os acentos. Exportam: Agendamentos, Clientes e o Relatório Consolidado (depois do aviso
-de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que o original pede
+pt-BR abrir os acentos. Exportam em CSV: Agendamentos e o Relatório Consolidado (depois do aviso de
+LGPD). Clientes exporta em .xlsx (ver abaixo). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que o original pede
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
 `profissao`). O arquivo pode ser .csv ou .xlsx (ver abaixo); .xls, o formato binário antigo que o
 original também aceita, não é lido.
 
 `xlsx.ts` escreve um .xlsx de uma aba (um zip sem compressão de umas poucas partes XML, com CRC-32 e
 deslocamentos à mão), usado por "Modelo da planilha" (`inviteTemplate.ts`), por "Baixar modelo (.xlsx)"
-de Importar Clientes (`clientTemplate.ts`) e pelo "Exportar" do Acesso Individual (`accessExport.ts`). `xlsxRead.ts` faz o caminho de volta: abre o zip (partes guardadas ou
+de Importar Clientes e "Exportar" de Clientes (os dois em `clientSheet.ts`) e pelo "Exportar" do Acesso
+Individual (`accessExport.ts`). `xlsxRead.ts` faz o caminho de volta: abre o zip (partes guardadas ou
 comprimidas, estas por `DecompressionStream`), acha a primeira aba pelo próprio arquivo e devolve as
 células como texto, sem biblioteca. `sheetFile.ts` escolhe o leitor pela extensão (.csv, .xlsx), diz o
 que mostrar quando o arquivo não abre e converte as datas de uma planilha, que o .xlsx guarda como
