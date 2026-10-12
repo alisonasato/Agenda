@@ -7,6 +7,7 @@ register('data:text/javascript,export function resolve(s, c, next) { return next
 
 const { ACCESS_EXPORT_HEADER, ACCESS_EXPORT_FILE, ACCESS_EXPORT_SHEET, intervalText, periodCount, accessExportRows } = await import("./accessExport.ts");
 const { INVITE_TEMPLATE_SHEET, inviteTemplateFile } = await import("./inviteTemplate.ts");
+const { CLIENT_TEMPLATE_SHEET, clientTemplateFile } = await import("./clientTemplate.ts");
 
 const TODAY = new Date(2026, 9, 9, 15, 0); // Friday 09/10/2026
 
@@ -176,6 +177,18 @@ const link = (c) => `https://exemplo.com.br/agendar/?cliente=${c.accessKey ?? c.
 
   assert.equal(inviteTemplateFile(new Date(2026, 9, 10)), "modelo_convite_clientes_2026-10-10.xlsx", "medido: a data do dia no nome");
   assert.equal(inviteTemplateFile(new Date(2026, 0, 5)), "modelo_convite_clientes_2026-01-05.xlsx", "zero à esquerda");
+}
+
+// The client import template, as measured: sheet Clientes, one header row of ten columns, nothing else.
+{
+  assert.equal(CLIENT_TEMPLATE_SHEET.name, "Clientes");
+  assert.deepEqual(CLIENT_TEMPLATE_SHEET.rows, [
+    ["cliente_id", "nome", "email", "login", "telefone", "cpf", "dt_nascimento", "genero", "nacionalidade", "profissao"],
+  ]);
+  assert.ok(!CLIENT_TEMPLATE_SHEET.widths && !CLIENT_TEMPLATE_SHEET.styledHeader, "sem larguras nem estilo, como o do original");
+
+  assert.equal(clientTemplateFile(new Date(2026, 9, 12)), "lista_clientes_2026-10-12.xlsx", "medido: a data do dia no nome");
+  assert.equal(clientTemplateFile(new Date(2026, 0, 5)), "lista_clientes_2026-01-05.xlsx", "zero à esquerda");
 }
 
 console.log("accessExport ok");

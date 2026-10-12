@@ -42,8 +42,8 @@ de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que 
 original também aceita, não é lido.
 
 `xlsx.ts` escreve um .xlsx de uma aba (um zip sem compressão de umas poucas partes XML, com CRC-32 e
-deslocamentos à mão), usado por "Modelo da planilha" (`inviteTemplate.ts`) e pelo "Exportar" do Acesso
-Individual (`accessExport.ts`). `xlsxRead.ts` faz o caminho de volta: abre o zip (partes guardadas ou
+deslocamentos à mão), usado por "Modelo da planilha" (`inviteTemplate.ts`), por "Baixar modelo (.xlsx)"
+de Importar Clientes (`clientTemplate.ts`) e pelo "Exportar" do Acesso Individual (`accessExport.ts`). `xlsxRead.ts` faz o caminho de volta: abre o zip (partes guardadas ou
 comprimidas, estas por `DecompressionStream`), acha a primeira aba pelo próprio arquivo e devolve as
 células como texto, sem biblioteca. `sheetFile.ts` escolhe o leitor pela extensão (.csv, .xlsx), diz o
 que mostrar quando o arquivo não abre e converte as datas de uma planilha, que o .xlsx guarda como

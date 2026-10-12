@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Modal } from "../shared/Modal";
 import { FilePicker } from "../shared/FilePicker";
 import { CheckCircleIcon, DangerCircleIcon, DownloadIcon, InfoIcon, UploadIcon } from "../shared/icons";
-import { download, toCsv } from "@/lib/seiri/csv";
+import { CLIENT_TEMPLATE_SHEET, clientTemplateFile } from "@/lib/seiri/clientTemplate";
+import { download } from "@/lib/seiri/csv";
 import { excelDate, sheetProblem, sheetRows } from "@/lib/seiri/sheetFile";
 import { fold } from "@/lib/seiri/select";
 import { nextId, update } from "@/lib/seiri/store";
+import { XLSX_TYPE, toXlsx } from "@/lib/seiri/xlsx";
 import type { Client } from "@/lib/seiri/types";
 
 /** The columns the original lists as chips, and the order its template uses. */
@@ -145,15 +147,10 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             className="hbtn hbtn--secondary hbtn--sm"
-            onClick={() =>
-              download(
-                "modelo-clientes.csv",
-                toCsv(COLUMNS, [["", "Maria Souza", "maria@exemplo.com.br", "+55 11 98888-1010", "", "", "Feminino", "Brasileira", ""]]),
-              )
-            }
+            onClick={() => download(clientTemplateFile(), toXlsx(CLIENT_TEMPLATE_SHEET), XLSX_TYPE)}
           >
             <DownloadIcon className="w-4 h-4" />
-            Baixar modelo (.csv)
+            Baixar modelo (.xlsx)
           </button>
         </div>
       </div>

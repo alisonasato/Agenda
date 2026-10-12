@@ -44,7 +44,15 @@ Cada linha traz os três botões do original, `btn-icon btn-icon-sm` de 36×36 c
   nascimento vem como número de dias (33010 é 17/05/1990) e é escrita "dd/mm/aaaa"; um texto já
   escrito fica como está. **.xls**, o formato binário antigo, avisa para salvar como .xlsx ou .csv, e um
   arquivo quebrado diz "Não foi possível ler a planilha." (alerta vermelho).
-- O original oferece "Baixar modelo (.xlsx)", gerado no servidor; o modelo do clone ainda sai em .csv.
+- "Baixar modelo (.xlsx)" baixa o mesmo arquivo que o original gera no servidor, medido em 12/10/2026
+  (`/clientes/criar_xlsx`, lido numa conta sem clientes): `lista_clientes_AAAA-MM-DD.xlsx` (data do dia),
+  aba "Clientes", **só a linha de cabeçalho**, sem exemplo, sem larguras e sem estilo, com dez colunas:
+  `cliente_id`, `nome`, `email`, **`login`**, `telefone`, `cpf`, `dt_nascimento`, `genero`,
+  `nacionalidade`, `profissao`. Os chips do modal listam só nove (sem `login`). O clone monta o arquivo no
+  navegador (`clientTemplate.ts`, `xlsx.ts`) e abre no `openpyxl`; a coluna `login` é ignorada ao
+  importar, porque cliente aqui não tem login. Em uma conta com clientes o original pode devolver a
+  lista deles no mesmo endereço (o nome diz "lista"); isso não foi visto. Antes o modelo saía em `.csv`,
+  com uma linha de exemplo que o original não tem.
 - A lista de regras do original traz uma linha que o clone não tem ("Preencha o campo username com o
   e-mail de acesso para também criar o login do cliente.") e o clone traz outra que o original não tem
   ("Quem já está na lista com o mesmo nome, e-mail ou CPF é ignorado."); clientes aqui não têm login.
