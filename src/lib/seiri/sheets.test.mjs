@@ -1,4 +1,4 @@
-// node src/lib/seiri/inviteSheet.test.mjs — reading the spreadsheet an invite is filled from, without a browser.
+// node src/lib/seiri/sheets.test.mjs — reading uploaded spreadsheets (.csv, .xlsx), without a browser.
 import assert from "node:assert/strict";
 import { register } from "node:module";
 
@@ -7,7 +7,8 @@ register('data:text/javascript,export function resolve(s, c, next) { return next
 
 const { fromXlsx, openZip } = await import("./xlsxRead.ts");
 const { toXlsx } = await import("./xlsx.ts");
-const { sheetRows, emailsFromRows, addEmails, splitEmails, UnsupportedSheet } = await import("./inviteSheet.ts");
+const { emailsFromRows, addEmails, splitEmails } = await import("./inviteSheet.ts");
+const { sheetRows, sheetProblem, excelDate, UnsupportedSheet } = await import("./sheetFile.ts");
 
 const bytes = (b64) => new Uint8Array(Buffer.from(b64, "base64"));
 const encode = (text) => new TextEncoder().encode(text);
@@ -208,4 +209,22 @@ const SHEET = (rows) => `<worksheet xmlns="http://schemas.openxmlformats.org/spr
   assert.deepEqual(addEmails("a@x.co, b@x.co", ["c@x.co"]).text, "a@x.co\nb@x.co\nc@x.co", "a lista vira uma por linha");
 }
 
-console.log("inviteSheet ok");
+// What the person is told when a file cannot be read, and the day counts an .xlsx keeps dates as.
+{
+  assert.match(sheetProblem(new UnsupportedSheet("xls")), /\.xls .*\.xlsx ou \.csv/);
+  assert.equal(sheetProblem(new UnsupportedSheet("txt")), "Use uma planilha .csv ou .xlsx.");
+  assert.equal(sheetProblem(new UnsupportedSheet("")), "Use uma planilha .csv ou .xlsx.");
+  assert.equal(sheetProblem(new Error("zip")), "Não foi possível ler a planilha.");
+  assert.equal(sheetProblem("x"), "Não foi possível ler a planilha.");
+
+  assert.equal(excelDate("36526"), "01/01/2000", "o dia 1 do ano 2000");
+  assert.equal(excelDate("32874"), "01/01/1990");
+  assert.equal(excelDate("45000"), "15/03/2023");
+  assert.equal(excelDate("10000"), "18/05/1927", "o primeiro valor de cinco dígitos");
+  assert.equal(excelDate("99999"), "13/10/2173", "e o último");
+  for (const text of ["1990", "01/01/1990", "1990-01-01", "01011990", "123456", "", "12 345", "36526.5", " 36526"]) {
+    assert.equal(excelDate(text), text, `"${text}" já é texto, fica como está`);
+  }
+}
+
+console.log("sheets ok");

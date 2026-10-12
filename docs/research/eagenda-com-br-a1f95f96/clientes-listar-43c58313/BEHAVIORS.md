@@ -38,8 +38,16 @@ Cada linha traz os três botões do original, `btn-icon btn-icon-sm` de 36×36 c
   agendamentos continuam lá, como no original, que desativa em vez de apagar.
 
 ## Diferenças em relação ao original
-- O original aceita .csv, .xlsx e .xls e oferece "Baixar modelo (.xlsx)"; o clone roda só no
-  navegador, então aceita .csv e o modelo sai em .csv.
+- O seletor do original aceita `.csv,.xlsx,.xls` (relido em 12/10/2026, junto com o texto "Planilha CSV,
+  XLSX ou XLS de até 5 MB — arraste aqui ou clique para escolher."), e o clone passou a aceitar o mesmo e
+  a ler **.csv e .xlsx** no navegador (`sheetFile.ts`, `xlsxRead.ts`). Numa planilha, a data de
+  nascimento vem como número de dias (33010 é 17/05/1990) e é escrita "dd/mm/aaaa"; um texto já
+  escrito fica como está. **.xls**, o formato binário antigo, avisa para salvar como .xlsx ou .csv, e um
+  arquivo quebrado diz "Não foi possível ler a planilha." (alerta vermelho).
+- O original oferece "Baixar modelo (.xlsx)", gerado no servidor; o modelo do clone ainda sai em .csv.
+- A lista de regras do original traz uma linha que o clone não tem ("Preencha o campo username com o
+  e-mail de acesso para também criar o login do cliente.") e o clone traz outra que o original não tem
+  ("Quem já está na lista com o mesmo nome, e-mail ou CPF é ignorado."); clientes aqui não têm login.
 - País, Estado e Cidade vêm do pacote de dados local (`useGeoCascade`), não de `/autocomplete/`.
 - O CEP é só um campo com máscara, como no original — não busca endereço.
 

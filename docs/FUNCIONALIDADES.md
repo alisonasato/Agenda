@@ -305,7 +305,7 @@ estado).
 
 - **Adicionar Cliente:** nome, e-mail, telefone, CPF, nascimento, gênero, nacionalidade, profissão,
   estado civil e endereço. Avisa quando já existe cadastro com o mesmo e-mail ou documento.
-- **Importar:** arquivo CSV com as colunas `cliente_id`, `nome`, `email`, `telefone`, `cpf`,
+- **Importar:** arquivo CSV ou XLSX (.xls, o formato antigo, não é lido) com as colunas `cliente_id`, `nome`, `email`, `telefone`, `cpf`,
   `dt_nascimento`, `genero`, `nacionalidade`, `profissao`; "Baixar modelo" traz o arquivo de
   exemplo. Linhas repetidas (mesmo nome, e-mail ou CPF) são ignoradas, e o resultado diz quantos
   entraram.

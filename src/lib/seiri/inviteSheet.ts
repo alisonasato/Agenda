@@ -1,17 +1,3 @@
-import { parseCsv } from "./csv";
-import { fromXlsx } from "./xlsxRead";
-
-/** The original's "Planilha (.csv, .xlsx)" also lists .xls in its file picker, a binary format nothing here reads. */
-export class UnsupportedSheet extends Error {}
-
-/** The rows of an uploaded spreadsheet, by what its name says it is. */
-export async function sheetRows(name: string, bytes: Uint8Array): Promise<string[][]> {
-  const ext = name.toLowerCase().match(/\.(\w+)$/)?.[1];
-  if (ext === "csv") return parseCsv(new TextDecoder().decode(bytes));
-  if (ext === "xlsx") return fromXlsx(bytes);
-  throw new UnsupportedSheet(ext === "xls" ? "xls" : (ext ?? ""));
-}
-
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**

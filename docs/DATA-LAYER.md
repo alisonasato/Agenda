@@ -14,7 +14,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `select.ts` | Formatação (`formatWhen`, `formatMoney`, `formatDuration`), o filtro de período `inPreset()` e o `expand()` que troca ids por nomes |
 | `booking.ts` | Os dias e horários que a tela pública de agendamento oferece |
 | `csv.ts` | Exportar e importar CSV (ver abaixo) |
-| `xlsx.ts`, `xlsxRead.ts`, `inviteSheet.ts` | Escrever e ler planilhas .xlsx; os e-mails de uma planilha de convite (ver abaixo) |
+| `xlsx.ts`, `xlsxRead.ts`, `sheetFile.ts`, `inviteSheet.ts` | Escrever e ler planilhas .xlsx; escolher o leitor pela extensão; os e-mails de uma planilha de convite (ver abaixo) |
 | `holidays.ts` | Feriados customizados e nacionais (ver abaixo) |
 | `limits.ts` | Limites de agendamentos e listas de bloqueio (ver abaixo) |
 | `sends.ts` | Os envios que Acompanhamento mostra (ver abaixo) |
@@ -38,15 +38,18 @@ CSV é gerado e lido no navegador (`src/lib/seiri/csv.ts`): separador `;`, com B
 pt-BR abrir os acentos. Exportam: Agendamentos, Clientes e o Relatório Consolidado (depois do aviso
 de LGPD). Importa: Clientes, pelo modal "Importar Clientes", com as colunas que o original pede
 (`cliente_id`, `nome`, `email`, `telefone`, `cpf`, `dt_nascimento`, `genero`, `nacionalidade`,
-`profissao`). O original também aceita .xlsx e .xls; aqui, sem servidor, só .csv.
+`profissao`). O arquivo pode ser .csv ou .xlsx (ver abaixo); .xls, o formato binário antigo que o
+original também aceita, não é lido.
 
 `xlsx.ts` escreve um .xlsx de uma aba (um zip sem compressão de umas poucas partes XML, com CRC-32 e
 deslocamentos à mão), usado por "Modelo da planilha" (`inviteTemplate.ts`) e pelo "Exportar" do Acesso
 Individual (`accessExport.ts`). `xlsxRead.ts` faz o caminho de volta: abre o zip (partes guardadas ou
 comprimidas, estas por `DecompressionStream`), acha a primeira aba pelo próprio arquivo e devolve as
-células como texto, sem biblioteca. `inviteSheet.ts` escolhe o leitor pela extensão (.csv, .xlsx) e
-tira os e-mails das linhas; o convite os junta à lista colada. Só o convite lê planilha: "Importar
-Clientes" ainda aceita só .csv. .xls, o formato binário antigo, não é lido.
+células como texto, sem biblioteca. `sheetFile.ts` escolhe o leitor pela extensão (.csv, .xlsx), diz o
+que mostrar quando o arquivo não abre e converte as datas de uma planilha, que o .xlsx guarda como
+número de dias (`excelDate()`, só valores de cinco dígitos). `inviteSheet.ts` tira os e-mails das
+linhas, e o convite os junta à lista colada; "Importar Clientes" lê as mesmas linhas pelo mesmo
+caminho. .xls, o formato binário antigo, não é lido.
 
 ## Onboarding
 O assistente não guarda nada próprio: ele junta os campos dos sete passos e, ao terminar, escreve

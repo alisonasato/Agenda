@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Modal } from "../shared/Modal";
 import { FilePicker } from "../shared/FilePicker";
-import { CheckCircleIcon, DownloadIcon, InfoIcon, UploadIcon } from "../shared/icons";
-import { download, parseCsv, toCsv } from "@/lib/seiri/csv";
+import { CheckCircleIcon, DangerCircleIcon, DownloadIcon, InfoIcon, UploadIcon } from "../shared/icons";
+import { download, toCsv } from "@/lib/seiri/csv";
+import { excelDate, sheetProblem, sheetRows } from "@/lib/seiri/sheetFile";
 import { fold } from "@/lib/seiri/select";
 import { nextId, update } from "@/lib/seiri/store";
 import type { Client } from "@/lib/seiri/types";
@@ -12,7 +13,7 @@ import type { Client } from "@/lib/seiri/types";
 /** The columns the original lists as chips, and the order its template uses. */
 const COLUMNS = ["cliente_id", "nome", "email", "telefone", "cpf", "dt_nascimento", "genero", "nacionalidade", "profissao"];
 
-type Notice = { tone: "accent" | "success"; text: string } | null;
+type Notice = { tone: "accent" | "success" | "danger"; text: string } | null;
 
 /** Reads the sheet into clients, skipping whoever the list already has. */
 function ingest(rows: string[][]) {
@@ -42,7 +43,7 @@ function ingest(rows: string[][]) {
         phone: known ? at(row, "telefone") : (row[2] ?? "").trim(),
         cpf: cpf || undefined,
         gender: gender.startsWith("f") ? "Feminino" : gender.startsWith("m") ? "Masculino" : undefined,
-        birthday: (known && at(row, "dt_nascimento")) || undefined,
+        birthday: (known && excelDate(at(row, "dt_nascimento"))) || undefined,
         nationality: (known && at(row, "nacionalidade")) || undefined,
         profession: (known && at(row, "profissao")) || undefined,
       };
@@ -61,7 +62,13 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
 
   const send = async () => {
     if (!file) return setNotice({ tone: "accent", text: "Selecione um arquivo CSV para importar." });
-    const { added, skipped, ignored } = ingest(parseCsv(await file.text()));
+    let rows: string[][];
+    try {
+      rows = await sheetRows(file.name, new Uint8Array(await file.arrayBuffer()));
+    } catch (e) {
+      return setNotice({ tone: "danger", text: sheetProblem(e) });
+    }
+    const { added, skipped, ignored } = ingest(rows);
     const parts = [`${added} ${added === 1 ? "cliente importado" : "clientes importados"}`];
     if (skipped) parts.push(`${skipped} já ${skipped === 1 ? "existia" : "existiam"}`);
     if (ignored) parts.push(`${ignored} ${ignored === 1 ? "linha ignorada" : "linhas ignoradas"}`);
@@ -90,7 +97,13 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
         {notice && (
           <div className={`halert halert--${notice.tone}`} role="alert">
             <span className="halert-indicator" aria-hidden="true">
-              {notice.tone === "success" ? <CheckCircleIcon className="w-5 h-5" /> : <InfoIcon className="w-5 h-5" />}
+              {notice.tone === "success" ? (
+                <CheckCircleIcon className="w-5 h-5" />
+              ) : notice.tone === "danger" ? (
+                <DangerCircleIcon className="w-5 h-5" />
+              ) : (
+                <InfoIcon className="w-5 h-5" />
+              )}
             </span>
             <div className="halert-content">
               <p className="halert-description">{notice.text}</p>
@@ -104,10 +117,10 @@ export function ImportModal({ onClose }: { onClose: () => void }) {
             name="csv_file"
             label="Arquivo"
             kind="sheet"
-            accept=".csv,text/csv"
+            accept=".csv,.xlsx,.xls"
             maxMb={5}
             onFile={setFile}
-            desc="Planilha CSV de até 5 MB — arraste aqui ou clique para escolher."
+            desc="Planilha CSV, XLSX ou XLS de até 5 MB — arraste aqui ou clique para escolher."
           />
         </div>
 

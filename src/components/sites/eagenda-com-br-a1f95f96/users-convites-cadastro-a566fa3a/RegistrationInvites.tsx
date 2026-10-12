@@ -1,7 +1,8 @@
 "use client";
 
 import { download } from "@/lib/seiri/csv";
-import { UnsupportedSheet, addEmails, emailsFromRows, sheetRows, splitEmails } from "@/lib/seiri/inviteSheet";
+import { addEmails, emailsFromRows, splitEmails } from "@/lib/seiri/inviteSheet";
+import { sheetProblem, sheetRows } from "@/lib/seiri/sheetFile";
 import { INVITE_TEMPLATE_SHEET, inviteTemplateFile } from "@/lib/seiri/inviteTemplate";
 import { XLSX_TYPE, toXlsx } from "@/lib/seiri/xlsx";
 import { useState, type CSSProperties } from "react";
@@ -270,13 +271,7 @@ function InviteModal({ invite, onClose }: { invite?: RegistrationInvite; onClose
       if (repeated) parts.push(`${repeated} já ${repeated === 1 ? "estava" : "estavam"} nela`);
       setSheetNotice({ tone: added ? "success" : "accent", text: `${parts.join(" · ")}.` });
     } catch (e) {
-      const text =
-        e instanceof UnsupportedSheet
-          ? e.message === "xls"
-            ? "Arquivos .xls não são lidos aqui. Salve a planilha como .xlsx ou .csv."
-            : "Use uma planilha .csv ou .xlsx."
-          : "Não foi possível ler a planilha.";
-      setSheetNotice({ tone: "danger", text });
+      setSheetNotice({ tone: "danger", text: sheetProblem(e) });
     }
   };
 
