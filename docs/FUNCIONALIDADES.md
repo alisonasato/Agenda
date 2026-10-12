@@ -354,8 +354,10 @@ e "Comentários" sai vazio. **Importar** não faz nada.
 - Crie um convite com uma lista de e-mails colada, o texto do e-mail, os campos que a pessoa deve
   preencher (e quais são obrigatórios), aprovação automática, criação de senha e validade do link.
 - Busca, filtro por status, editar e excluir (excluir apaga também os cadastros recebidos por ele).
-- **Modelo da planilha** baixa um .xlsx com as colunas `email` e `nome`. A planilha preenchida,
-  porém, não é lida: só a lista de e-mails colada entra no convite.
+- **Modelo da planilha** baixa um .xlsx com as colunas `email` e `nome`.
+- **Planilha (.csv, .xlsx):** ao escolher o arquivo, os e-mails dele entram na lista colada, sem
+  repetir, e um aviso diz quantos entraram. Vale o primeiro e-mail de cada linha, em qualquer
+  coluna. O nome não é guardado, e .xls (formato antigo) não é lido: salve como .xlsx ou .csv.
 
 ### Cadastros Recebidos
 

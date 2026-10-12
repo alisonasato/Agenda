@@ -26,5 +26,17 @@ e-mails, "Documento de identificação" marcado e aprovação automática gravou
   (data do dia), aba "Clientes", cabeçalho `email` / `nome` sem estilo, uma linha de exemplo, colunas
   com largura 34 e 28. O clone gera os mesmos bytes sempre (data fixa no zip), e o arquivo abre no
   `openpyxl`, a mesma biblioteca do servidor.
-- A planilha escolhida no modal não é lida; só a lista de e-mails colada entra no convite.
+- A planilha escolhida no modal é lida ao escolher o arquivo (`inviteSheet.ts`, `xlsxRead.ts`), e seus
+  e-mails entram na lista colada, sem repetir (nem trocando maiúsculas por minúsculas); no original o
+  formulário vai por `multipart/form-data` (`name="spreadsheet"`, `accept=".csv,.xlsx,.xls"`, lido
+  em 12/10/2026) e o servidor lê o arquivo ao salvar, o que não dá para ver daqui. Leitura do clone:
+  - de cada linha vale a primeira célula que parece e-mail (tem `@` e um ponto depois), em qualquer
+    coluna; isso pula o cabeçalho `email` / `nome` do modelo e lê planilhas com as colunas trocadas;
+  - `.csv` (`;` ou `,`, com BOM) e `.xlsx` (só a primeira aba do arquivo, na ordem do próprio
+    arquivo). `.xls`, o formato binário antigo que o seletor também aceita, avisa para salvar como
+    `.xlsx` ou `.csv`;
+  - o aviso embaixo do seletor diz quantos e-mails entraram e quantos já estavam na lista, ou que
+    nenhum foi achado, ou que o arquivo não pôde ser lido;
+  - a coluna `nome` não é guardada: o convite do clone só registra endereços, e o original usa o nome
+    em `{{nome_cliente}}` no texto do e-mail, que aqui nunca é enviado.
 - Nada é enviado: o status nunca sai de `DRAFT` sozinho, porque não há disparo de e-mail.

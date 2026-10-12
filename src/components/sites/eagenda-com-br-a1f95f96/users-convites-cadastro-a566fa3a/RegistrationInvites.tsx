@@ -1,6 +1,7 @@
 "use client";
 
 import { download } from "@/lib/seiri/csv";
+import { UnsupportedSheet, addEmails, emailsFromRows, sheetRows, splitEmails } from "@/lib/seiri/inviteSheet";
 import { INVITE_TEMPLATE_SHEET, inviteTemplateFile } from "@/lib/seiri/inviteTemplate";
 import { XLSX_TYPE, toXlsx } from "@/lib/seiri/xlsx";
 import { useState, type CSSProperties } from "react";
@@ -11,9 +12,11 @@ import { ScrollRail } from "../shared/ScrollRail";
 import { Select } from "../shared/Select";
 import {
   CheckboxMark,
+  CheckCircleIcon,
   CloseCircleIcon,
   DangerCircleIcon,
   GridPlusIcon,
+  InfoIcon,
   LetterIcon,
   PenIcon,
   SearchSolidIcon,
@@ -253,6 +256,29 @@ function InviteModal({ invite, onClose }: { invite?: RegistrationInvite; onClose
   const [autoApprove, setAutoApprove] = useState(invite?.autoApprove ?? false);
   const [askPassword, setAskPassword] = useState(invite?.askPassword ?? true);
   const [expires, setExpires] = useState(String(invite?.expiresInDays ?? 7));
+  const [sheetNotice, setSheetNotice] = useState<{ tone: "success" | "accent" | "danger"; text: string } | null>(null);
+
+  /** The original reads the spreadsheet on its server when the invite is saved; here it is read on pick, and its e-mails join the list above. */
+  const readSheet = async (file: File | null) => {
+    if (!file) return setSheetNotice(null);
+    try {
+      const found = emailsFromRows(await sheetRows(file.name, new Uint8Array(await file.arrayBuffer())));
+      if (!found.length) return setSheetNotice({ tone: "accent", text: "Nenhum e-mail encontrado na planilha." });
+      const { text, added, repeated } = addEmails(emails, found);
+      setEmails(text);
+      const parts = [`${added} ${added === 1 ? "e-mail adicionado" : "e-mails adicionados"} à lista`];
+      if (repeated) parts.push(`${repeated} já ${repeated === 1 ? "estava" : "estavam"} nela`);
+      setSheetNotice({ tone: added ? "success" : "accent", text: `${parts.join(" · ")}.` });
+    } catch (e) {
+      const text =
+        e instanceof UnsupportedSheet
+          ? e.message === "xls"
+            ? "Arquivos .xls não são lidos aqui. Salve a planilha como .xlsx ou .csv."
+            : "Use uma planilha .csv ou .xlsx."
+          : "Não foi possível ler a planilha.";
+      setSheetNotice({ tone: "danger", text });
+    }
+  };
 
   const toggle = (list: string[], set: (next: string[]) => void, id: string) => set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
 
@@ -262,10 +288,7 @@ function InviteModal({ invite, onClose }: { invite?: RegistrationInvite; onClose
       const row: RegistrationInvite = {
         id: invite?.id ?? nextId("iv", d.invites),
         name: name.trim(),
-        emails: emails
-          .split(/[\n,;]/)
-          .map((e) => e.trim())
-          .filter(Boolean),
+        emails: splitEmails(emails),
         templateId,
         fields,
         // A field only carries "Obrigatório" while it is still asked for.
@@ -349,7 +372,24 @@ function InviteModal({ invite, onClose }: { invite?: RegistrationInvite; onClose
                 />
                 <p className="hinput-help">Cole uma lista de emails, um por linha.</p>
               </div>
-              <FilePicker name="spreadsheet" label="Planilha (.csv, .xlsx)" kind="sheet" accept=".csv,.xlsx,.xls" maxMb={5} />
+              <FilePicker name="spreadsheet" label="Planilha (.csv, .xlsx)" kind="sheet" accept=".csv,.xlsx,.xls" maxMb={5} onFile={(f) => void readSheet(f)} />
+              {sheetNotice && (
+                <div className={`halert halert--${sheetNotice.tone}`} role="alert">
+                  <span className="halert-indicator" aria-hidden="true">
+                    {sheetNotice.tone === "success" ? (
+                      <CheckCircleIcon className="w-5 h-5" />
+                    ) : sheetNotice.tone === "danger" ? (
+                      <DangerCircleIcon className="w-5 h-5" />
+                    ) : (
+                      <InfoIcon className="w-5 h-5" />
+                    )}
+                  </span>
+                  <div className="halert-content">
+                    <p className="halert-description">{sheetNotice.text}</p>
+                  </div>
+                  <div className="halert-actions" />
+                </div>
+              )}
             </div>
           </div>
         </section>
