@@ -13,6 +13,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `slots.ts` | Os slots de 30 minutos do calendário: `slotsOf()`, `slotColor()`, `hourRange()` |
 | `select.ts` | Formatação (`formatWhen`, `formatMoney`, `formatDuration`), o filtro de período `inPreset()` e o `expand()` que troca ids por nomes |
 | `booking.ts` | Os dias e horários que a tela pública de agendamento oferece |
+| `bookingUrl.ts` | Os parâmetros do endereço da tela pública: o passo em que a pessoa está (ver abaixo) |
 | `csv.ts` | Exportar e importar CSV (ver abaixo) |
 | `xlsx.ts`, `xlsxRead.ts`, `sheetFile.ts`, `inviteSheet.ts` | Escrever e ler planilhas .xlsx; escolher o leitor pela extensão; os e-mails de uma planilha de convite (ver abaixo) |
 | `holidays.ts` | Feriados customizados e nacionais (ver abaixo) |
@@ -268,6 +269,11 @@ agenda. Ela não inventa dados nenhum — lê `bookingScreen` (nome e mensagem d
 `units`, `agendas`, `services`, `agendaOptions` (quais campos pedir, senha, recorrência) e
 `agendaRules` (antecedência mínima e máxima), e monta o calendário com o mesmo `slotsOf` do painel,
 de modo que horários, bloqueios e feriados valem igual dos dois lados.
+
+O passo em que a pessoa está não é estado da tela: é o endereço (`bookingUrl.ts`). Unidade, agenda
+(pelo identificador, ou pelo id quando não há), serviço, dia e hora ficam na query string; a tela lê o
+endereço a cada renderização e cada escolha empurra uma entrada no histórico, de modo que o Voltar e o
+Avançar do navegador, recarregar e colar o endereço reconstroem o passo sem mais nada.
 
 Confirmar grava um cliente em `clients` e um agendamento em `appointments` com status PENDING, que
 é como o original deixa um agendamento externo até a agenda aceitá-lo — ele aparece em seguida na

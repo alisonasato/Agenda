@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -27,11 +27,11 @@ import {
   Tag,
   User,
 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { MONTHS, WEEKDAYS_SHORT, addMonths } from "../shared/calendarDates";
 import { dateStr, formFields, monthCells, optionsOf, publicAgendas, rulesOf, servicesOf, timesOf } from "@/lib/seiri/booking";
+import { flowQuery, readFlow, startsFlow, type Flow } from "@/lib/seiri/bookingUrl";
 import { nextId, update, useData } from "@/lib/seiri/store";
-import type { Appointment, Client } from "@/lib/seiri/types";
+import type { Agenda, Appointment, Client } from "@/lib/seiri/types";
 
 const STEPS = ["Agenda", "Data e Hora", "Seus Dados"];
 const WEEKDAY_CHIPS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -89,24 +89,44 @@ function StepCard({ title, context, onBack, children }: { title: string; context
   );
 }
 
+const addressListeners = new Set<() => void>();
+
+/** The address's query string, where the flow lives: re-read when a step pushes a new one and on the browser's Back and Forward. */
+function subscribeAddress(onChange: () => void) {
+  addressListeners.add(onChange);
+  window.addEventListener("popstate", onChange);
+  return () => {
+    addressListeners.delete(onChange);
+    window.removeEventListener("popstate", onChange);
+  };
+}
+const readAddress = () => window.location.search;
+
+/** Moves the flow to `patch` on top of what the address holds, as a history entry the Back button can return to. */
+function goTo(patch: Partial<Flow>) {
+  const { pathname, search } = window.location;
+  const query = flowQuery(search, { ...readFlow(search), ...patch });
+  const url = pathname + (query ? `?${query}` : "");
+  if (url !== pathname + search) window.history.pushState(null, "", url);
+  addressListeners.forEach((listener) => listener());
+}
+
+/** What an agenda is called in the address: its identifier, or its id when it has none. */
+const agendaKey = (a: Agenda) => a.slug || a.id;
+const CLEARED = { agenda: "", servico: "", data: "", hora: "" };
+
 /** The public booking screen, the page a client opens from an agenda's link. */
 export function BookingPage() {
   const data = useData();
-  // An agenda's own link carries ?agenda=<identificador>; it opens the flow already on that agenda.
-  const linked = useSearchParams().get("agenda");
-  const linkedId = data.agendas.find((a) => a.slug === linked)?.id ?? "";
+  // The flow (unit, agenda, service, day, time) lives in the address, so each step has a link and Back walks them.
+  // An agenda's own link carries ?agenda=<identificador> and opens the flow already on that agenda.
+  const flow = readFlow(useSyncExternalStore(subscribeAddress, readAddress, () => ""));
   const [now] = useState(() => new Date());
   const [started, setStarted] = useState(false);
-  const [unitId, setUnitId] = useState<string | null>(null);
-  const [mode, setMode] = useState<Mode>("agenda");
-  // "-" is the agenda the visitor cleared, which the link must not put back.
-  const [picked, setAgendaId] = useState("");
-  const agendaId = picked === "-" ? "" : picked || linkedId;
-  const [serviceId, setServiceId] = useState("");
-  const [month, setMonth] = useState(() => new Date(now.getFullYear(), now.getMonth(), 1));
-  const [day, setDay] = useState<Date | null>(null);
-  const [time, setTime] = useState("");
-  const [onForm, setOnForm] = useState(false);
+  // "Todas as unidades" is not in the address, as in the original, where it is a unit with no id.
+  const [allUnits, setAllUnits] = useState(false);
+  // The month the visitor paged to, good only while the day in the address is the one it was paged on.
+  const [paged, setPaged] = useState<{ month: Date; day: string } | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [password, setPassword] = useState("");
   const [recurring, setRecurring] = useState(false);
@@ -121,32 +141,43 @@ export function BookingPage() {
   const orgMessage = String(screen.mensagem || "Agende seu atendimento de forma rápida e prática.");
 
   const units = data.units;
+  const unit = units.find((u) => u.id === flow.unidade) ?? null;
+  const unitId = unit ? unit.id : allUnits ? "all" : null;
+  const mode: Mode = flow.modo === "servico" ? "service" : flow.modo === "data" ? "date" : "agenda";
   const all = publicAgendas(data);
-  const agendas = unitId && unitId !== "all" ? all.filter((a) => a.unitId === unitId) : all;
+  const agendas = unit ? all.filter((a) => a.unitId === unit.id) : all;
   const needsUnit = units.length > 0 && unitId === null;
 
-  const agenda = agendas.find((a) => a.id === agendaId) ?? null;
+  // A lone agenda, and a lone service, are chosen for the visitor, as the original does.
+  const agenda = needsUnit ? null : (agendas.find((a) => agendaKey(a) === flow.agenda) ?? (agendas.length === 1 ? agendas[0] : null));
   const options = agenda ? optionsOf(data, agenda.id) : null;
   const rules = agenda ? rulesOf(data, agenda.id) : null;
   const subTypes = agenda ? servicesOf(data, agenda.id) : [];
-  const service = subTypes.find((s) => s.id === serviceId) ?? null;
+  const service = subTypes.find((s) => s.id === flow.servico) ?? (subTypes.length === 1 ? subTypes[0] : null);
   const allServices = data.services.filter((s) => agendas.some((a) => s.agendaIds.includes(a.id))).sort((a, b) => a.order - b.order);
 
   const needsService = Boolean(agenda && subTypes.length > 0 && !service);
   const calendarReady = Boolean(agenda && !needsService);
-  const cells = agenda ? monthCells(data, agenda.id, month, now) : [];
-  const times = agenda && day ? timesOf(data, agenda.id, day, now) : [];
+  const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  // A day or time in the address that the agenda cannot offer reads as not chosen.
+  const chosenDay = flow.data ? new Date(`${flow.data}T00:00:00`) : null;
+  const times = agenda && calendarReady && chosenDay ? timesOf(data, agenda.id, chosenDay, now) : [];
+  const day = times.length > 0 ? chosenDay : null;
+  const time = (day && times.find((t) => t.label === flow.hora)?.id) || "";
+  const onForm = Boolean(time);
+  const month = paged && paged.day === flow.data ? paged.month : day ? new Date(day.getFullYear(), day.getMonth(), 1) : thisMonth;
+  const cells = agenda && calendarReady ? monthCells(data, agenda.id, month, now) : [];
 
   const duration = service?.duration || rules?.duration || 30;
-  const unitLabel = unitId && unitId !== "all" ? (units.find((u) => u.id === unitId)?.name ?? "") : "";
-  const canGoBack = month > new Date(now.getFullYear(), now.getMonth(), 1);
+  const unitLabel = unit?.name ?? "";
+  const canGoBack = month > thisMonth;
 
-  const resetSelection = () => {
-    setAgendaId("-");
-    setServiceId("");
-    setDay(null);
-    setTime("");
+  const resetSelection = () => goTo(CLEARED);
+  const chooseUnit = (id: string) => {
+    setAllUnits(false);
+    goTo({ unidade: id, ...CLEARED });
   };
+  const browseBy = (modo: Flow["modo"]) => goTo({ modo, ...CLEARED });
 
   const submit = () => {
     if (!agenda || !day || !time) return;
@@ -190,7 +221,7 @@ export function BookingPage() {
     });
   };
 
-  if (!started && !agendaId && !booked) {
+  if (!started && !startsFlow(flow) && !booked) {
     return (
       <>
         <div className="booking-landing-wrap">
@@ -208,6 +239,8 @@ export function BookingPage() {
     );
   }
 
+  // The receipt is of what was booked, whatever the address says now.
+  const bookedService = booked ? data.services.find((s) => s.id === booked.serviceId) : undefined;
   const step = booked ? 3 : onForm ? 3 : calendarReady ? 2 : 1;
 
   return (
@@ -220,7 +253,7 @@ export function BookingPage() {
             <StepCard title="Escolha a Unidade" context={<span>Onde você deseja ser atendido?</span>}>
               <div className="grid grid-cols-1 gap-2.5">
                 {units.map((u) => (
-                  <button key={u.id} type="button" className="booking-unit-card" onClick={() => setUnitId(u.id)}>
+                  <button key={u.id} type="button" className="booking-unit-card" onClick={() => chooseUnit(u.id)}>
                     <span className="booking-unit-card-avatar">{u.name.charAt(0).toUpperCase()}</span>
                     <span className="booking-unit-card-info">
                       <span className="booking-unit-card-title">{u.name}</span>
@@ -245,7 +278,15 @@ export function BookingPage() {
                     </span>
                   </button>
                 ))}
-                <button type="button" className="booking-unit-card" style={{ borderStyle: "dashed" }} onClick={() => setUnitId("all")}>
+                <button
+                  type="button"
+                  className="booking-unit-card"
+                  style={{ borderStyle: "dashed" }}
+                  onClick={() => {
+                    setAllUnits(true);
+                    goTo({ unidade: "", ...CLEARED });
+                  }}
+                >
                   <span className="booking-unit-card-avatar" style={{ background: "var(--iframe-muted)" }}>
                     <LayoutGrid className="w-6 h-6" />
                   </span>
@@ -260,36 +301,15 @@ export function BookingPage() {
 
           {!needsUnit && !calendarReady && !onForm && !booked && (
             <div className="booking-tabs booking-step-anim">
-              <button
-                type="button"
-                className={`booking-tab${mode === "agenda" ? " active" : ""}`}
-                onClick={() => {
-                  setMode("agenda");
-                  resetSelection();
-                }}
-              >
+              <button type="button" className={`booking-tab${mode === "agenda" ? " active" : ""}`} onClick={() => browseBy("")}>
                 <CalendarDays className="w-3.5 h-3.5 inline -mt-0.5" /> Por Agenda
               </button>
               {allServices.length > 0 && (
-                <button
-                  type="button"
-                  className={`booking-tab${mode === "service" ? " active" : ""}`}
-                  onClick={() => {
-                    setMode("service");
-                    resetSelection();
-                  }}
-                >
+                <button type="button" className={`booking-tab${mode === "service" ? " active" : ""}`} onClick={() => browseBy("servico")}>
                   <List className="w-3.5 h-3.5 inline -mt-0.5" /> Por Serviço
                 </button>
               )}
-              <button
-                type="button"
-                className={`booking-tab${mode === "date" ? " active" : ""}`}
-                onClick={() => {
-                  setMode("date");
-                  resetSelection();
-                }}
-              >
+              <button type="button" className={`booking-tab${mode === "date" ? " active" : ""}`} onClick={() => browseBy("data")}>
                 <CalendarSearch className="w-3.5 h-3.5 inline -mt-0.5" /> Por Data
               </button>
             </div>
@@ -306,13 +326,25 @@ export function BookingPage() {
                   </span>
                 ) : undefined
               }
-              onBack={units.length ? () => setUnitId(null) : undefined}
+              onBack={
+                units.length
+                  ? () => {
+                      setAllUnits(false);
+                      goTo({ unidade: "", ...CLEARED });
+                    }
+                  : undefined
+              }
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {agendas.map((a) => {
                   const subs = servicesOf(data, a.id);
                   return (
-                    <button key={a.id} type="button" className="booking-agenda-card" onClick={() => setAgendaId(a.id)}>
+                    <button
+                      key={a.id}
+                      type="button"
+                      className="booking-agenda-card"
+                      onClick={() => goTo({ agenda: agendaKey(a), servico: "", data: "", hora: "" })}
+                    >
                       <span className="booking-agenda-card-avatar">{a.name.charAt(0).toUpperCase()}</span>
                       <span className="booking-agenda-card-info">
                         <span className="booking-agenda-card-title">{a.name}</span>
@@ -336,7 +368,17 @@ export function BookingPage() {
           )}
 
           {!needsUnit && mode === "service" && !agenda && (
-            <StepCard title="Escolha o Serviço" onBack={units.length ? () => setUnitId(null) : undefined}>
+            <StepCard
+              title="Escolha o Serviço"
+              onBack={
+                units.length
+                  ? () => {
+                      setAllUnits(false);
+                      goTo({ unidade: "", ...CLEARED });
+                    }
+                  : undefined
+              }
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {allServices.map((s) => (
                   <button
@@ -344,8 +386,8 @@ export function BookingPage() {
                     type="button"
                     className="booking-service-card"
                     onClick={() => {
-                      setServiceId(s.id);
-                      setAgendaId(s.agendaIds.find((id) => agendas.some((a) => a.id === id)) ?? "");
+                      const offers = agendas.find((a) => s.agendaIds.includes(a.id));
+                      goTo({ servico: s.id, agenda: offers ? agendaKey(offers) : "", data: "", hora: "" });
                     }}
                   >
                     <span className="booking-service-card-icon">
@@ -376,7 +418,7 @@ export function BookingPage() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {subTypes.map((s) => (
-                  <button key={s.id} type="button" className="booking-service-card" onClick={() => setServiceId(s.id)}>
+                  <button key={s.id} type="button" className="booking-service-card" onClick={() => goTo({ servico: s.id, data: "", hora: "" })}>
                     <span className="booking-service-card-icon">
                       <Tag className="w-4 h-4" />
                     </span>
@@ -434,7 +476,7 @@ export function BookingPage() {
                         type="button"
                         disabled={!canGoBack}
                         className={`p-1.5 rounded-lg transition-colors text-slate-600 ${canGoBack ? "hover:bg-slate-100" : "opacity-30 cursor-default"}`}
-                        onClick={() => setMonth(addMonths(month, -1))}
+                        onClick={() => setPaged({ month: addMonths(month, -1), day: flow.data })}
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
@@ -444,7 +486,7 @@ export function BookingPage() {
                       <button
                         type="button"
                         className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
-                        onClick={() => setMonth(addMonths(month, 1))}
+                        onClick={() => setPaged({ month: addMonths(month, 1), day: flow.data })}
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -477,10 +519,7 @@ export function BookingPage() {
                                 ]
                                   .filter(Boolean)
                                   .join(" ")}
-                                onClick={() => {
-                                  setDay(cell.date);
-                                  setTime("");
-                                }}
+                                onClick={() => goTo({ data: cell.dateStr, hora: "" })}
                               >
                                 {cell.day}
                               </button>
@@ -550,10 +589,7 @@ export function BookingPage() {
                               key={t.id}
                               type="button"
                               className={`iframe-slot py-3 px-3 rounded-lg text-sm text-center font-medium${time === t.id ? " selected" : ""}`}
-                              onClick={() => {
-                                setTime(t.id);
-                                setOnForm(true);
-                              }}
+                              onClick={() => goTo({ hora: t.label })}
                             >
                               {t.label}
                             </button>
@@ -596,7 +632,7 @@ export function BookingPage() {
                       )}
                     </div>
                   </div>
-                  <button type="button" className="booking-summary-change" onClick={() => setOnForm(false)}>
+                  <button type="button" className="booking-summary-change" onClick={() => goTo({ hora: "" })}>
                     <ArrowLeft className="w-3.5 h-3.5" />
                     Alterar
                   </button>
@@ -699,7 +735,7 @@ export function BookingPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <button type="button" className="booking-back-btn" onClick={() => setOnForm(false)}>
+                  <button type="button" className="booking-back-btn" onClick={() => goTo({ hora: "" })}>
                     <ArrowLeft className="w-4 h-4" />
                     Voltar
                   </button>
@@ -733,19 +769,19 @@ export function BookingPage() {
                 <div className="booking-receipt-row">
                   <Calendar />
                   <span className="lbl">Agenda:</span>
-                  <span className="val">{agenda?.name}</span>
+                  <span className="val">{data.agendas.find((a) => a.id === booked.agendaId)?.name}</span>
                 </div>
                 <div className="booking-receipt-row">
                   <Clock />
                   <span className="val">
-                    {day && longDay(day)} • {booked.start.slice(11, 16)}
+                    {longDay(new Date(`${booked.start.slice(0, 10)}T00:00:00`))} • {booked.start.slice(11, 16)}
                   </span>
                 </div>
-                {service?.price != null && (
+                {bookedService?.price != null && (
                   <div className="booking-receipt-row">
                     <Banknote />
                     <span className="lbl">Valor:</span>
-                    <span className="val">{money(service.price)}</span>
+                    <span className="val">{money(bookedService.price)}</span>
                   </div>
                 )}
                 <div className="booking-receipt-row">

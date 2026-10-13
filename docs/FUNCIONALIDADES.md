@@ -644,7 +644,13 @@ faz login em lugar nenhum; nenhum e-mail de verificação é enviado.
 O agendamento entra como **Pendente**, aparece na lista e no calendário do painel, e o cliente é
 cadastrado.
 
-**Limites:** acompanhantes, pagamento e formulários de pesquisa ficam de fora. As listas de acesso e
+**Cada etapa tem o seu endereço.** A unidade, a agenda, o serviço, o dia e o horário que a pessoa
+escolheu ficam na barra de endereço (`?agenda=...&servico=...&data=2026-10-13&hora=09:00`): o botão
+Voltar do navegador volta uma etapa, o Avançar vai de novo, e recarregar a página ou colar o endereço
+reabre a mesma etapa. Com uma agenda só (ou um serviço só), a tela já a traz escolhida.
+
+**Limites:** "Por Data" ainda mostra as agendas, como "Por Agenda"; o recibo não tem endereço próprio;
+acompanhantes, pagamento e formulários de pesquisa ficam de fora. As listas de acesso e
 as listas de bloqueio ainda não são verificadas aqui. A aparência não segue a Tela de Agendamento.
 
 ---

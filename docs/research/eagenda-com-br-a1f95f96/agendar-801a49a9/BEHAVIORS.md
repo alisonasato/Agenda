@@ -17,6 +17,22 @@
 - Confirmar cria o cliente em `data.clients` e o agendamento em `data.appointments` com status
   PENDING, que é como o original deixa um agendamento vindo de fora até a agenda aceitar.
 - O link de cada agenda (`?agenda=<identificador>`) abre a tela já naquela agenda.
+- **Cada etapa tem um endereço, e o Voltar/Avançar do navegador percorre as etapas.** Lido no script da
+  página do original em 12/10/2026 (`_commitUrl`, `_restoreFromUrl`, `popstate`): o fluxo fica na query
+  string, com `unidade`, `modo` (`servico` ou `data`; "Por Agenda" é o padrão e não se escreve), `agenda`
+  (o identificador), `servico`, `data` (AAAA-MM-DD) e `hora` (HH:MM, que é também a etapa do formulário).
+  Qualquer um deles pula a tela de boas-vindas. Cada escolha, e cada "Voltar" ou "Alterar" da tela, grava uma
+  entrada nova no histórico; reabrir, recarregar ou colar o endereço reconstrói o passo. Uma data ou hora
+  que a agenda não oferece (ou que não existe, como 30/02) vale como não escolhida e a tela fica na etapa
+  anterior. Outros parâmetros do endereço (a chave `?cliente=` do Acesso Individual) ficam como estão.
+  `bookingUrl.ts` lê e escreve esses parâmetros; a tela os deriva do endereço, sem estado duplicado.
+- **Uma única agenda, ou um único serviço, vem escolhido**, como no original (`_autoSelectAgenda`): com uma
+  agenda só, a tela vai direto ao serviço ou ao calendário.
+- O recibo mostra o que foi agendado, não o que o endereço diz depois: o Voltar do navegador depois de
+  confirmar não troca a agenda nem o dia do recibo (o original também ignora o `popstate` depois de enviar).
+- Diferenças deste endereço: o clone guarda o `modo` mesmo com a agenda escolhida (o original o tira, e o
+  restabelece ao "Alterar"); "Todas as unidades" fica fora do endereço, como no original, mas não é
+  zerada pelo Voltar; uma agenda sem identificador entra pelo id.
 
 ## Verificação
 No build estático, em 1280×900: "Agendar" abre o passo 1 com as abas e as duas agendas; escolher a
@@ -26,6 +42,18 @@ lista 07:00–17:30; 09:00 leva ao formulário com o resumo "Segunda-feira, 5 de
 Consulta inicial · R$ 180,00" e os campos Nome/E-mail/Telefone; confirmar grava o cliente e o
 agendamento PENDING e mostra o recibo com agenda, dia, valor e código. Em 375×812 tudo empilha sem
 rolagem horizontal. `?agenda=agenda-principal` pula a tela inicial e a escolha da agenda.
+
+## Lacunas conhecidas desta tela
+Achadas ao comparar a lista de funções do script do original com a tela do clone:
+- **"Por Data"** é só um rótulo: mostra a mesma lista de agendas de "Por Agenda". O original tem um
+  calendário que junta os dias livres de todas as agendas (`buildDateFirstCalendar`, `selectDateFirst`).
+- **O recibo não tem endereço próprio.** O original manda para `/<org>/<chave secreta>/` com `#recibo`
+  (e `#acompanhantes`, `#pagamento`), e recarregar volta ao recibo; aqui, recarregar volta ao formulário.
+- **Cancelar e editar o agendamento** pelo recibo (`cancelAppointment`, `openEdit`) e responder à pesquisa.
+- **Listas de bloqueio, limites de agendamentos e listas de acesso** não são verificados aqui, só na tela
+  Novo Agendamento do painel.
+- **A aparência da Tela de Agendamento** (modelo, cores, logotipo) não vale aqui, só o nome e a mensagem.
+- Sem descrição, imagem nem "Ler mais" nas agendas (`openDescModal`), porque o clone não as guarda.
 
 ## Diferenças em relação ao original
 - No original o formulário de dados, o recibo e os formulários de pesquisa vêm prontos do servidor;
