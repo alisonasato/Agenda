@@ -19,6 +19,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `holidays.ts` | Feriados customizados e nacionais (ver abaixo) |
 | `limits.ts` | Limites de agendamentos e listas de bloqueio (ver abaixo) |
 | `publicBooking.ts` | Quem a tela pública deixa agendar: o cliente conhecido e a recusa por bloqueio ou limite |
+| `access.ts` | As listas de acesso na tela pública: identificar o cliente e dizer se a lista deixa agendar (ver abaixo) |
 | `sends.ts` | Os envios que Acompanhamento mostra (ver abaixo) |
 | `agendas.ts` | `removeAgenda()`: o que sai junto quando uma agenda é excluída (ver abaixo) |
 
@@ -164,6 +165,16 @@ páginas de cada integração não foram clonadas, é o próprio card que liga e
 ## Listas de acesso
 `data.accessLists` guarda as listas de controle de acesso: o tipo de chave, os limites por período,
 as agendas e os serviços que a lista alcança (vazio = todos) e os clientes convidados.
+
+A tela pública as aplica nas agendas com `authorizedOnly` (`access.ts`). Uma lista vale quando está ligada,
+cobre a agenda e o serviço e não passou de "Expira em"; o cliente é quem o link próprio (`?cliente=`, a
+`accessKey` ou o id) nomeia ou quem a chave digitada abre, comparada pelo tipo da lista (e-mail sem caixa,
+telefone sem o +55, CPF sem máscara, passaporte, e a chave de acesso para contrato e código de convite).
+"Agendar até" fecha os dias depois dele, e o máximo por período é contado como um limite por cliente com o
+próprio `exceeded` de `limits.ts`, sobre as agendas e serviços da lista ("Sem Prazo" conta tudo). Quem está
+em várias listas agenda se uma delas deixa. O original não mostrou nada disso na página pública (roda no
+servidor e a conta de referência não tem agenda assim), então a leitura é do clone. O seed antigo escrevia
+"CPF" e "MONTH"; `access.ts` os lê como "PIN" e "MES".
 
 ## Indicações
 `data.referrals` guarda quem se cadastrou pelo link de indicação, com o status, as duas recompensas

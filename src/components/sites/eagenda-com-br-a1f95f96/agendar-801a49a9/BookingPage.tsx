@@ -30,6 +30,7 @@ import {
 import { MONTHS, WEEKDAYS_SHORT, addMonths } from "../shared/calendarDates";
 import { dateStr, formFields, monthCells, optionsOf, publicAgendas, rulesOf, servicesOf, timesOf } from "@/lib/seiri/booking";
 import { flowQuery, readFlow, startsFlow, type Flow } from "@/lib/seiri/bookingUrl";
+import { accessRefusal, clientByLink, denied, identify, isListed, prompt } from "@/lib/seiri/access";
 import { knownClient, refusalFor } from "@/lib/seiri/publicBooking";
 import { nextId, update, useData } from "@/lib/seiri/store";
 import type { Agenda, Appointment, Client } from "@/lib/seiri/types";
@@ -121,11 +122,16 @@ export function BookingPage() {
   const data = useData();
   // The flow (unit, agenda, service, day, time) lives in the address, so each step has a link and Back walks them.
   // An agenda's own link carries ?agenda=<identificador> and opens the flow already on that agenda.
-  const flow = readFlow(useSyncExternalStore(subscribeAddress, readAddress, () => ""));
+  const search = useSyncExternalStore(subscribeAddress, readAddress, () => "");
+  const flow = readFlow(search);
   const [now] = useState(() => new Date());
   const [started, setStarted] = useState(false);
   // "Todas as unidades" is not in the address, as in the original, where it is a unit with no id.
   const [allUnits, setAllUnits] = useState(false);
+  // For an agenda that only authorized clients may book: the key the visitor typed, who it opened, and what it was told.
+  const [typedKey, setTypedKey] = useState("");
+  const [identifiedId, setIdentifiedId] = useState("");
+  const [accessError, setAccessError] = useState("");
   // The month the visitor paged to, good only while the day in the address is the one it was paged on.
   const [paged, setPaged] = useState<{ month: Date; day: string } | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
@@ -159,15 +165,25 @@ export function BookingPage() {
 
   const needsService = Boolean(agenda && subTypes.length > 0 && !service);
   const calendarReady = Boolean(agenda && !needsService);
+
+  // "Somente Agendamento Autorizado": the visitor is who the personal link (?cliente=) names, or who the key they typed
+  // opened, and must be on a list in force for this agenda and service. Until then neither calendar nor form shows.
+  const accessSlot = agenda ? { agendaId: agenda.id, serviceId: service?.id ?? "" } : null;
+  const restricted = Boolean(calendarReady && accessSlot && options?.authorizedOnly);
+  const visitor = restricted
+    ? (clientByLink(data, new URLSearchParams(search).get("cliente") ?? "") ?? data.clients.find((c) => c.id === identifiedId && !c.inactive) ?? null)
+    : null;
+  const needsAccess = restricted && !(visitor && accessSlot && isListed(data, visitor, accessSlot, now));
+  const canBook = calendarReady && !needsAccess;
   const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   // A day or time in the address that the agenda cannot offer reads as not chosen.
   const chosenDay = flow.data ? new Date(`${flow.data}T00:00:00`) : null;
-  const times = agenda && calendarReady && chosenDay ? timesOf(data, agenda.id, chosenDay, now) : [];
+  const times = agenda && canBook && chosenDay ? timesOf(data, agenda.id, chosenDay, now) : [];
   const day = times.length > 0 ? chosenDay : null;
   const time = (day && times.find((t) => t.label === flow.hora)?.id) || "";
   const onForm = Boolean(time);
   const month = paged && paged.day === flow.data ? paged.month : day ? new Date(day.getFullYear(), day.getMonth(), 1) : thisMonth;
-  const cells = agenda && calendarReady ? monthCells(data, agenda.id, month, now) : [];
+  const cells = agenda && canBook ? monthCells(data, agenda.id, month, now) : [];
 
   const duration = service?.duration || rules?.duration || 30;
   const unitLabel = unit?.name ?? "";
@@ -180,25 +196,34 @@ export function BookingPage() {
   };
   const browseBy = (modo: Flow["modo"]) => goTo({ modo, ...CLEARED });
 
+  /** A form field's value: what was typed, or else what the identified client has on file. */
+  const val = (name: string) => fields[name] ?? String((visitor as Record<string, unknown> | null)?.[name] ?? "");
+
   const submit = () => {
     if (!agenda || !day || !time) return;
     if (!accepted) return setError("Você precisa aceitar os termos para continuar.");
     if (options?.password && password !== options.password) return setError("Senha inválida para esta agenda.");
-    if (!fields.name?.trim()) return setError("Informe o seu nome.");
+    if (!val("name").trim()) return setError("Informe o seu nome.");
     const details: Omit<Client, "id"> = {
-      name: fields.name.trim(),
-      email: fields.email ?? "",
-      phone: fields.phone ?? "",
-      cpf: fields.cpf,
-      birthday: fields.birthday,
-      nationality: fields.nationality,
-      placeOfBirth: fields.placeOfBirth,
-      profession: fields.profession,
-      identificationNumber: fields.identificationNumber,
+      name: val("name").trim(),
+      email: val("email"),
+      phone: val("phone"),
+      cpf: val("cpf") || undefined,
+      birthday: val("birthday") || undefined,
+      nationality: val("nationality") || undefined,
+      placeOfBirth: val("placeOfBirth") || undefined,
+      profession: val("profession") || undefined,
+      identificationNumber: val("identificationNumber") || undefined,
     };
-    // Someone with the e-mail or phone typed is already a client: the booking is theirs, and counts toward their limits.
-    const known = knownClient(data, details);
     const slot = { agendaId: agenda.id, serviceId: service?.id ?? "", start: time };
+    // An agenda for authorized clients books for the client the visitor was identified as, and only if their list allows this slot.
+    if (restricted) {
+      if (!visitor) return setError(denied(data, slot, new Date()));
+      const barred = accessRefusal(data, visitor, slot, new Date());
+      if (barred) return setError(barred);
+    }
+    // Someone with the e-mail or phone typed is already a client: the booking is theirs, and counts toward their limits.
+    const known = visitor ?? knownClient(data, details);
     const refusal = refusalFor(data, known ?? { id: nextId("c", data.clients), ...details }, slot, orgName);
     if (refusal) return setError(refusal);
     setError("");
@@ -218,7 +243,7 @@ export function BookingPage() {
         status: "PENDING",
         owner: "",
         tagIds: [],
-        comment: fields.comment ?? "",
+        comment: val("comment"),
         createdAt: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
       };
       setBooked(appointment);
@@ -439,7 +464,52 @@ export function BookingPage() {
             </StepCard>
           )}
 
-          {calendarReady && !onForm && !booked && (
+          {needsAccess && !booked && (
+            <StepCard
+              title="Identifique-se"
+              context={
+                <span>
+                  <Lock className="w-3.5 h-3.5" />
+                  {agenda?.name}
+                </span>
+              }
+              onBack={() => resetSelection()}
+            >
+              {visitor ? (
+                <p className="text-sm" style={{ color: "var(--iframe-text)" }}>
+                  {denied(data, accessSlot!, now)}
+                </p>
+              ) : (
+                <form
+                  className="iframe-form-container space-y-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const found = identify(data, accessSlot!, typedKey, now);
+                    setAccessError(found ? "" : denied(data, accessSlot!, now));
+                    if (found) setIdentifiedId(found.id);
+                  }}
+                >
+                  <div className="iframe-form-group">
+                    <label className="iframe-form-label" htmlFor="booking-access-key">
+                      {prompt(data, accessSlot!, now).label}
+                    </label>
+                    <input id="booking-access-key" type="text" autoComplete="off" value={typedKey} onChange={(e) => setTypedKey(e.target.value)} />
+                    {prompt(data, accessSlot!, now).help && (
+                      <p className="text-xs mt-1" style={{ color: "var(--iframe-muted)" }}>
+                        {prompt(data, accessSlot!, now).help}
+                      </p>
+                    )}
+                  </div>
+                  {accessError && <p className="text-xs text-red-500">{accessError}</p>}
+                  <button type="submit" className="iframe-btn-primary relative text-sm font-medium text-white">
+                    Continuar
+                  </button>
+                </form>
+              )}
+            </StepCard>
+          )}
+
+          {canBook && !onForm && !booked && (
             <div className="iframe-card p-0 overflow-hidden flex flex-col booking-step-anim">
               <div className="booking-step-head">
                 <div className="booking-step-head-info">
@@ -657,18 +727,14 @@ export function BookingPage() {
                         {f.required && " *"}
                       </label>
                       {f.type === "textarea" ? (
-                        <textarea
-                          id={`booking-${f.name}`}
-                          rows={3}
-                          value={fields[f.name] ?? ""}
-                          onChange={(e) => setFields({ ...fields, [f.name]: e.target.value })}
-                        />
+                        <textarea id={`booking-${f.name}`} rows={3} value={val(f.name)} onChange={(e) => setFields({ ...fields, [f.name]: e.target.value })} />
                       ) : (
                         <input
                           id={`booking-${f.name}`}
                           type={f.type}
                           required={f.required}
-                          value={fields[f.name] ?? ""}
+                          readOnly={Boolean(visitor)}
+                          value={val(f.name)}
                           onChange={(e) => setFields({ ...fields, [f.name]: e.target.value })}
                         />
                       )}

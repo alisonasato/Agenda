@@ -12,13 +12,14 @@ export function knownClient(data: Data, details: Pick<Client, "email" | "phone">
   return data.clients.find((c) => !c.inactive && ((email && c.email.trim().toLowerCase() === email) || samePhone(c.phone, details.phone))) ?? null;
 }
 
-/** "por dia", "por semana", "em 7 dias corridos": the limit's window as a sentence ends with it. */
-function windowOf(limit: BookingLimit) {
+/** "por dia", "por semana", "em 7 dias corridos", "no total": the limit's window as a sentence ends with it. */
+export function windowOf(limit: BookingLimit) {
   if (limit.interval === "NDAYS") return `em ${limit.days} dias corridos`;
   if (limit.interval === "HORARIO") return "por horário";
   if (limit.interval === "SEMANA") return "por semana";
   if (limit.interval === "MES") return "por mês";
-  return "por dia";
+  if (limit.interval === "DIA") return "por dia";
+  return "no total";
 }
 
 /**

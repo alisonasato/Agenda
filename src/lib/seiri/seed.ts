@@ -194,9 +194,9 @@ export function seed(): Data {
       {
         id: "al1",
         title: "Pacientes do convênio",
-        keyType: "CPF",
+        keyType: "PIN",
         maxAppointments: 4,
-        interval: "MONTH",
+        interval: "MES",
         days: 30,
         expiresAt: "",
         maxDate: "",

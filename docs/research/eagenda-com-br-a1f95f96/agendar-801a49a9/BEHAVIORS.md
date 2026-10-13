@@ -37,6 +37,17 @@
 - **Quem já é cliente é reaproveitado:** o e-mail ou o telefone digitado que já é de um cliente ativo faz o
   agendamento ser dele (e contar nos limites dele), no lugar de cadastrar outro com os mesmos dados, como
   o modal "Adicionar cliente" do Novo Agendamento. Telefone casa com ou sem o +55 e com qualquer pontuação.
+- **Agendas "Somente Agendamento Autorizado" pedem identificação** (`access.ts`), antes do calendário e depois
+  do serviço (a lista pode valer só para um serviço). O script da página pública do original não tem nada
+  sobre isso (relido em 12/10/2026: nenhuma ocorrência de acesso, autorização ou chave), então é leitura do
+  clone do que a lista guarda: o passo "Identifique-se" pede o tipo de chave da primeira lista em vigor
+  (rótulo do tipo e texto de ajuda da lista); o link próprio `?cliente=` dispensa o passo, e quem o link
+  nomeia mas não está em lista nenhuma vê a mensagem de acesso negado, sem campo. Uma chave que não abre
+  mostra a mensagem de acesso negado da lista, ou "Acesso restrito: este agendamento é só para clientes
+  autorizados." quando ela está em branco. Quem entra agenda como o cliente da lista (os dados dele
+  aparecem preenchidos e travados; só "Observações" se edita) e passa pelo bloqueio e pelos limites
+  gerais como todo mundo. Confirmar ainda confere "Agendar até" e o máximo por período da lista.
+  "Login obrigatório" e a lista externa não valem.
 - O recibo mostra o que foi agendado, não o que o endereço diz depois: o Voltar do navegador depois de
   confirmar não troca a agenda nem o dia do recibo (o original também ignora o `popstate` depois de enviar).
 - Diferenças deste endereço: o clone guarda o `modo` mesmo com a agenda escolhida (o original o tira, e o
@@ -59,7 +70,6 @@ Achadas ao comparar a lista de funções do script do original com a tela do clo
 - **O recibo não tem endereço próprio.** O original manda para `/<org>/<chave secreta>/` com `#recibo`
   (e `#acompanhantes`, `#pagamento`), e recarregar volta ao recibo; aqui, recarregar volta ao formulário.
 - **Cancelar e editar o agendamento** pelo recibo (`cancelAppointment`, `openEdit`) e responder à pesquisa.
-- **Listas de acesso** (só clientes autorizados, por chave) não são verificadas aqui.
 - **A aparência da Tela de Agendamento** (modelo, cores, logotipo) não vale aqui, só o nome e a mensagem.
 - Sem descrição, imagem nem "Ler mais" nas agendas (`openDescModal`), porque o clone não as guarda.
 

@@ -345,8 +345,9 @@ estado).
 - **Gestão individual:** cada cliente autorizado, com o seu "Cliente ID", quantos agendamentos já
   teve e em que listas está. Copiar o link próprio do cliente ou removê-lo de todas as listas.
 
-**Limites:** as listas ainda não barram ninguém na tela pública. A lista externa (API) não é
-consultada. **Exportar** baixa uma planilha .xlsx com todos os clientes que estão em alguma lista
+**As listas valem na tela pública** das agendas com "Somente Agendamento Autorizado" (ver [Tela de
+agendamento](#tela-pública-de-agendamento)). **Limites:** "Login obrigatório" e a lista externa (API) não
+são consultados. **Exportar** baixa uma planilha .xlsx com todos os clientes que estão em alguma lista
 (13 colunas, como a do original); o "Total de Agendamentos no Período Atual" é a leitura do clone
 e "Comentários" sai vazio. **Importar** não faz nada.
 
@@ -656,9 +657,18 @@ Quem já atingiu um limite (por dia, semana, mês, horário ou N dias) vê qual 
 telefone digitado já é de um cliente, o agendamento é dele (e conta para os limites dele), em vez de
 cadastrar outro.
 
+**Agendas só para clientes autorizados.** Uma agenda com "Somente Agendamento Autorizado" não mostra o
+calendário até a pessoa se identificar: pelo link próprio dela (`?cliente=`, o que o "Copiar Link" do
+Acesso Individual copia) ou digitando a chave que a lista pede (e-mail, telefone, CPF, passaporte,
+contrato ou código de convite), com o texto de ajuda da lista embaixo. Quem não está em nenhuma lista que
+valha para aquela agenda e serviço vê a mensagem de acesso negado da lista. Quem entra agenda como o
+cliente da lista, com os dados dele já preenchidos, e pode agendar até a data da lista ("Agendar até") e
+até o máximo por período dela, que a página diz qual é quando é atingido. Listas desligadas ou vencidas
+não valem.
+
 **Limites:** "Por Data" ainda mostra as agendas, como "Por Agenda"; o recibo não tem endereço próprio;
-acompanhantes, pagamento e formulários de pesquisa ficam de fora. As listas de acesso ainda não são
-verificadas aqui. A aparência não segue a Tela de Agendamento.
+acompanhantes, pagamento e formulários de pesquisa ficam de fora. "Login obrigatório" não vale (o clone
+não tem login). A aparência não segue a Tela de Agendamento.
 
 ---
 
