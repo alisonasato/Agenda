@@ -30,6 +30,7 @@ import {
 import { MONTHS, WEEKDAYS_SHORT, addMonths } from "../shared/calendarDates";
 import { dateStr, formFields, monthCells, optionsOf, publicAgendas, rulesOf, servicesOf, timesOf } from "@/lib/seiri/booking";
 import { flowQuery, readFlow, startsFlow, type Flow } from "@/lib/seiri/bookingUrl";
+import { knownClient, refusalFor } from "@/lib/seiri/publicBooking";
 import { nextId, update, useData } from "@/lib/seiri/store";
 import type { Agenda, Appointment, Client } from "@/lib/seiri/types";
 
@@ -184,21 +185,25 @@ export function BookingPage() {
     if (!accepted) return setError("Você precisa aceitar os termos para continuar.");
     if (options?.password && password !== options.password) return setError("Senha inválida para esta agenda.");
     if (!fields.name?.trim()) return setError("Informe o seu nome.");
+    const details: Omit<Client, "id"> = {
+      name: fields.name.trim(),
+      email: fields.email ?? "",
+      phone: fields.phone ?? "",
+      cpf: fields.cpf,
+      birthday: fields.birthday,
+      nationality: fields.nationality,
+      placeOfBirth: fields.placeOfBirth,
+      profession: fields.profession,
+      identificationNumber: fields.identificationNumber,
+    };
+    // Someone with the e-mail or phone typed is already a client: the booking is theirs, and counts toward their limits.
+    const known = knownClient(data, details);
+    const slot = { agendaId: agenda.id, serviceId: service?.id ?? "", start: time };
+    const refusal = refusalFor(data, known ?? { id: nextId("c", data.clients), ...details }, slot, orgName);
+    if (refusal) return setError(refusal);
     setError("");
     update((d) => {
-      const clientId = nextId("c", d.clients);
-      const client: Client = {
-        id: clientId,
-        name: fields.name.trim(),
-        email: fields.email ?? "",
-        phone: fields.phone ?? "",
-        cpf: fields.cpf,
-        birthday: fields.birthday,
-        nationality: fields.nationality,
-        placeOfBirth: fields.placeOfBirth,
-        profession: fields.profession,
-        identificationNumber: fields.identificationNumber,
-      };
+      const clientId = known?.id ?? nextId("c", d.clients);
       const id = nextId("ap", d.appointments);
       const appointment: Appointment = {
         id,
@@ -217,7 +222,7 @@ export function BookingPage() {
         createdAt: `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`,
       };
       setBooked(appointment);
-      return { ...d, clients: [...d.clients, client], appointments: [...d.appointments, appointment] };
+      return { ...d, clients: known ? d.clients : [...d.clients, { id: clientId, ...details }], appointments: [...d.appointments, appointment] };
     });
   };
 

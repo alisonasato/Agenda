@@ -28,6 +28,15 @@
   `bookingUrl.ts` lê e escreve esses parâmetros; a tela os deriva do endereço, sem estado duplicado.
 - **Uma única agenda, ou um único serviço, vem escolhido**, como no original (`_autoSelectAgenda`): com uma
   agenda só, a tela vai direto ao serviço ou ao calendário.
+- **Listas de bloqueio e limites barram o visitante** ao confirmar (`publicBooking.ts`, as mesmas regras do
+  Novo Agendamento): um e-mail, telefone ou documento bloqueado recebe "Não foi possível concluir o
+  agendamento com os dados informados. Entre em contato com <empresa>." (sem o motivo, que é da equipe), e
+  um limite atingido diz qual é ("Você já atingiu o limite de 1 agendamento(s) por dia."). O script da página
+  do original só mostra o `errors` que o servidor devolve; o texto das duas recusas não está nele, então a
+  redação é do clone. Nada é gravado numa recusa.
+- **Quem já é cliente é reaproveitado:** o e-mail ou o telefone digitado que já é de um cliente ativo faz o
+  agendamento ser dele (e contar nos limites dele), no lugar de cadastrar outro com os mesmos dados, como
+  o modal "Adicionar cliente" do Novo Agendamento. Telefone casa com ou sem o +55 e com qualquer pontuação.
 - O recibo mostra o que foi agendado, não o que o endereço diz depois: o Voltar do navegador depois de
   confirmar não troca a agenda nem o dia do recibo (o original também ignora o `popstate` depois de enviar).
 - Diferenças deste endereço: o clone guarda o `modo` mesmo com a agenda escolhida (o original o tira, e o
@@ -50,8 +59,7 @@ Achadas ao comparar a lista de funções do script do original com a tela do clo
 - **O recibo não tem endereço próprio.** O original manda para `/<org>/<chave secreta>/` com `#recibo`
   (e `#acompanhantes`, `#pagamento`), e recarregar volta ao recibo; aqui, recarregar volta ao formulário.
 - **Cancelar e editar o agendamento** pelo recibo (`cancelAppointment`, `openEdit`) e responder à pesquisa.
-- **Listas de bloqueio, limites de agendamentos e listas de acesso** não são verificados aqui, só na tela
-  Novo Agendamento do painel.
+- **Listas de acesso** (só clientes autorizados, por chave) não são verificadas aqui.
 - **A aparência da Tela de Agendamento** (modelo, cores, logotipo) não vale aqui, só o nome e a mensagem.
 - Sem descrição, imagem nem "Ler mais" nas agendas (`openDescModal`), porque o clone não as guarda.
 

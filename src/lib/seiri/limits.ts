@@ -5,12 +5,24 @@ export const intervalLabel = (limit: BookingLimit) =>
 
 export const keyLabel = (limit: BookingLimit) => LIMIT_KEYS.find((k) => k.value === limit.key)?.label ?? "—";
 
+/** Only digits, so "(11) 99999-0000" and "11999990000" are the same phone. */
+const digits = (text: string) => text.replace(/\D+/g, "");
+
+/** A phone without Brazil's +55, which one form writes and another leaves out: "+55 11 99999-0000" is "11999990000". */
+const national = (text: string) => {
+  const d = digits(text);
+  return d.length > 11 && d.startsWith("55") ? d.slice(2) : d;
+};
+
+/** The same phone however it is written. Something too short to be a phone number (two empty ones, a lone "55") matches nothing. */
+export const samePhone = (a: string, b: string) => national(a).length >= 8 && national(a) === national(b);
+
 /** What the limit groups clients by: the same value means "the same person" for the count. */
 function identity(limit: BookingLimit, client: Client | undefined) {
   if (limit.key === "count" || !client) return "";
   const field = (name: string) => {
     if (name === "name" || name === "nome") return client.name;
-    if (name === "phone") return client.phone;
+    if (name === "phone") return national(client.phone);
     if (name === "email") return client.email;
     if (name === "personal_identification_number") return client.cpf ?? client.identificationNumber ?? "";
     // "user", "source_ip" and "custom" have nothing else to go on here: the client itself is the key.
@@ -76,9 +88,6 @@ export function exceeded(data: Data, candidate: Candidate): BookingLimit | null 
   return null;
 }
 
-/** Only digits, so "(11) 99999-0000" and "11999990000" are the same phone. */
-const digits = (text: string) => text.replace(/\D+/g, "");
-
 /** The "Lista de Bloqueio" entry that stops this client from booking, or null. */
 export function blockedBy(data: Data, clientId: string, now = new Date()) {
   const client = data.clients.find((c) => c.id === clientId);
@@ -88,7 +97,7 @@ export function blockedBy(data: Data, clientId: string, now = new Date()) {
     data.suppressions.find((s) => {
       if (!s.active || (s.expiresAt && s.expiresAt <= at)) return false;
       if (s.type === "email") return s.contact.trim().toLowerCase() === client.email.trim().toLowerCase();
-      if (s.type === "phone") return digits(s.contact) === digits(client.phone);
+      if (s.type === "phone") return samePhone(s.contact, client.phone);
       return digits(s.contact) === digits(client.cpf ?? client.identificationNumber ?? "");
     }) ?? null
   );

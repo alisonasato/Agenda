@@ -18,6 +18,7 @@ O clone não tem servidor: as telas passam a funcionar de verdade lendo e gravan
 | `xlsx.ts`, `xlsxRead.ts`, `sheetFile.ts`, `inviteSheet.ts` | Escrever e ler planilhas .xlsx; escolher o leitor pela extensão; os e-mails de uma planilha de convite (ver abaixo) |
 | `holidays.ts` | Feriados customizados e nacionais (ver abaixo) |
 | `limits.ts` | Limites de agendamentos e listas de bloqueio (ver abaixo) |
+| `publicBooking.ts` | Quem a tela pública deixa agendar: o cliente conhecido e a recusa por bloqueio ou limite |
 | `sends.ts` | Os envios que Acompanhamento mostra (ver abaixo) |
 | `agendas.ts` | `removeAgenda()`: o que sai junto quando uma agenda é excluída (ver abaixo) |
 
@@ -134,8 +135,11 @@ WhatsApp, SMS e email ao mesmo tempo, e a lista abre uma linha por canal.
 ## Listas de bloqueio
 `data.suppressions` guarda os contatos impedidos de agendar. `blockedBy` em
 `src/lib/seiri/limits.ts` procura um bloqueio ativo e não vencido cujo e-mail, telefone ou CPF seja
-o do cliente — o telefone e o CPF comparados só pelos dígitos — e é isso que o Novo Agendamento
-consulta antes dos limites.
+o do cliente — o telefone e o CPF comparados só pelos dígitos, o telefone também sem o +55 de quem o
+escreveu de um jeito e do outro (`samePhone`) — e é isso que o Novo Agendamento e a tela pública consultam
+antes dos limites. A tela pública passa por `publicBooking.ts`: `knownClient` acha o cliente que já tem o
+e-mail ou o telefone digitado (e o agendamento passa a ser dele), e `refusalFor` junta o bloqueio e os
+limites numa frase para o visitante, que vale mesmo para quem ainda não está na lista de clientes.
 
 ## Feriados
 `data.holidays` guarda os feriados customizados e `data.holidayRules` o que cada agenda bloqueia.

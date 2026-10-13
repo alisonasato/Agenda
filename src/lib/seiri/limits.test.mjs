@@ -116,4 +116,34 @@ const candidate = (clientId, start) => ({ clientId, agendaId: "a1", serviceId: "
   assert.ok(blockedBy(byPhone, "c1", now), "11999990001 and (11) 99999-0001 are the same phone");
 }
 
+// The same phone is the same phone with or without Brazil's +55, and however it is punctuated.
+{
+  const { samePhone } = await import("./limits.ts");
+  assert.ok(samePhone("+55 11 98888-1010", "(11) 98888-1010"));
+  assert.ok(samePhone("5511988881010", "11988881010"));
+  assert.ok(samePhone("+55 (11) 3333-4444", "1133334444"), "fixo, dez dígitos");
+  assert.ok(!samePhone("+55 11 98888-1010", "+55 21 98888-1010"), "outro DDD é outro telefone");
+  assert.ok(!samePhone("11 98888-1010", "11 98888-1011"));
+  assert.ok(!samePhone("", ""), "dois vazios não são o mesmo telefone");
+  assert.ok(!samePhone("()-", "  "), "nem o que só tem pontuação");
+  assert.ok(!samePhone("", "11988881010"));
+  assert.ok(!samePhone("55", "55"), "só o código do país não é telefone");
+  assert.ok(samePhone("5511988881010", "5511988881010"));
+  assert.ok(samePhone("(55) 98888-1010", "55988881010"), "55 também é um DDD (Rio Grande do Sul), não só o código do país");
+  assert.ok(!samePhone("(55) 98888-1010", "98888-1010"), "e um número de onze dígitos que começa com 55 não perde o 55");
+
+  // A block-list phone matches a client who wrote theirs the other way.
+  const entry = { id: "sp2", type: "phone", contact: "+55 11 98888-1010", reason: "", expiresAt: "", createdAt: "", createdBy: "", active: true };
+  const withoutCode = { ...base, clients: [{ id: "c9", name: "Zé", email: "z@exemplo.com.br", phone: "(11) 98888-1010" }], suppressions: [entry] };
+  assert.ok(blockedBy(withoutCode, "c9", new Date(2026, 8, 30, 12, 0)), "o bloqueio com +55 pega quem digitou sem");
+
+  // A limit by phone counts one person across both writings.
+  const same = [
+    { id: "p1", name: "Zé", email: "z1@exemplo.com.br", phone: "+55 11 98888-1010" },
+    { id: "p2", name: "Zé", email: "z2@exemplo.com.br", phone: "(11) 98888-1010" },
+  ];
+  const data = { ...base, clients: same, limits: [limit({ key: "phone" })], appointments: [appointment("p1", "2026-09-27T09:00")] };
+  assert.ok(exceeded(data, candidate("p2", "2026-09-27T15:00")), "o mesmo telefone, escrito de outro jeito, é a mesma pessoa");
+}
+
 console.log("limits ok");

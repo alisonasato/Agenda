@@ -235,7 +235,8 @@ descrição e proprietário não são gravados.
 - Escolha como identificar "a mesma pessoa": CPF, e-mail, nome, telefone, combinações deles,
   usuário cadastrado ou o total geral.
 - Filtros por agenda, serviço, intervalo e tipo; editar e excluir.
-- **O limite vale de verdade:** o Novo Agendamento é barrado quando o limite já foi atingido.
+- **O limite vale de verdade:** o Novo Agendamento e a tela pública de agendamento são barrados quando o
+  limite já foi atingido.
 
 **Limites:** "IP de Origem" e "Chave Customizada" se comportam como "Usuário Cadastrado".
 
@@ -245,8 +246,8 @@ descrição e proprietário não são gravados.
 
 - Bloqueie um e-mail, telefone ou CPF, com motivo e data para expirar (em branco = para sempre).
 - Ativar/desativar, editar, excluir; busca e filtros por tipo e situação.
-- **O bloqueio vale de verdade:** o Novo Agendamento é barrado para o cliente bloqueado. Telefones
-  são comparados só pelos dígitos.
+- **O bloqueio vale de verdade:** o Novo Agendamento e a tela pública de agendamento são barrados para
+  o cliente bloqueado. Telefones são comparados só pelos dígitos, e com ou sem o +55.
 
 ### Serviços
 
@@ -649,9 +650,15 @@ escolheu ficam na barra de endereço (`?agenda=...&servico=...&data=2026-10-13&h
 Voltar do navegador volta uma etapa, o Avançar vai de novo, e recarregar a página ou colar o endereço
 reabre a mesma etapa. Com uma agenda só (ou um serviço só), a tela já a traz escolhida.
 
+**As listas de bloqueio e os limites valem aqui.** Quem digita um e-mail, telefone ou documento que está
+numa lista de bloqueio ativa não agenda, e a mensagem não diz o motivo: pede para falar com a empresa.
+Quem já atingiu um limite (por dia, semana, mês, horário ou N dias) vê qual é o limite. Se o e-mail ou o
+telefone digitado já é de um cliente, o agendamento é dele (e conta para os limites dele), em vez de
+cadastrar outro.
+
 **Limites:** "Por Data" ainda mostra as agendas, como "Por Agenda"; o recibo não tem endereço próprio;
-acompanhantes, pagamento e formulários de pesquisa ficam de fora. As listas de acesso e
-as listas de bloqueio ainda não são verificadas aqui. A aparência não segue a Tela de Agendamento.
+acompanhantes, pagamento e formulários de pesquisa ficam de fora. As listas de acesso ainda não são
+verificadas aqui. A aparência não segue a Tela de Agendamento.
 
 ---
 
