@@ -666,6 +666,10 @@ cliente da lista, com os dados dele já preenchidos, e pode agendar até a data 
 até o máximo por período dela, que a página diz qual é quando é atingido. Listas desligadas ou vencidas
 não valem.
 
+**O calendário abre no primeiro dia livre.** Ao escolher a agenda (e o serviço), a tela já mostra o
+primeiro dia com horário e os horários dele. A grade é uma janela de seis semanas a partir desse dia, e
+não um mês: as setas andam de seis em seis semanas e a de voltar para no primeiro dia livre.
+
 **Por Data.** Com mais de uma agenda, a aba "Por Data" mostra o calendário do mês com os dias em que alguma
 agenda tem vaga; ao escolher um dia, a pessoa escolhe a agenda que atende nele (se for só uma, ela já vem
 escolhida) e segue para o serviço e o horário, no dia que escolheu.

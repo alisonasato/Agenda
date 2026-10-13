@@ -29,15 +29,20 @@ import {
 } from "lucide-react";
 import { MONTHS, WEEKDAYS_SHORT, addMonths } from "../shared/calendarDates";
 import {
+  anchorWindow,
   dateFirstCells,
   dateStr,
+  firstFreeDay,
   formFields,
-  monthCells,
+  nextWindowStart,
   optionsOf,
+  prevWindowStart,
   publicAgendas,
   rulesOf,
   servicesOf,
   timesOf,
+  windowCells,
+  windowLabel,
   type DateFirstCell,
   type DayCell as DayCellData,
 } from "@/lib/seiri/booking";
@@ -195,8 +200,10 @@ export function BookingPage() {
   const [typedKey, setTypedKey] = useState("");
   const [identifiedId, setIdentifiedId] = useState("");
   const [accessError, setAccessError] = useState("");
-  // The month the visitor paged to, good only while the day in the address is the one it was paged on.
-  const [paged, setPaged] = useState<{ month: Date; day: string } | null>(null);
+  // Where the visitor paged the agenda's calendar to (a window of six weeks, not a month). It is good only for that
+  // agenda and the day in the address it was paged on; if the address changes under it (Back, a link) the window opens
+  // on the day, or on the first free one.
+  const [win, setWin] = useState<{ start: Date; agendaId: string; forDay: string } | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [password, setPassword] = useState("");
   const [recurring, setRecurring] = useState(false);
@@ -239,20 +246,26 @@ export function BookingPage() {
   const needsAccess = restricted && !(visitor && accessSlot && isListed(data, visitor, accessSlot, now));
   const canBook = calendarReady && !needsAccess;
   const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // Like the original, the calendar opens on the first day with a free time and has it chosen, so its times are
+  // already on the page; the window never goes back before that day. Without a free day it opens on today.
+  const firstFree = agenda && canBook ? firstFreeDay(data, agenda.id, now) : null;
+  const floor = firstFree ?? today;
   // A day or time in the address that the agenda cannot offer reads as not chosen.
-  const chosenDay = flow.data ? new Date(`${flow.data}T00:00:00`) : null;
+  const chosenDay = flow.data ? new Date(`${flow.data}T00:00:00`) : firstFree;
   const times = agenda && canBook && chosenDay ? timesOf(data, agenda.id, chosenDay, now) : [];
   const day = times.length > 0 ? chosenDay : null;
   const time = (day && times.find((t) => t.label === flow.hora)?.id) || "";
   const onForm = Boolean(time);
-  const month = paged && paged.day === flow.data ? paged.month : day ? new Date(day.getFullYear(), day.getMonth(), 1) : thisMonth;
-  const cells = agenda && canBook ? monthCells(data, agenda.id, month, now) : [];
+  const anchor = anchorWindow(chosenDay ?? today, floor);
+  const windowFrom = win && win.agendaId === agenda?.id && win.forDay === flow.data ? win.start : anchor;
+  const cells = agenda && canBook ? windowCells(data, agenda.id, windowFrom, now) : [];
   const dateCells = !needsUnit && mode === "date" && !agenda ? dateFirstCells(data, agendas, dateMonth, now) : [];
   const onThatDay = agendas.filter((a) => dateCells.find((c) => c?.dateStr === dateDay)?.agendaIds.includes(a.id));
 
   const duration = service?.duration || rules?.duration || 30;
   const unitLabel = unit?.name ?? "";
-  const canGoBack = month > thisMonth;
+  const canGoBack = windowFrom.getTime() > floor.getTime();
 
   const resetSelection = () => goTo(CLEARED);
   const chooseUnit = (id: string) => {
@@ -718,17 +731,15 @@ export function BookingPage() {
                         type="button"
                         disabled={!canGoBack}
                         className={`p-1.5 rounded-lg transition-colors text-slate-600 ${canGoBack ? "hover:bg-slate-100" : "opacity-30 cursor-default"}`}
-                        onClick={() => setPaged({ month: addMonths(month, -1), day: flow.data })}
+                        onClick={() => agenda && setWin({ start: prevWindowStart(windowFrom, floor), agendaId: agenda.id, forDay: flow.data })}
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
-                      <h3 className="text-sm font-semibold text-slate-800 capitalize">
-                        {MONTHS[month.getMonth()]} {month.getFullYear()}
-                      </h3>
+                      <h3 className="text-sm font-semibold text-slate-800 capitalize">{windowLabel(windowFrom)}</h3>
                       <button
                         type="button"
                         className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
-                        onClick={() => setPaged({ month: addMonths(month, 1), day: flow.data })}
+                        onClick={() => agenda && setWin({ start: nextWindowStart(windowFrom), agendaId: agenda.id, forDay: flow.data })}
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -750,7 +761,11 @@ export function BookingPage() {
                               cell={cell}
                               selected={Boolean(day) && dateStr(day!) === cell.dateStr}
                               dimBlocked
-                              onPick={() => goTo({ data: cell.dateStr, hora: "" })}
+                              onPick={() => {
+                                // Picking a day inside the window keeps the window where the visitor paged to.
+                                setWin((w) => w && { ...w, forDay: cell.dateStr });
+                                goTo({ data: cell.dateStr, hora: "" });
+                              }}
                             />
                           )}
                         </div>
@@ -811,7 +826,7 @@ export function BookingPage() {
                               key={t.id}
                               type="button"
                               className={`iframe-slot py-3 px-3 rounded-lg text-sm text-center font-medium${time === t.id ? " selected" : ""}`}
-                              onClick={() => goTo({ hora: t.label })}
+                              onClick={() => goTo({ data: dateStr(day), hora: t.label })}
                             >
                               {t.label}
                             </button>

@@ -5,7 +5,25 @@ import { register } from "node:module";
 // Node wants the extension that the source's own imports leave out.
 register('data:text/javascript,export function resolve(s, c, next) { return next(s[0] === "." && !s.endsWith(".ts") ? s + ".ts" : s, c); }');
 
-const { dateStr, optionsOf, rulesOf, publicAgendas, servicesOf, timesOf, monthCells, dateFirstCells, formFields } = await import("./booking.ts");
+const {
+  dateStr,
+  optionsOf,
+  rulesOf,
+  publicAgendas,
+  servicesOf,
+  timesOf,
+  monthCells,
+  dateFirstCells,
+  windowEnd,
+  windowCells,
+  nextWindowStart,
+  prevWindowStart,
+  anchorWindow,
+  windowLabel,
+  firstFreeDay,
+  WINDOW_CELLS,
+  formFields,
+} = await import("./booking.ts");
 const { DEFAULT_OPTIONS, DEFAULT_RULES } = await import("./types.ts");
 
 // 2026-09-24 is a Thursday; the working hours go on weekday 4.
@@ -266,6 +284,94 @@ const base = {
     none.filter(Boolean).every((c) => c.isPast),
     "sem agenda nenhuma, nenhum dia está aberto: todos valem como passado",
   );
+}
+
+// The agenda's calendar is a window of six weeks starting on a chosen day, not a month.
+{
+  const start = new Date(2026, 8, 24); // a Thursday
+  const sunday = new Date(2026, 8, 27);
+
+  // The last day on show: 42 cells counting the blanks before the start's weekday.
+  assert.equal(dateStr(windowEnd(start)), "2026-10-31", "quinta: 42 - 1 - 4 = 37 dias depois");
+  assert.equal(dateStr(windowEnd(sunday)), "2026-11-07", "domingo: 41 dias depois, sem brancos");
+  assert.equal(windowEnd(start).getDay(), 6, "termina sempre num sábado");
+  assert.equal(windowEnd(sunday).getDay(), 6);
+  assert.equal(WINDOW_CELLS, 42);
+
+  // Blanks up to the weekday, then days, 42 cells always.
+  const cells = windowCells(base, "a1", start, EARLY);
+  assert.equal(cells.length, 42);
+  assert.deepEqual(cells.slice(0, 4), [null, null, null, null], "quinta tem quatro brancos antes");
+  assert.equal(cells[4].dateStr, "2026-09-24", "o primeiro dia cai na coluna do seu dia da semana");
+  assert.equal(cells[41].dateStr, "2026-10-31");
+  assert.equal(cells.filter(Boolean).length, 38);
+  assert.ok(cells[4].isToday && cells[4].hasAvailability, "hoje é o primeiro dia e tem horário");
+  assert.ok(!cells[5].hasAvailability, "sexta a agenda não trabalha");
+  assert.ok(cells[11].hasAvailability, "a quinta seguinte, 01/10");
+  assert.equal(cells[11].dateStr, "2026-10-01");
+  assert.equal(windowCells(base, "a1", sunday, EARLY).filter((c) => c === null).length, 0, "domingo não tem branco");
+  assert.equal(windowCells(base, "a1", sunday, EARLY).length, 42);
+  assert.equal(windowCells(base, "a1", new Date(2026, 8, 26), EARLY).filter((c) => c === null).length, 6, "sábado tem seis brancos");
+
+  // The cells say the same as the month grid does for the same day.
+  const month = monthCells(base, "a1", new Date(2026, 9, 1), EARLY).filter(Boolean);
+  for (const cell of cells.filter((c) => c && c.dateStr.startsWith("2026-10"))) {
+    const same = month.find((m) => m.dateStr === cell.dateStr);
+    assert.deepEqual([cell.hasAvailability, cell.status, cell.isPast], [same.hasAvailability, same.status, same.isPast], cell.dateStr);
+  }
+
+  // Paging: next starts the day after the last one on show; previous goes back 42 days, never past the floor.
+  assert.equal(dateStr(nextWindowStart(start)), "2026-11-01");
+  assert.equal(nextWindowStart(start).getDay(), 0, "a página seguinte começa num domingo");
+  assert.equal(dateStr(nextWindowStart(nextWindowStart(start))), "2026-12-13", "e anda 42 dias cheios");
+  const floor = new Date(2026, 8, 24);
+  assert.equal(dateStr(prevWindowStart(nextWindowStart(start), floor)), "2026-09-24", "voltar não passa do piso");
+  assert.equal(dateStr(prevWindowStart(new Date(2026, 11, 13), floor)), "2026-11-01", "42 dias exatos para trás");
+  assert.equal(dateStr(prevWindowStart(new Date(2026, 11, 13), new Date(2026, 0, 1))), "2026-11-01");
+  assert.equal(dateStr(prevWindowStart(start, floor)), "2026-09-24", "na primeira página fica onde está");
+
+  // Opening on a day: never before the floor, at midnight otherwise.
+  assert.equal(dateStr(anchorWindow(new Date(2026, 8, 20, 15, 30), floor)), "2026-09-24", "antes do piso vai para o piso");
+  assert.equal(dateStr(anchorWindow(new Date(2026, 9, 8, 15, 30), floor)), "2026-10-08");
+  assert.equal(anchorWindow(new Date(2026, 9, 8, 15, 30), floor).getHours(), 0);
+
+  // The title is a range, since the window always crosses a month end.
+  assert.equal(windowLabel(start), "Set – Out 2026");
+  assert.equal(windowLabel(new Date(2026, 9, 1)), "Out – Nov 2026");
+  assert.equal(windowLabel(new Date(2026, 11, 13)), "Dez 2026 – Jan 2027", "atravessa o ano");
+  assert.equal(windowLabel(new Date(2026, 2, 1)), "Mar – Abr 2026");
+}
+
+// The first day with room, from today on and inside the agenda's horizon.
+{
+  const first = (data, now) => {
+    const day = firstFreeDay(data, "a1", now);
+    return day && dateStr(day);
+  };
+  assert.equal(first(base, EARLY), KEY, "hoje, se ainda há horário");
+  assert.equal(first(base, new Date(2026, 8, 24, 9, 40)), "2026-10-01", "hoje todos os horários caíram na antecedência mínima: a quinta seguinte");
+  assert.equal(first(base, new Date(2026, 8, 25, 8, 0)), "2026-10-01", "sexta: a próxima quinta");
+  assert.equal(firstFreeDay(base, "a1", new Date(2026, 8, 25, 8, 0)).getHours(), 0, "à meia-noite");
+
+  const blocked = { ...base, blocks: [{ id: "bl1", agendaIds: ["a1"], from: KEY, to: "", startTime: "", endTime: "", reason: "Reunião" }] };
+  assert.equal(first(blocked, EARLY), "2026-10-01", "um dia bloqueado é pulado");
+  const holiday = { ...base, holidays: [{ id: "hl1", agendaIds: [], name: "Festa", date: KEY, endDate: "", allDay: true, startTime: "", endTime: "" }] };
+  assert.equal(first(holiday, EARLY), "2026-10-01", "e um feriado também");
+  const full = {
+    ...base,
+    hours: { a1: { 4: [{ start: "09:00", end: "10:00", max: null }] } },
+    appointments: [appointment({ id: "x1", start: `${KEY}T09:00` }), appointment({ id: "x2", start: `${KEY}T09:30` })],
+  };
+  assert.equal(first(full, EARLY), "2026-10-01", "um dia lotado também");
+
+  const short = { ...base, agendaRules: { a1: { ...DEFAULT_RULES, maxAhead: 3 } } };
+  assert.equal(first(short, new Date(2026, 8, 25, 8, 0)), null, "a próxima quinta está além do horizonte: nenhum dia");
+  assert.equal(first(short, EARLY), KEY, "mas hoje, dentro dele, vale");
+  const edge = { ...base, agendaRules: { a1: { ...DEFAULT_RULES, maxAhead: 6 } } };
+  assert.equal(first(edge, new Date(2026, 8, 25, 8, 0)), "2026-10-01", "o último dia do horizonte vale (25/09 + 6)");
+  const closed = { ...base, hours: { a1: {} } };
+  assert.equal(first(closed, EARLY), null, "sem horários, nenhum dia");
+  assert.equal(firstFreeDay(base, "sem-agenda", EARLY), null);
 }
 
 // The person form asks for what the agenda turned on, in the original's order.

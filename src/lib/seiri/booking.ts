@@ -41,26 +41,78 @@ export function timesOf(data: Data, agendaId: string, day: Date, now = new Date(
     .map((slot) => ({ id: slot.start, label: slot.start.slice(11, 16), start: slot.start, max: slot.max, taken: slot.appointments.length }));
 }
 
+/** One day of an agenda's calendar, with the availability dot the original paints under it. */
+function dayCell(data: Data, agendaId: string, date: Date, now: Date): DayCell {
+  const rules = rulesOf(data, agendaId);
+  const last = new Date(now.getFullYear(), now.getMonth(), now.getDate() + rules.maxAhead);
+  const key = dateStr(date);
+  const slots = slotsOf(data, agendaId, date);
+  const times = timesOf(data, agendaId, date, now);
+  // Past, beyond the agenda's horizon, or a day the agenda simply does not work: no dot at all.
+  const isPast = key < dateStr(now) || date > last;
+  const status = !slots.length ? "" : slots.every((s) => s.blocked) ? "holiday" : times.length ? "" : "full";
+  return { day: date.getDate(), dateStr: key, date, isToday: key === dateStr(now), isPast, hasAvailability: !isPast && times.length > 0, status };
+}
+
 /** Every cell of the month grid, with the availability dot the original paints under each day. */
 export function monthCells(data: Data, agendaId: string, month: Date, now = new Date()): (DayCell | null)[] {
   const first = new Date(month.getFullYear(), month.getMonth(), 1);
   const days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
-  const rules = rulesOf(data, agendaId);
-  const last = new Date(now.getFullYear(), now.getMonth(), now.getDate() + rules.maxAhead);
-  const todayStr = dateStr(now);
-
   const cells: (DayCell | null)[] = Array.from({ length: first.getDay() }, () => null);
-  for (let day = 1; day <= days; day++) {
-    const date = new Date(month.getFullYear(), month.getMonth(), day);
-    const key = dateStr(date);
-    const slots = slotsOf(data, agendaId, date);
-    const times = timesOf(data, agendaId, date, now);
-    // Past, beyond the agenda's horizon, or a day the agenda simply does not work: no dot at all.
-    const isPast = key < todayStr || date > last;
-    const status = !slots.length ? "" : slots.every((s) => s.blocked) ? "holiday" : times.length ? "" : "full";
-    cells.push({ day, dateStr: key, date, isToday: key === todayStr, isPast, hasAvailability: !isPast && times.length > 0, status });
-  }
+  for (let day = 1; day <= days; day++) cells.push(dayCell(data, agendaId, new Date(month.getFullYear(), month.getMonth(), day), now));
   return cells;
+}
+
+/**
+ * The agenda's own calendar in the original is not a month but a window of six weeks that starts on a day of the
+ * visitor's choosing (the first free one, to begin with): that day sits in its weekday's column, the cells before it
+ * in the first row are blank, and the grid always has 42 cells, so the page's height does not jump as it moves.
+ */
+export const WINDOW_CELLS = 42;
+
+const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+/** The last day on show: the window holds 42 cells counting the blanks, so 42 minus the start's weekday days. */
+export const windowEnd = (start: Date) => addDays(start, WINDOW_CELLS - 1 - start.getDay());
+
+/** The 42 cells of the window from `start`: blanks up to its weekday, then one cell per day. */
+export function windowCells(data: Data, agendaId: string, start: Date, now = new Date()): (DayCell | null)[] {
+  const cells: (DayCell | null)[] = Array.from({ length: start.getDay() }, () => null);
+  for (let i = 0; cells.length < WINDOW_CELLS; i++) cells.push(dayCell(data, agendaId, addDays(start, i), now));
+  return cells;
+}
+
+/** "Next" starts the day after the last one on show (a Sunday, so a full 42 days). */
+export const nextWindowStart = (start: Date) => addDays(windowEnd(start), 1);
+
+/** "Previous" goes back 42 days but never before the floor, the first free day: nothing to see in the past. */
+export function prevWindowStart(start: Date, floor: Date) {
+  const back = addDays(start, -WINDOW_CELLS);
+  return back < floor ? floor : back;
+}
+
+/** Opens the window on `day`, never before the floor. */
+export const anchorWindow = (day: Date, floor: Date) => (startOfDay(day) < floor ? floor : startOfDay(day));
+
+const MONTH_ABBREVIATIONS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+/** The window is 36 to 42 days long, so it always crosses a month end and its title is a range: "Out – Nov 2026", "Dez 2026 – Jan 2027". */
+export function windowLabel(start: Date) {
+  const end = windowEnd(start);
+  const [sy, ey] = [start.getFullYear(), end.getFullYear()];
+  if (sy === ey) return `${MONTH_ABBREVIATIONS[start.getMonth()]} – ${MONTH_ABBREVIATIONS[end.getMonth()]} ${sy}`;
+  return `${MONTH_ABBREVIATIONS[start.getMonth()]} ${sy} – ${MONTH_ABBREVIATIONS[end.getMonth()]} ${ey}`;
+}
+
+/** The first day with a free time, today on, as far ahead as the agenda takes bookings; null when there is none. */
+export function firstFreeDay(data: Data, agendaId: string, now = new Date()): Date | null {
+  const horizon = rulesOf(data, agendaId).maxAhead;
+  for (let i = 0; i <= horizon; i++) {
+    const day = addDays(now, i);
+    if (timesOf(data, agendaId, day, now).length > 0) return day;
+  }
+  return null;
 }
 
 /** A day of "Por Data": the agendas that can take someone that day, whichever of them it is. */

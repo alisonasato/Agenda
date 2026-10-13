@@ -30,6 +30,20 @@
   dias com os mesmos `monthCells` de cada agenda (`dateFirstCells`, em `booking.ts`), no lugar do endpoint de dias
   do original. Um dia sem vaga em uma agenda e com vaga em outra aparece com ponto e só lista a segunda; sem vaga
   em nenhuma, vale "sem vaga" antes de "feriado" (a regra do servidor não foi vista).
+- **O calendário da agenda é uma janela de seis semanas, não um mês, e abre no primeiro dia livre** (lido no
+  script do original em 12/10/2026: `buildCalendar`, `_windowEnd`, `prevMonth`, `nextMonth`, `_shiftWindow`,
+  `goToFirstAvailableDay`). A grade tem sempre 42 células: o primeiro dia da janela cai na coluna do seu dia
+  da semana, as células antes dele ficam em branco, e a janela vai até o sábado da sexta semana (42 menos o dia
+  da semana de início dias). O título é uma faixa ("Out – Nov 2026", "Nov 2026 – Jan 2027"), porque a janela
+  sempre atravessa um fim de mês. A seta para a frente começa no dia seguinte ao último mostrado (sempre um
+  domingo); a de trás volta 42 dias, mas nunca antes do "piso", que é o primeiro dia livre da agenda (ou hoje,
+  se não há nenhum), e fica desligada na primeira página. Ao abrir, a janela começa no primeiro dia livre e esse
+  dia já vem escolhido, com os horários na página; com `?data=` ela abre no dia do endereço (nunca antes do
+  piso), e uma data que a agenda não oferece não escolhe nada. Escolher um dia dentro da janela não a move. O
+  original põe `?data=` no endereço do primeiro dia sem empilhar histórico; o clone não escreve o dia
+  automático até a pessoa escolher um horário (aí vão `data` e `hora`). O calendário de "Por Data" continua
+  sendo de mês, como no original (`buildDateFirstCalendar`). O clone acha o primeiro dia livre pelos mesmos
+  horários de cada agenda (`firstFreeDay`, em `booking.ts`), de hoje até o horizonte da agenda.
 - **Cada etapa tem um endereço, e o Voltar/Avançar do navegador percorre as etapas.** Lido no script da
   página do original em 12/10/2026 (`_commitUrl`, `_restoreFromUrl`, `popstate`): o fluxo fica na query
   string, com `unidade`, `modo` (`servico` ou `data`; "Por Agenda" é o padrão e não se escreve), `agenda`
