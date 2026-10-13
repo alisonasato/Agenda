@@ -5,7 +5,7 @@ import { register } from "node:module";
 // Node wants the extension that the source's own imports leave out.
 register('data:text/javascript,export function resolve(s, c, next) { return next(s[0] === "." && !s.endsWith(".ts") ? s + ".ts" : s, c); }');
 
-const { dateStr, optionsOf, rulesOf, publicAgendas, servicesOf, timesOf, monthCells, formFields } = await import("./booking.ts");
+const { dateStr, optionsOf, rulesOf, publicAgendas, servicesOf, timesOf, monthCells, dateFirstCells, formFields } = await import("./booking.ts");
 const { DEFAULT_OPTIONS, DEFAULT_RULES } = await import("./types.ts");
 
 // 2026-09-24 is a Thursday; the working hours go on weekday 4.
@@ -177,6 +177,95 @@ const base = {
   };
   const holiday = monthCells(closed, "a1", new Date(2026, 8, 1), EARLY).find((c) => c && c.dateStr === KEY);
   assert.equal(holiday.status, "holiday");
+}
+
+// "Por Data": the month's days, each with the agendas that can take someone then.
+{
+  // a1 works Thursdays (24/09, 01/10...) 09:00-11:00; a2 works Thursdays and Fridays 09:00-10:00, with a longer horizon.
+  const two = {
+    ...base,
+    agendas: [
+      { id: "a1", name: "Agenda Principal", active: true },
+      { id: "a2", name: "Unidade Centro", active: true },
+    ],
+    hours: {
+      a1: { 4: [{ start: "09:00", end: "11:00", max: null }] },
+      a2: { 4: [{ start: "09:00", end: "10:00", max: null }], 5: [{ start: "09:00", end: "10:00", max: null }] },
+    },
+    agendaRules: { a2: { ...DEFAULT_RULES, maxAhead: 90 } },
+  };
+  const agendas = two.agendas;
+  const sep = dateFirstCells(two, agendas, new Date(2026, 8, 1), EARLY);
+  const at = (cells, key) => cells.find((c) => c && c.dateStr === key);
+
+  // The grid is the month's own: two blanks, then 30 days.
+  assert.equal(sep.length, 2 + 30);
+  assert.deepEqual(sep.slice(0, 2), [null, null]);
+  assert.equal(sep[2].day, 1);
+  assert.equal(sep[2].dateStr, "2026-09-01");
+
+  // Thursday both take, Friday only a2, a day neither works nobody.
+  assert.deepEqual(at(sep, "2026-09-24").agendaIds, ["a1", "a2"]);
+  assert.ok(at(sep, "2026-09-24").hasAvailability);
+  assert.deepEqual(at(sep, "2026-09-25").agendaIds, ["a2"], "só a segunda agenda trabalha na sexta");
+  assert.deepEqual(at(sep, "2026-09-26").agendaIds, []);
+  assert.ok(!at(sep, "2026-09-26").hasAvailability);
+  assert.equal(at(sep, "2026-09-26").status, "", "um dia que ninguém trabalha não é 'sem vaga'");
+
+  // Today, and the past.
+  assert.ok(at(sep, KEY).isToday);
+  assert.ok(!at(sep, "2026-09-25").isToday);
+  assert.ok(at(sep, "2026-09-17").isPast, "uma quinta anterior");
+  assert.deepEqual(at(sep, "2026-09-17").agendaIds, [], "o passado não oferece nada");
+
+  // A day past one agenda's horizon is still open on the agenda that looks further ahead.
+  const oct = dateFirstCells(two, agendas, new Date(2026, 9, 1), EARLY);
+  assert.deepEqual(at(oct, "2026-10-22").agendaIds, ["a1", "a2"], "dentro do horizonte das duas");
+  assert.deepEqual(at(oct, "2026-10-29").agendaIds, ["a2"], "além do horizonte da primeira (30 dias)");
+  assert.ok(!at(oct, "2026-10-29").isPast, "e por isso não é passado");
+  const dec = dateFirstCells(two, agendas, new Date(2026, 11, 1), EARLY);
+  assert.ok(at(dec, "2026-12-24").isPast, "além do horizonte de todas");
+  assert.deepEqual(at(dec, "2026-12-24").agendaIds, []);
+
+  // Vacancies: a day full on one agenda is listed by the other; full on both reads "full".
+  const fullOn = (id, time) => appointment({ id: `ap-${id}-${time}`, agendaId: id, start: `${KEY}T${time}` });
+  const a1Full = { ...two, appointments: [fullOn("a1", "09:00"), fullOn("a1", "09:30"), fullOn("a1", "10:00"), fullOn("a1", "10:30")] };
+  assert.deepEqual(at(dateFirstCells(a1Full, agendas, new Date(2026, 8, 1), EARLY), KEY).agendaIds, ["a2"], "a primeira lotou, a segunda ainda tem");
+  assert.equal(at(dateFirstCells(a1Full, agendas, new Date(2026, 8, 1), EARLY), KEY).status, "", "com vaga em alguma agenda o dia não é 'sem vaga'");
+
+  const bothFull = { ...a1Full, appointments: [...a1Full.appointments, fullOn("a2", "09:00"), fullOn("a2", "09:30")] };
+  const full = at(dateFirstCells(bothFull, agendas, new Date(2026, 8, 1), EARLY), KEY);
+  assert.equal(full.status, "full");
+  assert.ok(!full.hasAvailability && full.agendaIds.length === 0);
+
+  // Holiday on every agenda reads "holiday"; "full" on one and "holiday" on the other reads "full".
+  const holiday = {
+    ...two,
+    holidays: [{ id: "hl1", agendaIds: [], name: "Festa da cidade", date: KEY, endDate: "", allDay: true, startTime: "", endTime: "" }],
+  };
+  assert.equal(at(dateFirstCells(holiday, agendas, new Date(2026, 8, 1), EARLY), KEY).status, "holiday");
+  const mixed = { ...holiday, holidays: [{ ...holiday.holidays[0], agendaIds: ["a2"] }], appointments: a1Full.appointments };
+  assert.equal(at(dateFirstCells(mixed, agendas, new Date(2026, 8, 1), EARLY), KEY).status, "full", "'sem vaga' vence 'feriado' quando as duas aparecem");
+
+  // A day that is a holiday on the one agenda that works it reads "holiday", though the other agenda does not work it at all.
+  const split = { ...two, hours: { a1: two.hours.a1, a2: { 5: two.hours.a2[5] } }, holidays: [{ ...holiday.holidays[0], agendaIds: ["a1"] }] };
+  const thursday = at(dateFirstCells(split, agendas, new Date(2026, 8, 1), EARLY), KEY);
+  assert.equal(thursday.status, "holiday");
+  assert.deepEqual(thursday.agendaIds, []);
+
+  // One agenda gives the same availability its own calendar does; none gives a grid with nothing in it.
+  const alone = dateFirstCells(two, [agendas[0]], new Date(2026, 8, 1), EARLY);
+  assert.deepEqual(
+    alone.map((c) => c && c.hasAvailability),
+    monthCells(two, "a1", new Date(2026, 8, 1), EARLY).map((c) => c && c.hasAvailability),
+  );
+  const none = dateFirstCells(two, [], new Date(2026, 8, 1), EARLY);
+  assert.equal(none.length, 32);
+  assert.ok(none.every((c) => c === null || (!c.hasAvailability && c.agendaIds.length === 0)));
+  assert.ok(
+    none.filter(Boolean).every((c) => c.isPast),
+    "sem agenda nenhuma, nenhum dia está aberto: todos valem como passado",
+  );
 }
 
 // The person form asks for what the agenda turned on, in the original's order.

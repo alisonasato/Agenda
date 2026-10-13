@@ -63,6 +63,41 @@ export function monthCells(data: Data, agendaId: string, month: Date, now = new 
   return cells;
 }
 
+/** A day of "Por Data": the agendas that can take someone that day, whichever of them it is. */
+export type DateFirstCell = DayCell & { agendaIds: string[] };
+
+/**
+ * The month grid of "Por Data", where the visitor picks the day first and the agenda after. A day has a dot when any
+ * of the agendas can take someone; when none can it is "full" if some agenda is out of vacancies, else "holiday" if
+ * some is closed, else plain. It is past when every agenda counts it past (a day beyond one agenda's horizon can still
+ * be open on another). This is the original's bulk-days endpoint, computed here from the same slots as each agenda's own
+ * calendar.
+ */
+export function dateFirstCells(data: Data, agendas: Agenda[], month: Date, now = new Date()): (DateFirstCell | null)[] {
+  const per = agendas.map((a) => ({ id: a.id, cells: monthCells(data, a.id, month, now) }));
+  const lead = new Date(month.getFullYear(), month.getMonth(), 1).getDay();
+  const cells: (DateFirstCell | null)[] = Array.from({ length: lead }, () => null);
+  const days = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+  for (let i = 0; i < days; i++) {
+    const own = per.map((p) => ({ id: p.id, cell: p.cells[lead + i] as DayCell }));
+    const free = own.filter((o) => o.cell.hasAvailability).map((o) => o.id);
+    const day = new Date(month.getFullYear(), month.getMonth(), i + 1);
+    const key = dateStr(day);
+    const status = free.length ? "" : own.some((o) => o.cell.status === "full") ? "full" : own.some((o) => o.cell.status === "holiday") ? "holiday" : "";
+    cells.push({
+      day: i + 1,
+      dateStr: key,
+      date: day,
+      isToday: key === dateStr(now),
+      isPast: own.every((o) => o.cell.isPast),
+      hasAvailability: free.length > 0,
+      status,
+      agendaIds: free,
+    });
+  }
+  return cells;
+}
+
 /** The fields "Dados solicitados no agendamento" turns on, in the order the original asks them. */
 export const formFields = (options: AgendaOptions) =>
   [

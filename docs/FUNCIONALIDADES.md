@@ -666,7 +666,11 @@ cliente da lista, com os dados dele já preenchidos, e pode agendar até a data 
 até o máximo por período dela, que a página diz qual é quando é atingido. Listas desligadas ou vencidas
 não valem.
 
-**Limites:** "Por Data" ainda mostra as agendas, como "Por Agenda"; o recibo não tem endereço próprio;
+**Por Data.** Com mais de uma agenda, a aba "Por Data" mostra o calendário do mês com os dias em que alguma
+agenda tem vaga; ao escolher um dia, a pessoa escolhe a agenda que atende nele (se for só uma, ela já vem
+escolhida) e segue para o serviço e o horário, no dia que escolheu.
+
+**Limites:** o recibo não tem endereço próprio;
 acompanhantes, pagamento e formulários de pesquisa ficam de fora. "Login obrigatório" não vale (o clone
 não tem login). A aparência não segue a Tela de Agendamento.
 

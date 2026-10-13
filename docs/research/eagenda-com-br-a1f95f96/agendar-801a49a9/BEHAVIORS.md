@@ -17,6 +17,19 @@
 - Confirmar cria o cliente em `data.clients` e o agendamento em `data.appointments` com status
   PENDING, que é como o original deixa um agendamento vindo de fora até a agenda aceitar.
 - O link de cada agenda (`?agenda=<identificador>`) abre a tela já naquela agenda.
+- **"Por Data"** escolhe o dia antes da agenda (lido no script e no HTML da página do original em 12/10/2026:
+  `switchTab`, `loadAllAgendaDays`, `buildDateFirstCalendar`, `selectDateFirst`, `_selectFromDateFirst`). As abas
+  só aparecem com mais de uma agenda. A aba mostra o cartão "Escolha a Data" ("Dias com horários disponíveis
+  estão destacados"): o mês com setas (sem limite para trás, dias passados apagados), os dias com ponto quando
+  alguma agenda tem vaga, e a legenda quando há dia sem vaga ou feriado. Escolher um dia com vaga: se só uma
+  agenda o atende, ela já é escolhida; se mais de uma, abre embaixo "Escolha a Agenda" ("Disponíveis em
+  dd/mm/aaaa", com o Voltar chamado "Escolher outra data"), e a agenda escolhida segue para o serviço (se
+  tiver) e para o calendário já no dia escolhido. Trocar de mês limpa o dia. O dia e o mês da escolha não
+  vão para o endereço até haver uma agenda; aí o dia entra como `data`. O dia da escolha de uma agenda sem
+  serviço leva ao calendário já com os horários; com serviço, o dia fica à espera do serviço. O clone calcula os
+  dias com os mesmos `monthCells` de cada agenda (`dateFirstCells`, em `booking.ts`), no lugar do endpoint de dias
+  do original. Um dia sem vaga em uma agenda e com vaga em outra aparece com ponto e só lista a segunda; sem vaga
+  em nenhuma, vale "sem vaga" antes de "feriado" (a regra do servidor não foi vista).
 - **Cada etapa tem um endereço, e o Voltar/Avançar do navegador percorre as etapas.** Lido no script da
   página do original em 12/10/2026 (`_commitUrl`, `_restoreFromUrl`, `popstate`): o fluxo fica na query
   string, com `unidade`, `modo` (`servico` ou `data`; "Por Agenda" é o padrão e não se escreve), `agenda`
@@ -65,8 +78,6 @@ rolagem horizontal. `?agenda=agenda-principal` pula a tela inicial e a escolha d
 
 ## Lacunas conhecidas desta tela
 Achadas ao comparar a lista de funções do script do original com a tela do clone:
-- **"Por Data"** é só um rótulo: mostra a mesma lista de agendas de "Por Agenda". O original tem um
-  calendário que junta os dias livres de todas as agendas (`buildDateFirstCalendar`, `selectDateFirst`).
 - **O recibo não tem endereço próprio.** O original manda para `/<org>/<chave secreta>/` com `#recibo`
   (e `#acompanhantes`, `#pagamento`), e recarregar volta ao recibo; aqui, recarregar volta ao formulário.
 - **Cancelar e editar o agendamento** pelo recibo (`cancelAppointment`, `openEdit`) e responder à pesquisa.

@@ -28,7 +28,19 @@ import {
   User,
 } from "lucide-react";
 import { MONTHS, WEEKDAYS_SHORT, addMonths } from "../shared/calendarDates";
-import { dateStr, formFields, monthCells, optionsOf, publicAgendas, rulesOf, servicesOf, timesOf } from "@/lib/seiri/booking";
+import {
+  dateFirstCells,
+  dateStr,
+  formFields,
+  monthCells,
+  optionsOf,
+  publicAgendas,
+  rulesOf,
+  servicesOf,
+  timesOf,
+  type DateFirstCell,
+  type DayCell as DayCellData,
+} from "@/lib/seiri/booking";
 import { flowQuery, readFlow, startsFlow, type Flow } from "@/lib/seiri/bookingUrl";
 import { accessRefusal, clientByLink, denied, identify, isListed, prompt } from "@/lib/seiri/access";
 import { knownClient, refusalFor } from "@/lib/seiri/publicBooking";
@@ -69,7 +81,19 @@ function Stepper({ step }: { step: number }) {
   );
 }
 
-function StepCard({ title, context, onBack, children }: { title: string; context?: React.ReactNode; onBack?: () => void; children: React.ReactNode }) {
+function StepCard({
+  title,
+  context,
+  onBack,
+  backTitle = "Voltar",
+  children,
+}: {
+  title: string;
+  context?: React.ReactNode;
+  onBack?: () => void;
+  backTitle?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="mb-3 booking-step-anim">
       <div className="booking-step-card">
@@ -79,7 +103,7 @@ function StepCard({ title, context, onBack, children }: { title: string; context
             {context && <p className="booking-step-context">{context}</p>}
           </div>
           {onBack && (
-            <button type="button" className="booking-back-btn" title="Voltar" onClick={onBack}>
+            <button type="button" className="booking-back-btn" title={backTitle} onClick={onBack}>
               <ArrowLeft className="w-3.5 h-3.5" />
               Voltar
             </button>
@@ -88,6 +112,41 @@ function StepCard({ title, context, onBack, children }: { title: string; context
         <div className="booking-step-body">{children}</div>
       </div>
     </div>
+  );
+}
+
+/**
+ * One day of a month grid: the button, the dot under a day that has room and the bar over one that is full or a
+ * holiday. The agenda's own calendar dims those two as it dims a day it does not work; "Por Data" does not.
+ */
+function DayCell({ cell, selected, dimBlocked, onPick }: { cell: DayCellData | DateFirstCell; selected: boolean; dimBlocked: boolean; onPick: () => void }) {
+  const blocked = cell.status === "full" || cell.status === "holiday";
+  const dim = cell.isPast || (dimBlocked ? !cell.hasAvailability : !cell.hasAvailability && !blocked);
+  return (
+    <>
+      <button
+        type="button"
+        disabled={cell.isPast || !cell.hasAvailability}
+        title={cell.status === "full" ? "Sem vagas neste dia" : cell.status === "holiday" ? "Feriado / indisponível" : ""}
+        className={[
+          "iframe-day w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all duration-150",
+          selected ? "selected" : "",
+          cell.isToday && !selected ? "today" : "",
+          !cell.isPast && cell.hasAvailability && (dimBlocked ? !selected : true) ? "cursor-pointer font-medium" : "",
+          dim ? "opacity-30 cursor-default" : "",
+          blocked ? "iframe-day-blocked" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        onClick={onPick}
+      >
+        {cell.day}
+      </button>
+      {cell.hasAvailability && !cell.isPast && !selected && (
+        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full iframe-avail-dot pointer-events-none" />
+      )}
+      {blocked && <span className={`iframe-blocked-mark pointer-events-none${cell.status === "holiday" ? " is-holiday" : ""}`} />}
+    </>
   );
 }
 
@@ -128,6 +187,10 @@ export function BookingPage() {
   const [started, setStarted] = useState(false);
   // "Todas as unidades" is not in the address, as in the original, where it is a unit with no id.
   const [allUnits, setAllUnits] = useState(false);
+  // "Por Data": the month on show and the day picked before an agenda is. The original keeps them out of the address
+  // too, until an agenda is chosen and the day goes in as ?data=.
+  const [dateMonth, setDateMonth] = useState(() => new Date(now.getFullYear(), now.getMonth(), 1));
+  const [dateDay, setDateDay] = useState("");
   // For an agenda that only authorized clients may book: the key the visitor typed, who it opened, and what it was told.
   const [typedKey, setTypedKey] = useState("");
   const [identifiedId, setIdentifiedId] = useState("");
@@ -184,6 +247,8 @@ export function BookingPage() {
   const onForm = Boolean(time);
   const month = paged && paged.day === flow.data ? paged.month : day ? new Date(day.getFullYear(), day.getMonth(), 1) : thisMonth;
   const cells = agenda && canBook ? monthCells(data, agenda.id, month, now) : [];
+  const dateCells = !needsUnit && mode === "date" && !agenda ? dateFirstCells(data, agendas, dateMonth, now) : [];
+  const onThatDay = agendas.filter((a) => dateCells.find((c) => c?.dateStr === dateDay)?.agendaIds.includes(a.id));
 
   const duration = service?.duration || rules?.duration || 30;
   const unitLabel = unit?.name ?? "";
@@ -194,7 +259,21 @@ export function BookingPage() {
     setAllUnits(false);
     goTo({ unidade: id, ...CLEARED });
   };
-  const browseBy = (modo: Flow["modo"]) => goTo({ modo, ...CLEARED });
+  const browseBy = (modo: Flow["modo"]) => {
+    setDateDay("");
+    setDateMonth(thisMonth);
+    goTo({ modo, ...CLEARED });
+  };
+  const pageDates = (by: number) => {
+    setDateMonth(addMonths(dateMonth, by));
+    setDateDay("");
+  };
+  /** A day with room is picked; when only one agenda has it, that agenda is chosen with it. */
+  const pickDate = (cell: DateFirstCell) => {
+    setDateDay(cell.dateStr);
+    const only = cell.agendaIds.length === 1 ? agendas.find((a) => a.id === cell.agendaIds[0]) : undefined;
+    if (only) goTo({ agenda: agendaKey(only), servico: "", data: cell.dateStr, hora: "" });
+  };
 
   /** A form field's value: what was typed, or else what the identified client has on file. */
   const val = (name: string) => fields[name] ?? String((visitor as Record<string, unknown> | null)?.[name] ?? "");
@@ -329,7 +408,7 @@ export function BookingPage() {
             </StepCard>
           )}
 
-          {!needsUnit && !calendarReady && !onForm && !booked && (
+          {!needsUnit && !calendarReady && !onForm && !booked && agendas.length > 1 && (
             <div className="booking-tabs booking-step-anim">
               <button type="button" className={`booking-tab${mode === "agenda" ? " active" : ""}`} onClick={() => browseBy("")}>
                 <CalendarDays className="w-3.5 h-3.5 inline -mt-0.5" /> Por Agenda
@@ -345,7 +424,90 @@ export function BookingPage() {
             </div>
           )}
 
-          {!needsUnit && mode !== "service" && !agenda && agendas.length > 0 && (
+          {!needsUnit && mode === "date" && !agenda && (
+            <StepCard title="Escolha a Data" context={<span>Dias com horários disponíveis estão destacados</span>}>
+              <div className="flex items-center justify-between mb-2">
+                <button type="button" className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600" onClick={() => pageDates(-1)}>
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <h3 className="text-sm font-semibold text-slate-800 capitalize">
+                  {MONTHS[dateMonth.getMonth()]} {dateMonth.getFullYear()}
+                </h3>
+                <button type="button" className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-600" onClick={() => pageDates(1)}>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-7 gap-0">
+                {WEEKDAYS_SHORT.map((w) => (
+                  <span key={w} className="text-center text-xs font-medium text-slate-400 py-1">
+                    {w}
+                  </span>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-0 mt-1">
+                {dateCells.map((cell, i) => (
+                  <div key={i} className="flex items-center justify-center p-0.5 relative">
+                    {cell && (
+                      <DayCell
+                        cell={cell}
+                        selected={cell.dateStr === dateDay}
+                        dimBlocked={false}
+                        onPick={() => cell.hasAvailability && !cell.isPast && pickDate(cell)}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+              {dateCells.some((c) => c && (c.status === "full" || c.status === "holiday")) && (
+                <div className="booking-cal-legend">
+                  <span className="lg-item">
+                    <span className="lg-dot avail" />
+                    Disponível
+                  </span>
+                  <span className="lg-item">
+                    <span className="lg-bar full" />
+                    Sem vaga
+                  </span>
+                  <span className="lg-item">
+                    <span className="lg-bar holiday" />
+                    Feriado
+                  </span>
+                </div>
+              )}
+            </StepCard>
+          )}
+
+          {!needsUnit && mode === "date" && !agenda && dateDay && onThatDay.length > 1 && (
+            <StepCard
+              title="Escolha a Agenda"
+              context={
+                <span>
+                  <Calendar className="w-3.5 h-3.5" />
+                  Disponíveis em {dateDay.split("-").reverse().join("/")}
+                </span>
+              }
+              backTitle="Escolher outra data"
+              onBack={() => setDateDay("")}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {onThatDay.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className="booking-agenda-card"
+                    onClick={() => goTo({ agenda: agendaKey(a), servico: "", data: dateDay, hora: "" })}
+                  >
+                    <span className="booking-agenda-card-avatar">{a.name.charAt(0).toUpperCase()}</span>
+                    <span className="booking-agenda-card-info">
+                      <span className="booking-agenda-card-title">{a.name}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </StepCard>
+          )}
+
+          {!needsUnit && mode === "agenda" && !agenda && agendas.length > 0 && (
             <StepCard
               title="Escolha a Agenda"
               context={
@@ -448,7 +610,12 @@ export function BookingPage() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {subTypes.map((s) => (
-                  <button key={s.id} type="button" className="booking-service-card" onClick={() => goTo({ servico: s.id, data: "", hora: "" })}>
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="booking-service-card"
+                    onClick={() => goTo({ servico: s.id, data: mode === "date" ? flow.data : "", hora: "" })}
+                  >
                     <span className="booking-service-card-icon">
                       <Tag className="w-4 h-4" />
                     </span>
@@ -579,32 +746,12 @@ export function BookingPage() {
                       {cells.map((cell, i) => (
                         <div key={i} className="flex items-center justify-center p-0.5 relative">
                           {cell && (
-                            <>
-                              <button
-                                type="button"
-                                disabled={cell.isPast || !cell.hasAvailability}
-                                title={cell.status === "full" ? "Sem vagas neste dia" : cell.status === "holiday" ? "Feriado / indisponível" : ""}
-                                className={[
-                                  "iframe-day w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all duration-150",
-                                  day && dateStr(day) === cell.dateStr ? "selected" : "",
-                                  cell.isToday && (!day || dateStr(day) !== cell.dateStr) ? "today" : "",
-                                  !cell.isPast && cell.hasAvailability && (!day || dateStr(day) !== cell.dateStr) ? "cursor-pointer font-medium" : "",
-                                  cell.isPast || !cell.hasAvailability ? "opacity-30 cursor-default" : "",
-                                  cell.status === "full" || cell.status === "holiday" ? "iframe-day-blocked" : "",
-                                ]
-                                  .filter(Boolean)
-                                  .join(" ")}
-                                onClick={() => goTo({ data: cell.dateStr, hora: "" })}
-                              >
-                                {cell.day}
-                              </button>
-                              {cell.hasAvailability && !cell.isPast && (!day || dateStr(day) !== cell.dateStr) && (
-                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full iframe-avail-dot pointer-events-none" />
-                              )}
-                              {(cell.status === "full" || cell.status === "holiday") && (
-                                <span className={`iframe-blocked-mark pointer-events-none${cell.status === "holiday" ? " is-holiday" : ""}`} />
-                              )}
-                            </>
+                            <DayCell
+                              cell={cell}
+                              selected={Boolean(day) && dateStr(day!) === cell.dateStr}
+                              dimBlocked
+                              onPick={() => goTo({ data: cell.dateStr, hora: "" })}
+                            />
                           )}
                         </div>
                       ))}
